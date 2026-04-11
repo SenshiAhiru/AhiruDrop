@@ -52,9 +52,9 @@ export function PublicHeader() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Left: Logo */}
-            <Link href="/">
+            <a href="/">
               <Logo size="md" />
-            </Link>
+            </a>
 
             {/* Center: Desktop nav */}
             <nav className="hidden md:flex items-center gap-1">
@@ -111,48 +111,51 @@ export function PublicHeader() {
 
                   {/* Dropdown */}
                   {userMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-[var(--card)] border border-[var(--border)] shadow-xl py-1 animate-in fade-in slide-in-from-top-2 duration-200">
-                      <Link
+                    <div
+                      className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-[var(--card)] border border-[var(--border)] shadow-xl py-1"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <a
                         href="/dashboard"
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
                       >
                         <User className="h-4 w-4" />
                         Minha Conta
-                      </Link>
+                      </a>
                       {(session.user as any).role === "ADMIN" || (session.user as any).role === "SUPER_ADMIN" ? (
-                        <Link
+                        <a
                           href="/admin"
                           className="flex items-center gap-2 px-4 py-2.5 text-sm text-accent-500 hover:bg-[var(--muted)] transition-colors"
                         >
                           <Shield className="h-4 w-4" />
                           Painel Admin
-                        </Link>
+                        </a>
                       ) : null}
                       <hr className="border-[var(--border)] my-1" />
-                      <Link
+                      <a
                         href="/api/auth/signout"
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-danger hover:bg-[var(--muted)] transition-colors"
                       >
                         <LogOut className="h-4 w-4" />
                         Sair
-                      </Link>
+                      </a>
                     </div>
                   )}
                 </div>
               ) : (
                 <div className="hidden md:flex items-center gap-2">
-                  <Link
+                  <a
                     href="/login"
                     className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors"
                   >
                     Entrar
-                  </Link>
-                  <Link
+                  </a>
+                  <a
                     href="/register"
                     className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md bg-primary-600 text-white hover:bg-primary-700 shadow-sm transition-colors"
                   >
                     Cadastrar
-                  </Link>
+                  </a>
                 </div>
               )}
 
@@ -187,44 +190,44 @@ export function PublicHeader() {
                 <p className="text-xs text-surface-500">{session.user.email}</p>
               </div>
             </div>
-            <Link
+            <a
               href="/dashboard"
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
             >
               <User className="h-4 w-4" />
               Minha Conta
-            </Link>
+            </a>
             {(session.user as any).role === "ADMIN" || (session.user as any).role === "SUPER_ADMIN" ? (
-              <Link
+              <a
                 href="/admin"
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-accent-500 hover:bg-[var(--muted)] transition-colors"
               >
                 <Shield className="h-4 w-4" />
                 Painel Admin
-              </Link>
+              </a>
             ) : null}
-            <Link
+            <a
               href="/api/auth/signout"
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-danger hover:bg-[var(--muted)] transition-colors"
             >
               <LogOut className="h-4 w-4" />
               Sair
-            </Link>
+            </a>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            <Link
+            <a
               href="/login"
               className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors"
             >
               Entrar
-            </Link>
-            <Link
+            </a>
+            <a
               href="/register"
               className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md bg-primary-600 text-white hover:bg-primary-700 shadow-sm transition-colors"
             >
               Cadastrar
-            </Link>
+            </a>
           </div>
         )}
       </MobileNav>

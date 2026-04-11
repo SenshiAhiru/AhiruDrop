@@ -1,5 +1,6 @@
 import { cn, formatCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { getWearColor } from "@/constants/cs2";
 
 type RaffleStatus = "DRAFT" | "ACTIVE" | "PAUSED" | "DRAWN" | "CANCELLED";
 
@@ -11,6 +12,12 @@ interface RaffleDetailHeaderProps {
     pricePerNumber: number;
     category: string | null;
     prizeType: string | null;
+    skinRarity?: string;
+    skinRarityColor?: string;
+    skinWear?: string;
+    skinWeapon?: string;
+    skinStatTrak?: boolean;
+    skinMarketPrice?: number | null;
   };
   className?: string;
 }
@@ -24,7 +31,20 @@ const statusConfig: Record<RaffleStatus, { label: string; variant: "default" | "
 };
 
 export function RaffleDetailHeader({ raffle, className }: RaffleDetailHeaderProps) {
-  const { title, description, status, pricePerNumber, category, prizeType } = raffle;
+  const {
+    title,
+    description,
+    status,
+    pricePerNumber,
+    category,
+    prizeType,
+    skinRarity,
+    skinRarityColor,
+    skinWear,
+    skinWeapon,
+    skinStatTrak,
+    skinMarketPrice,
+  } = raffle;
   const statusInfo = statusConfig[status] ?? statusConfig.ACTIVE;
 
   return (
@@ -39,8 +59,43 @@ export function RaffleDetailHeader({ raffle, className }: RaffleDetailHeaderProp
         </Badge>
       </div>
 
+      {/* Weapon subtitle */}
+      {skinWeapon && (
+        <p className="text-sm text-[var(--muted-foreground)]">{skinWeapon}</p>
+      )}
+
       {/* Tags */}
       <div className="flex flex-wrap items-center gap-2">
+        {/* Skin rarity badge */}
+        {skinRarity && skinRarityColor && (
+          <Badge
+            className="text-xs text-white"
+            style={{ backgroundColor: skinRarityColor }}
+          >
+            {skinRarity}
+          </Badge>
+        )}
+
+        {/* Skin wear badge */}
+        {skinWear && (
+          <Badge
+            className="text-xs text-white"
+            style={{ backgroundColor: getWearColor(skinWear) }}
+          >
+            {skinWear}
+          </Badge>
+        )}
+
+        {/* StatTrak badge */}
+        {skinStatTrak && (
+          <Badge
+            className="text-xs font-semibold text-white"
+            style={{ backgroundColor: "#cf6a32" }}
+          >
+            StatTrak&trade;
+          </Badge>
+        )}
+
         {category && (
           <Badge variant="outline" className="text-xs">
             <svg
@@ -79,6 +134,16 @@ export function RaffleDetailHeader({ raffle, className }: RaffleDetailHeaderProp
           </Badge>
         )}
       </div>
+
+      {/* Market price */}
+      {skinMarketPrice != null && skinMarketPrice > 0 && (
+        <div className="rounded-xl border border-accent-500/20 bg-accent-500/5 px-5 py-3">
+          <span className="text-sm text-[var(--muted-foreground)]">Valor de mercado: </span>
+          <span className="text-xl font-bold text-accent-500">
+            {formatCurrency(skinMarketPrice)}
+          </span>
+        </div>
+      )}
 
       {/* Price highlight */}
       <div className="flex items-baseline gap-2 rounded-xl border border-accent-500/20 bg-accent-500/5 px-5 py-3">

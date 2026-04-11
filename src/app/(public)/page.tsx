@@ -6,43 +6,59 @@ import { RaffleCard } from "@/components/raffle/raffle-card";
 const FEATURED_RAFFLES = [
   {
     id: "1",
-    title: "PlayStation 5 Slim Digital Edition",
-    slug: "playstation-5-slim-digital",
-    featuredImage: null,
-    pricePerNumber: 2.5,
+    title: "AK-47 | Asiimov (Field-Tested)",
+    slug: "ak47-asiimov-ft",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 2.50,
     stats: { available: 720, paid: 280, total: 1000 },
     status: "ACTIVE" as const,
-    scheduledDrawAt: "2026-05-15T20:00:00Z",
+    scheduledDrawAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    skinRarity: "Classified",
+    skinRarityColor: "#d32ce6",
+    skinWear: "Field-Tested",
+    skinWeapon: "AK-47",
   },
   {
     id: "2",
-    title: "iPhone 16 Pro Max 256GB",
-    slug: "iphone-16-pro-max",
-    featuredImage: null,
-    pricePerNumber: 5.0,
+    title: "Karambit | Doppler (Factory New)",
+    slug: "karambit-doppler-fn",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 10.00,
     stats: { available: 150, paid: 850, total: 1000 },
     status: "ACTIVE" as const,
-    scheduledDrawAt: "2026-04-30T20:00:00Z",
+    scheduledDrawAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+    skinRarity: "Covert",
+    skinRarityColor: "#eb4b4b",
+    skinWear: "Factory New",
+    skinWeapon: "Karambit",
   },
   {
     id: "3",
-    title: "PC Gamer RTX 4070 Super",
-    slug: "pc-gamer-rtx-4070-super",
-    featuredImage: null,
-    pricePerNumber: 10.0,
-    stats: { available: 320, paid: 180, total: 500 },
-    status: "ACTIVE" as const,
-    scheduledDrawAt: "2026-06-01T20:00:00Z",
+    title: "AWP | Dragon Lore (Minimal Wear)",
+    slug: "awp-dragon-lore-mw",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 25.00,
+    stats: { available: 5000, paid: 5000, total: 10000 },
+    status: "DRAWN" as const,
+    scheduledDrawAt: null,
+    skinRarity: "Covert",
+    skinRarityColor: "#eb4b4b",
+    skinWear: "Minimal Wear",
+    skinWeapon: "AWP",
   },
   {
     id: "4",
-    title: "Nintendo Switch OLED + 3 Jogos",
-    slug: "nintendo-switch-oled-3-jogos",
-    featuredImage: null,
-    pricePerNumber: 1.5,
-    stats: { available: 0, paid: 500, total: 500 },
-    status: "DRAWN" as const,
-    scheduledDrawAt: null,
+    title: "Sport Gloves | Pandora's Box (Minimal Wear)",
+    slug: "sport-gloves-pandoras-box-mw",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 5.00,
+    stats: { available: 300, paid: 200, total: 500 },
+    status: "ACTIVE" as const,
+    scheduledDrawAt: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+    skinRarity: "Extraordinary",
+    skinRarityColor: "#e4ae39",
+    skinWear: "Minimal Wear",
+    skinWeapon: "Sport Gloves",
   },
 ];
 
@@ -55,8 +71,8 @@ const STATS = [
 
 const STEPS = [
   {
-    title: "Escolha sua rifa",
-    description: "Navegue pelo catalogo e encontre o premio dos seus sonhos.",
+    title: "Escolha sua skin",
+    description: "Navegue pelo catalogo e encontre a skin dos seus sonhos.",
     icon: SearchIcon,
   },
   {
@@ -66,7 +82,7 @@ const STEPS = [
   },
   {
     title: "Aguarde o sorteio",
-    description: "Acompanhe em tempo real e confira o resultado publico e transparente.",
+    description: "Acompanhe em tempo real e receba sua skin direto no inventario.",
     icon: TrophyIcon,
   },
 ];
@@ -96,12 +112,12 @@ export default function HomePage() {
 
         <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-8 px-6 py-28 text-center lg:py-40">
           <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            <span className="text-gradient">Sua sorte comeca aqui</span>
+            <span className="text-gradient">Skins raras ao seu alcance</span>
           </h1>
 
           <p className="max-w-2xl text-lg text-surface-400 sm:text-xl">
-            Participe das melhores rifas online com transparencia e seguranca.
-            Premios incriveis esperam por voce.
+            Participe das melhores rifas de skins CS2. Armas, facas e luvas com
+            transparencia total.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4">

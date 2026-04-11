@@ -102,6 +102,20 @@ model Raffle {
   category         String?
   prizeType        String?
   regulation       String?      @db.Text
+  // CS2 Skin fields
+  skinName         String?
+  skinImage        String?
+  skinWeapon       String?
+  skinCategory     String?
+  skinRarity       String?
+  skinRarityColor  String?
+  skinWear         String?
+  skinFloat        Decimal?     @db.Decimal(16, 13)
+  skinStatTrak     Boolean      @default(false)
+  skinSouvenir     Boolean      @default(false)
+  skinExteriorMin  Decimal?     @db.Decimal(4, 2)
+  skinExteriorMax  Decimal?     @db.Decimal(4, 2)
+  skinMarketPrice  Decimal?     @db.Decimal(10, 2)
   scheduledDrawAt  DateTime?
   closedAt         DateTime?
   isFeatured       Boolean      @default(false)

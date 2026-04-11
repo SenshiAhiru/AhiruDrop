@@ -7,7 +7,7 @@ export const createRaffleSchema = z.object({
   title: z
     .string()
     .min(1, "Titulo e obrigatorio")
-    .max(120, "Titulo deve ter no maximo 120 caracteres"),
+    .max(200, "Titulo deve ter no maximo 200 caracteres"),
   description: z
     .string()
     .min(1, "Descricao e obrigatoria")
@@ -22,19 +22,31 @@ export const createRaffleSchema = z.object({
   maxPerPurchase: z
     .number()
     .int("Maximo por compra deve ser inteiro")
-    .positive("Maximo por compra deve ser positivo"),
-  category: z
-    .string()
-    .min(1, "Categoria e obrigatoria"),
-  prizeType: z
-    .string()
-    .min(1, "Tipo de premio e obrigatorio"),
+    .positive("Maximo por compra deve ser positivo")
+    .optional()
+    .default(10),
+  category: z.string().optional(),
+  prizeType: z.string().optional(),
   status: z
     .enum(raffleStatusValues)
     .optional()
     .default(RAFFLE_STATUS.DRAFT),
   imageUrl: z.string().url("URL da imagem invalida").optional(),
   drawDate: z.coerce.date().optional(),
+  // CS2 Skin fields
+  skinName: z.string().optional(),
+  skinImage: z.string().optional(),
+  skinWeapon: z.string().optional(),
+  skinCategory: z.string().optional(),
+  skinRarity: z.string().optional(),
+  skinRarityColor: z.string().optional(),
+  skinWear: z.string().optional(),
+  skinFloat: z.number().min(0).max(1).optional().nullable(),
+  skinStatTrak: z.boolean().optional().default(false),
+  skinSouvenir: z.boolean().optional().default(false),
+  skinExteriorMin: z.number().min(0).max(1).optional().nullable(),
+  skinExteriorMax: z.number().min(0).max(1).optional().nullable(),
+  skinMarketPrice: z.number().optional().nullable(),
 });
 
 export const updateRaffleSchema = createRaffleSchema.partial();

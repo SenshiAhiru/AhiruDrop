@@ -13,90 +13,122 @@ import { Button } from "@/components/ui/button";
 const MOCK_RAFFLES = [
   {
     id: "1",
-    title: "PlayStation 5 Slim Digital Edition",
-    slug: "playstation-5-slim-digital",
-    featuredImage: null,
-    pricePerNumber: 2.5,
+    title: "AK-47 | Asiimov (Field-Tested)",
+    slug: "ak47-asiimov-ft",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 2.50,
     stats: { available: 720, paid: 280, total: 1000 },
     status: "ACTIVE" as const,
-    scheduledDrawAt: "2026-05-15T20:00:00Z",
+    scheduledDrawAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    skinRarity: "Classified",
+    skinRarityColor: "#d32ce6",
+    skinWear: "Field-Tested",
+    skinWeapon: "AK-47",
   },
   {
     id: "2",
-    title: "iPhone 16 Pro Max 256GB",
-    slug: "iphone-16-pro-max",
-    featuredImage: null,
-    pricePerNumber: 5.0,
+    title: "Karambit | Doppler (Factory New)",
+    slug: "karambit-doppler-fn",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 10.00,
     stats: { available: 150, paid: 850, total: 1000 },
     status: "ACTIVE" as const,
-    scheduledDrawAt: "2026-04-30T20:00:00Z",
+    scheduledDrawAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+    skinRarity: "Covert",
+    skinRarityColor: "#eb4b4b",
+    skinWear: "Factory New",
+    skinWeapon: "Karambit",
   },
   {
     id: "3",
-    title: "PC Gamer RTX 4070 Super",
-    slug: "pc-gamer-rtx-4070-super",
-    featuredImage: null,
-    pricePerNumber: 10.0,
-    stats: { available: 320, paid: 180, total: 500 },
-    status: "ACTIVE" as const,
-    scheduledDrawAt: "2026-06-01T20:00:00Z",
+    title: "AWP | Dragon Lore (Minimal Wear)",
+    slug: "awp-dragon-lore-mw",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 25.00,
+    stats: { available: 5000, paid: 5000, total: 10000 },
+    status: "DRAWN" as const,
+    scheduledDrawAt: null,
+    skinRarity: "Covert",
+    skinRarityColor: "#eb4b4b",
+    skinWear: "Minimal Wear",
+    skinWeapon: "AWP",
   },
   {
     id: "4",
-    title: "Nintendo Switch OLED + 3 Jogos",
-    slug: "nintendo-switch-oled-3-jogos",
-    featuredImage: null,
-    pricePerNumber: 1.5,
-    stats: { available: 0, paid: 500, total: 500 },
-    status: "DRAWN" as const,
-    scheduledDrawAt: null,
+    title: "Sport Gloves | Pandora's Box (Minimal Wear)",
+    slug: "sport-gloves-pandoras-box-mw",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 5.00,
+    stats: { available: 300, paid: 200, total: 500 },
+    status: "ACTIVE" as const,
+    scheduledDrawAt: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+    skinRarity: "Extraordinary",
+    skinRarityColor: "#e4ae39",
+    skinWear: "Minimal Wear",
+    skinWeapon: "Sport Gloves",
   },
   {
     id: "5",
-    title: "Smart TV Samsung 65'' 4K QLED",
-    slug: "smart-tv-samsung-65-4k-qled",
-    featuredImage: null,
-    pricePerNumber: 3.0,
+    title: "M4A4 | Howl (Factory New)",
+    slug: "m4a4-howl-fn",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 15.00,
     stats: { available: 400, paid: 600, total: 1000 },
     status: "ACTIVE" as const,
-    scheduledDrawAt: "2026-05-20T20:00:00Z",
+    scheduledDrawAt: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+    skinRarity: "Contraband",
+    skinRarityColor: "#e4ae39",
+    skinWear: "Factory New",
+    skinWeapon: "M4A4",
   },
   {
     id: "6",
-    title: "AirPods Pro 2 + Apple Watch SE",
-    slug: "airpods-pro-2-apple-watch-se",
-    featuredImage: null,
-    pricePerNumber: 2.0,
+    title: "Desert Eagle | Blaze (Factory New)",
+    slug: "deagle-blaze-fn",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 2.00,
     stats: { available: 50, paid: 250, total: 300 },
     status: "ACTIVE" as const,
-    scheduledDrawAt: "2026-05-10T20:00:00Z",
+    scheduledDrawAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+    skinRarity: "Restricted",
+    skinRarityColor: "#8847ff",
+    skinWear: "Factory New",
+    skinWeapon: "Desert Eagle",
   },
   {
     id: "7",
-    title: "Xbox Series X + Game Pass Ultimate",
-    slug: "xbox-series-x-game-pass",
-    featuredImage: null,
-    pricePerNumber: 4.0,
+    title: "Butterfly Knife | Fade (Factory New)",
+    slug: "butterfly-fade-fn",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 8.00,
     stats: { available: 0, paid: 500, total: 500 },
     status: "DRAWN" as const,
     scheduledDrawAt: null,
+    skinRarity: "Covert",
+    skinRarityColor: "#eb4b4b",
+    skinWear: "Factory New",
+    skinWeapon: "Butterfly Knife",
   },
   {
     id: "8",
-    title: "Cadeira Gamer ThunderX3 + Headset",
-    slug: "cadeira-gamer-thunderx3-headset",
-    featuredImage: null,
-    pricePerNumber: 1.0,
+    title: "Specialist Gloves | Crimson Kimono (Field-Tested)",
+    slug: "specialist-gloves-crimson-kimono-ft",
+    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
+    pricePerNumber: 4.00,
     stats: { available: 180, paid: 120, total: 300 },
     status: "PAUSED" as const,
-    scheduledDrawAt: "2026-06-15T20:00:00Z",
+    scheduledDrawAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    skinRarity: "Extraordinary",
+    skinRarityColor: "#e4ae39",
+    skinWear: "Field-Tested",
+    skinWeapon: "Specialist Gloves",
   },
 ];
 
-type StatusFilter = "ALL" | "ACTIVE" | "CLOSED" | "DRAWN";
+type CategoryFilter = "ALL" | "Rifle" | "Knife" | "Gloves" | "Pistol" | "Sniper Rifle";
 
 export default function RafflesPage() {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("ALL");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 8;
@@ -105,12 +137,8 @@ export default function RafflesPage() {
   const filteredRaffles = useMemo(() => {
     let result = MOCK_RAFFLES;
 
-    if (statusFilter !== "ALL") {
-      if (statusFilter === "CLOSED") {
-        result = result.filter((r) => r.status === "PAUSED" || r.status === "CANCELLED");
-      } else {
-        result = result.filter((r) => r.status === statusFilter);
-      }
+    if (categoryFilter !== "ALL") {
+      result = result.filter((r) => r.skinWeapon && getCategoryFromWeapon(r.skinWeapon) === categoryFilter);
     }
 
     if (search.trim()) {
@@ -119,7 +147,7 @@ export default function RafflesPage() {
     }
 
     return result;
-  }, [statusFilter, search]);
+  }, [categoryFilter, search]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRaffles.length / perPage));
   const paginatedRaffles = filteredRaffles.slice((page - 1) * perPage, page * perPage);
@@ -128,9 +156,9 @@ export default function RafflesPage() {
     <div className="mx-auto max-w-7xl px-6 py-10">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[var(--foreground)]">Rifas</h1>
+        <h1 className="text-3xl font-bold text-[var(--foreground)]">Rifas de Skins CS2</h1>
         <p className="mt-2 text-[var(--muted-foreground)]">
-          Explore todas as rifas disponiveis e encontre o premio ideal.
+          Explore todas as rifas de skins disponiveis. Armas, facas, luvas e muito mais.
         </p>
       </div>
 
@@ -148,7 +176,7 @@ export default function RafflesPage() {
           </svg>
           <Input
             type="text"
-            placeholder="Buscar rifas..."
+            placeholder="Buscar skins..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -159,22 +187,24 @@ export default function RafflesPage() {
         </div>
 
         <Select
-          value={statusFilter}
+          value={categoryFilter}
           onChange={(e) => {
-            setStatusFilter(e.target.value as StatusFilter);
+            setCategoryFilter(e.target.value as CategoryFilter);
             setPage(1);
           }}
           className="w-full sm:w-48"
         >
-          <option value="ALL">Todas</option>
-          <option value="ACTIVE">Ativas</option>
-          <option value="CLOSED">Encerradas</option>
-          <option value="DRAWN">Sorteadas</option>
+          <option value="ALL">Todas as Categorias</option>
+          <option value="Rifle">Rifles</option>
+          <option value="Pistol">Pistolas</option>
+          <option value="Sniper Rifle">Snipers</option>
+          <option value="Knife">Facas</option>
+          <option value="Gloves">Luvas</option>
         </Select>
       </div>
 
       {/* Grid */}
-      <RaffleGrid loading={false} emptyMessage="Nenhuma rifa encontrada com os filtros selecionados.">
+      <RaffleGrid loading={false} emptyMessage="Nenhuma skin encontrada com os filtros selecionados.">
         {paginatedRaffles.length > 0
           ? paginatedRaffles.map((raffle) => (
               <RaffleCard key={raffle.id} raffle={raffle} />
@@ -216,4 +246,18 @@ export default function RafflesPage() {
       )}
     </div>
   );
+}
+
+/** Map weapon names to categories for filtering */
+function getCategoryFromWeapon(weapon: string): string {
+  const knives = ["Karambit", "Butterfly Knife", "Bayonet", "Flip Knife", "Gut Knife", "Falchion Knife", "Shadow Daggers", "Bowie Knife", "Huntsman Knife", "Navaja Knife", "Stiletto Knife", "Talon Knife", "Ursus Knife", "Classic Knife", "Paracord Knife", "Survival Knife", "Nomad Knife", "Skeleton Knife", "Kukri Knife"];
+  const gloves = ["Sport Gloves", "Specialist Gloves", "Driver Gloves", "Hand Wraps", "Moto Gloves", "Hydra Gloves", "Broken Fang Gloves"];
+  const snipers = ["AWP", "SSG 08", "SCAR-20", "G3SG1"];
+  const pistols = ["Desert Eagle", "USP-S", "Glock-18", "P250", "Five-SeveN", "Tec-9", "CZ75-Auto", "R8 Revolver", "P2000", "Dual Berettas"];
+
+  if (knives.includes(weapon)) return "Knife";
+  if (gloves.includes(weapon)) return "Gloves";
+  if (snipers.includes(weapon)) return "Sniper Rifle";
+  if (pistols.includes(weapon)) return "Pistol";
+  return "Rifle";
 }

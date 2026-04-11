@@ -7,6 +7,7 @@ import {
   Users,
   ShoppingCart,
   ArrowUpRight,
+  BarChart3,
 } from "lucide-react";
 import { StatsCard } from "@/components/admin/stats-card";
 import { DataTable, type Column } from "@/components/admin/data-table";
@@ -23,32 +24,18 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// --- Mock Data ---
-const revenueData = Array.from({ length: 30 }, (_, i) => ({
-  date: `${String(i + 1).padStart(2, "0")}/04`,
-  revenue: Math.floor(Math.random() * 5000) + 1000,
-}));
+const revenueData: { date: string; revenue: number }[] = [];
 
-const recentOrders = [
-  { id: "ORD-001", usuario: "Maria Silva", rifa: "iPhone 15 Pro", total: 25.0, status: "PAID", data: "2026-04-11T10:30:00" },
-  { id: "ORD-002", usuario: "Joao Santos", rifa: "PS5 Slim", total: 15.0, status: "PENDING", data: "2026-04-11T09:45:00" },
-  { id: "ORD-003", usuario: "Ana Costa", rifa: "MacBook Air M3", total: 50.0, status: "PAID", data: "2026-04-11T08:20:00" },
-  { id: "ORD-004", usuario: "Pedro Lima", rifa: "iPhone 15 Pro", total: 10.0, status: "CANCELLED", data: "2026-04-10T22:10:00" },
-  { id: "ORD-005", usuario: "Julia Rocha", rifa: "PS5 Slim", total: 30.0, status: "PAID", data: "2026-04-10T20:00:00" },
-  { id: "ORD-006", usuario: "Lucas Alves", rifa: "MacBook Air M3", total: 20.0, status: "EXPIRED", data: "2026-04-10T18:30:00" },
-  { id: "ORD-007", usuario: "Carla Souza", rifa: "Smart TV 65\"", total: 35.0, status: "PAID", data: "2026-04-10T16:15:00" },
-  { id: "ORD-008", usuario: "Rafael Dias", rifa: "iPhone 15 Pro", total: 5.0, status: "PENDING", data: "2026-04-10T14:00:00" },
-  { id: "ORD-009", usuario: "Fernanda Reis", rifa: "PS5 Slim", total: 45.0, status: "PAID", data: "2026-04-10T12:45:00" },
-  { id: "ORD-010", usuario: "Bruno Melo", rifa: "Smart TV 65\"", total: 10.0, status: "PAID", data: "2026-04-10T10:30:00" },
-];
+const recentOrders: {
+  id: string;
+  usuario: string;
+  rifa: string;
+  total: number;
+  status: string;
+  data: string;
+}[] = [];
 
-const recentActivity = [
-  { message: "Nova rifa criada: Smart TV 65\"", time: "2 min atras" },
-  { message: "Pedido ORD-001 pago via Mercado Pago", time: "15 min atras" },
-  { message: "Usuario 'Carlos' se cadastrou", time: "30 min atras" },
-  { message: "Rifa 'iPhone 15 Pro' atingiu 80% vendida", time: "1h atras" },
-  { message: "Sorteio realizado: Rifa 'Galaxy S24'", time: "3h atras" },
-];
+const recentActivity: { message: string; time: string }[] = [];
 
 const statusBadge: Record<string, "success" | "warning" | "danger" | "outline"> = {
   PAID: "success",
@@ -95,30 +82,30 @@ export default function AdminDashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Arrecadado"
-          value={formatCurrency(48750)}
+          value={formatCurrency(0)}
           icon={DollarSign}
-          trend={{ value: 12.5, isPositive: true }}
+          trend={{ value: 0, isPositive: true }}
           description="vs. mes anterior"
         />
         <StatsCard
           title="Rifas Ativas"
-          value="8"
+          value="0"
           icon={Ticket}
-          trend={{ value: 3, isPositive: true }}
+          trend={{ value: 0, isPositive: true }}
           description="novas esta semana"
         />
         <StatsCard
           title="Total Usuarios"
-          value="1.247"
+          value="0"
           icon={Users}
-          trend={{ value: 8.2, isPositive: true }}
+          trend={{ value: 0, isPositive: true }}
           description="vs. mes anterior"
         />
         <StatsCard
           title="Pedidos Pendentes"
-          value="23"
+          value="0"
           icon={ShoppingCart}
-          trend={{ value: 5, isPositive: false }}
+          trend={{ value: 0, isPositive: false }}
           description="aguardando pagamento"
         />
       </div>
@@ -130,44 +117,51 @@ export default function AdminDashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueData}>
-                <defs>
-                  <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(v) => `R$${v}`}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--card)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                  }}
-                  formatter={(v: number) => [formatCurrency(v), "Receita"]}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#7c3aed"
-                  strokeWidth={2}
-                  fill="url(#revenueGrad)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {revenueData.length === 0 ? (
+              <div className="flex h-full flex-col items-center justify-center text-[var(--muted-foreground)]">
+                <BarChart3 className="mb-2 h-10 w-10 opacity-40" />
+                <p className="text-sm">Sem dados de receita</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={revenueData}>
+                  <defs>
+                    <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(v) => `R$${v}`}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "var(--card)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                    }}
+                    formatter={(v: number) => [formatCurrency(v), "Receita"]}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#7c3aed"
+                    strokeWidth={2}
+                    fill="url(#revenueGrad)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -180,16 +174,23 @@ export default function AdminDashboardPage() {
               <CardTitle>Pedidos Recentes</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <DataTable
-                columns={orderColumns}
-                data={recentOrders as unknown as OrderRow[]}
-                pagination={{
-                  page,
-                  pages: 3,
-                  total: 30,
-                  onPageChange: setPage,
-                }}
-              />
+              {recentOrders.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-[var(--muted-foreground)]">
+                  <ShoppingCart className="mb-2 h-10 w-10 opacity-40" />
+                  <p className="text-sm">Nenhum pedido ainda</p>
+                </div>
+              ) : (
+                <DataTable
+                  columns={orderColumns}
+                  data={recentOrders as unknown as OrderRow[]}
+                  pagination={{
+                    page,
+                    pages: 1,
+                    total: recentOrders.length,
+                    onPageChange: setPage,
+                  }}
+                />
+              )}
             </CardContent>
           </Card>
         </div>
@@ -200,21 +201,28 @@ export default function AdminDashboardPage() {
             <CardTitle>Atividade Recente</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentActivity.map((activity, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-600/10">
-                    <ArrowUpRight className="h-3 w-3 text-primary-600" />
+            {recentActivity.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-[var(--muted-foreground)]">
+                <ArrowUpRight className="mb-2 h-8 w-8 opacity-40" />
+                <p className="text-sm">Nenhuma atividade recente</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {recentActivity.map((activity, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-600/10">
+                      <ArrowUpRight className="h-3 w-3 text-primary-600" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm leading-snug">{activity.message}</p>
+                      <p className="text-xs text-[var(--muted-foreground)]">
+                        {activity.time}
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm leading-snug">{activity.message}</p>
-                    <p className="text-xs text-[var(--muted-foreground)]">
-                      {activity.time}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

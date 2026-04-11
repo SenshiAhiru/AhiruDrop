@@ -1,73 +1,22 @@
 import Link from "next/link";
 import { RaffleCard } from "@/components/raffle/raffle-card";
 
-/* ── Mock Data ── */
+/* ── Data ── */
 
-const FEATURED_RAFFLES = [
-  {
-    id: "1",
-    title: "AK-47 | Asiimov (Field-Tested)",
-    slug: "ak47-asiimov-ft",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 2.50,
-    stats: { available: 720, paid: 280, total: 1000 },
-    status: "ACTIVE" as const,
-    scheduledDrawAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    skinRarity: "Classified",
-    skinRarityColor: "#d32ce6",
-    skinWear: "Field-Tested",
-    skinWeapon: "AK-47",
-  },
-  {
-    id: "2",
-    title: "Karambit | Doppler (Factory New)",
-    slug: "karambit-doppler-fn",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 10.00,
-    stats: { available: 150, paid: 850, total: 1000 },
-    status: "ACTIVE" as const,
-    scheduledDrawAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-    skinRarity: "Covert",
-    skinRarityColor: "#eb4b4b",
-    skinWear: "Factory New",
-    skinWeapon: "Karambit",
-  },
-  {
-    id: "3",
-    title: "AWP | Dragon Lore (Minimal Wear)",
-    slug: "awp-dragon-lore-mw",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 25.00,
-    stats: { available: 5000, paid: 5000, total: 10000 },
-    status: "DRAWN" as const,
-    scheduledDrawAt: null,
-    skinRarity: "Covert",
-    skinRarityColor: "#eb4b4b",
-    skinWear: "Minimal Wear",
-    skinWeapon: "AWP",
-  },
-  {
-    id: "4",
-    title: "Sport Gloves | Pandora's Box (Minimal Wear)",
-    slug: "sport-gloves-pandoras-box-mw",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 5.00,
-    stats: { available: 300, paid: 200, total: 500 },
-    status: "ACTIVE" as const,
-    scheduledDrawAt: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-    skinRarity: "Extraordinary",
-    skinRarityColor: "#e4ae39",
-    skinWear: "Minimal Wear",
-    skinWeapon: "Sport Gloves",
-  },
-];
-
-const STATS = [
-  { label: "Rifas Realizadas", value: "1.250+", icon: TicketIcon },
-  { label: "Premios Entregues", value: "R$ 2.8M", icon: GiftIcon },
-  { label: "Usuarios Ativos", value: "45.000+", icon: UsersIcon },
-  { label: "Transparencia", value: "100%", icon: ShieldIcon },
-];
+const FEATURED_RAFFLES: {
+  id: string;
+  title: string;
+  slug: string;
+  featuredImage: string;
+  pricePerNumber: number;
+  stats: { available: number; paid: number; total: number };
+  status: "ACTIVE" | "PAUSED" | "DRAWN" | "CLOSED" | "CANCELLED";
+  scheduledDrawAt: string | null;
+  skinRarity: string;
+  skinRarityColor: string;
+  skinWear: string;
+  skinWeapon: string;
+}[] = [];
 
 const STEPS = [
   {
@@ -149,11 +98,25 @@ export default function HomePage() {
           <div className="mt-3 h-1 w-16 rounded-full bg-accent-500" />
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {FEATURED_RAFFLES.map((raffle) => (
-            <RaffleCard key={raffle.id} raffle={raffle} />
-          ))}
-        </div>
+        {FEATURED_RAFFLES.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURED_RAFFLES.map((raffle) => (
+              <RaffleCard key={raffle.id} raffle={raffle} />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card)] py-16 text-center">
+            <svg className="h-12 w-12 text-[var(--muted-foreground)] mb-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
+            </svg>
+            <p className="text-lg font-semibold text-[var(--foreground)]">
+              Nenhuma rifa disponivel no momento.
+            </p>
+            <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+              Volte em breve!
+            </p>
+          </div>
+        )}
 
         <div className="mt-10 flex justify-center">
           <Link
@@ -206,28 +169,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* ── Stats / Trust ── */}
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
-          {STATS.map((stat) => (
-            <div
-              key={stat.label}
-              className="flex flex-col items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 text-center shadow-sm"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-600/10 text-primary-500">
-                <stat.icon />
-              </div>
-              <span className="text-2xl font-bold text-[var(--foreground)] lg:text-3xl">
-                {stat.value}
-              </span>
-              <span className="text-sm text-[var(--muted-foreground)]">
-                {stat.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
     </>
   );
 }
@@ -254,38 +195,6 @@ function TrophyIcon() {
   return (
     <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0 1 16.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.98 6.98 0 0 1-3.021 1.665m0 0a6.982 6.982 0 0 1-3.498 0m6.519-1.665L12 12.75M5.25 4.236 12 12.75" />
-    </svg>
-  );
-}
-
-function TicketIcon() {
-  return (
-    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
-    </svg>
-  );
-}
-
-function GiftIcon() {
-  return (
-    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
-    </svg>
-  );
-}
-
-function UsersIcon() {
-  return (
-    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-    </svg>
-  );
-}
-
-function ShieldIcon() {
-  return (
-    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
     </svg>
   );
 }

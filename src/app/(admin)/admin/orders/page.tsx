@@ -3,13 +3,8 @@
 import { useState } from "react";
 import {
   Search,
-  Download,
-  MoreHorizontal,
-  Eye,
-  CheckCircle,
-  XCircle,
+  ShoppingCart,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type Column } from "@/components/admin/data-table";
@@ -25,18 +20,16 @@ const statusLabels: Record<string, string> = {
   EXPIRED: "Expirado",
 };
 
-const mockOrders = [
-  { id: "ORD-001", usuario: "Maria Silva", rifa: "iPhone 15 Pro", qtd: 5, total: 25.0, status: "PAID", pagamento: "PIX", data: "2026-04-11T10:30:00" },
-  { id: "ORD-002", usuario: "Joao Santos", rifa: "PS5 Slim", qtd: 5, total: 15.0, status: "PENDING", pagamento: "-", data: "2026-04-11T09:45:00" },
-  { id: "ORD-003", usuario: "Ana Costa", rifa: "MacBook Air M3", qtd: 5, total: 50.0, status: "PAID", pagamento: "PIX", data: "2026-04-11T08:20:00" },
-  { id: "ORD-004", usuario: "Pedro Lima", rifa: "iPhone 15 Pro", qtd: 2, total: 10.0, status: "CANCELLED", pagamento: "-", data: "2026-04-10T22:10:00" },
-  { id: "ORD-005", usuario: "Julia Rocha", rifa: "PS5 Slim", qtd: 10, total: 30.0, status: "PAID", pagamento: "Cartao", data: "2026-04-10T20:00:00" },
-  { id: "ORD-006", usuario: "Lucas Alves", rifa: "MacBook Air M3", qtd: 2, total: 20.0, status: "EXPIRED", pagamento: "-", data: "2026-04-10T18:30:00" },
-  { id: "ORD-007", usuario: "Carla Souza", rifa: "Smart TV 65\"", qtd: 7, total: 35.0, status: "PAID", pagamento: "PIX", data: "2026-04-10T16:15:00" },
-  { id: "ORD-008", usuario: "Rafael Dias", rifa: "iPhone 15 Pro", qtd: 1, total: 5.0, status: "PENDING", pagamento: "-", data: "2026-04-10T14:00:00" },
-  { id: "ORD-009", usuario: "Fernanda Reis", rifa: "PS5 Slim", qtd: 15, total: 45.0, status: "PAID", pagamento: "PIX", data: "2026-04-10T12:45:00" },
-  { id: "ORD-010", usuario: "Bruno Melo", rifa: "Smart TV 65\"", qtd: 5, total: 10.0, status: "PAID", pagamento: "PIX", data: "2026-04-10T10:30:00" },
-];
+const orders: {
+  id: string;
+  usuario: string;
+  rifa: string;
+  qtd: number;
+  total: number;
+  status: string;
+  pagamento: string;
+  data: string;
+}[] = [];
 
 const statusVariant: Record<string, "success" | "warning" | "danger" | "outline"> = {
   PAID: "success",
@@ -45,15 +38,14 @@ const statusVariant: Record<string, "success" | "warning" | "danger" | "outline"
   EXPIRED: "outline",
 };
 
-type OrderRow = (typeof mockOrders)[number] & Record<string, unknown>;
+type OrderRow = (typeof orders)[number] & Record<string, unknown>;
 
 export default function OrdersPage() {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("TODOS");
   const [page, setPage] = useState(1);
-  const [actionsOpen, setActionsOpen] = useState<string | null>(null);
 
-  const filtered = mockOrders.filter((o) => {
+  const filtered = orders.filter((o) => {
     if (activeTab !== "TODOS" && o.status !== activeTab) return false;
     if (search) {
       const q = search.toLowerCase();
@@ -91,51 +83,12 @@ export default function OrdersPage() {
       label: "Data",
       render: (item) => formatDateTime(item.data as string),
     },
-    {
-      key: "actions",
-      label: "Acoes",
-      render: (item) => (
-        <div className="relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() =>
-              setActionsOpen(actionsOpen === (item.id as string) ? null : (item.id as string))
-            }
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-          {actionsOpen === (item.id as string) && (
-            <div className="absolute right-0 top-full z-10 mt-1 w-48 rounded-lg border border-[var(--border)] bg-[var(--card)] py-1 shadow-xl">
-              <button className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--muted)]/50">
-                <Eye className="h-4 w-4" /> Ver detalhes
-              </button>
-              {(item.status as string) === "PENDING" && (
-                <button className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--muted)]/50">
-                  <CheckCircle className="h-4 w-4" /> Aprovar manual
-                </button>
-              )}
-              {(item.status as string) !== "CANCELLED" && (
-                <button className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-[var(--muted)]/50">
-                  <XCircle className="h-4 w-4" /> Cancelar
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      ),
-    },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Pedidos</h1>
-        <Button variant="outline">
-          <Download className="h-4 w-4" />
-          Exportar
-        </Button>
       </div>
 
       {/* Status Tabs */}
@@ -174,17 +127,24 @@ export default function OrdersPage() {
         <Input type="date" className="w-full sm:w-40" />
       </div>
 
-      {/* Table */}
-      <DataTable
-        columns={columns}
-        data={filtered as unknown as OrderRow[]}
-        pagination={{
-          page,
-          pages: Math.max(1, Math.ceil(filtered.length / 10)),
-          total: filtered.length,
-          onPageChange: setPage,
-        }}
-      />
+      {/* Table or Empty State */}
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border border-[var(--border)] py-16 text-[var(--muted-foreground)]">
+          <ShoppingCart className="mb-3 h-12 w-12 opacity-40" />
+          <p className="text-lg font-medium">Nenhum pedido encontrado</p>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filtered as unknown as OrderRow[]}
+          pagination={{
+            page,
+            pages: Math.max(1, Math.ceil(filtered.length / 10)),
+            total: filtered.length,
+            onPageChange: setPage,
+          }}
+        />
+      )}
     </div>
   );
 }

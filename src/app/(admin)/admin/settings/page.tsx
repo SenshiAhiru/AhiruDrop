@@ -15,14 +15,13 @@ import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
   const [siteSettings, setSiteSettings] = useState({
-    site_name: "AhiruDrop",
-    site_description:
-      "A melhor plataforma de rifas online do Brasil",
+    site_name: "",
+    site_description: "",
   });
 
   const [contactSettings, setContactSettings] = useState({
-    support_email: "suporte@ahirudrop.com.br",
-    support_phone: "(11) 99999-9999",
+    support_email: "",
+    support_phone: "",
   });
 
   const [raffleSettings, setRaffleSettings] = useState({
@@ -32,6 +31,10 @@ export default function SettingsPage() {
   });
 
   const [maintenanceMode, setMaintenanceMode] = useState(false);
+
+  const handleSave = () => {
+    alert("Configuracoes salvas!");
+  };
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -53,6 +56,7 @@ export default function SettingsPage() {
               Nome do Site
             </label>
             <Input
+              placeholder="Nome do site"
               value={siteSettings.site_name}
               onChange={(e) =>
                 setSiteSettings({ ...siteSettings, site_name: e.target.value })
@@ -64,6 +68,7 @@ export default function SettingsPage() {
               Descricao do Site
             </label>
             <Input
+              placeholder="Descricao do site"
               value={siteSettings.site_description}
               onChange={(e) =>
                 setSiteSettings({
@@ -74,7 +79,7 @@ export default function SettingsPage() {
             />
           </div>
           <div className="flex justify-end">
-            <Button>
+            <Button onClick={handleSave}>
               <Save className="h-4 w-4" />
               Salvar
             </Button>
@@ -97,6 +102,7 @@ export default function SettingsPage() {
             </label>
             <Input
               type="email"
+              placeholder="email@exemplo.com"
               value={contactSettings.support_email}
               onChange={(e) =>
                 setContactSettings({
@@ -111,6 +117,7 @@ export default function SettingsPage() {
               Telefone de Suporte
             </label>
             <Input
+              placeholder="(00) 00000-0000"
               value={contactSettings.support_phone}
               onChange={(e) =>
                 setContactSettings({
@@ -121,7 +128,7 @@ export default function SettingsPage() {
             />
           </div>
           <div className="flex justify-end">
-            <Button>
+            <Button onClick={handleSave}>
               <Save className="h-4 w-4" />
               Salvar
             </Button>
@@ -193,7 +200,7 @@ export default function SettingsPage() {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button>
+            <Button onClick={handleSave}>
               <Save className="h-4 w-4" />
               Salvar
             </Button>
@@ -240,7 +247,7 @@ export default function SettingsPage() {
             </p>
           )}
           <div className="mt-4 flex justify-end">
-            <Button>
+            <Button onClick={handleSave}>
               <Save className="h-4 w-4" />
               Salvar
             </Button>

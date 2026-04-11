@@ -7,7 +7,7 @@ import {
   Search,
   Eye,
   Pencil,
-  Trash2,
+  Ticket,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,14 +16,15 @@ import { Badge } from "@/components/ui/badge";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
-// --- Mock Data ---
-const mockRaffles = [
-  { id: "r1", title: "iPhone 15 Pro Max 256GB", status: "ACTIVE", price: 5.0, soldNumbers: 780, totalNumbers: 1000, createdAt: "2026-04-01" },
-  { id: "r2", title: "PS5 Slim + 2 Controles", status: "ACTIVE", price: 3.0, soldNumbers: 450, totalNumbers: 500, createdAt: "2026-04-03" },
-  { id: "r3", title: "MacBook Air M3 15\"", status: "DRAFT", price: 10.0, soldNumbers: 0, totalNumbers: 2000, createdAt: "2026-04-08" },
-  { id: "r4", title: "Smart TV Samsung 65\" 4K", status: "CLOSED", price: 2.0, soldNumbers: 1000, totalNumbers: 1000, createdAt: "2026-03-15" },
-  { id: "r5", title: "Galaxy S24 Ultra", status: "CANCELLED", price: 4.0, soldNumbers: 120, totalNumbers: 800, createdAt: "2026-03-20" },
-];
+const raffles: {
+  id: string;
+  title: string;
+  status: string;
+  price: number;
+  soldNumbers: number;
+  totalNumbers: number;
+  createdAt: string;
+}[] = [];
 
 const statusVariant: Record<string, "success" | "warning" | "danger" | "outline" | "default"> = {
   ACTIVE: "success",
@@ -41,14 +42,14 @@ const statusLabel: Record<string, string> = {
   CANCELLED: "Cancelada",
 };
 
-type RaffleRow = (typeof mockRaffles)[number] & Record<string, unknown>;
+type RaffleRow = (typeof raffles)[number] & Record<string, unknown>;
 
 export default function AdminRafflesPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [page, setPage] = useState(1);
 
-  const filtered = mockRaffles.filter((r) => {
+  const filtered = raffles.filter((r) => {
     if (statusFilter !== "ALL" && r.status !== statusFilter) return false;
     if (search && !r.title.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
@@ -100,9 +101,6 @@ export default function AdminRafflesPage() {
               <Eye className="h-4 w-4" />
             </Button>
           </Link>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-600">
-            <Trash2 className="h-4 w-4" />
-          </Button>
         </div>
       ),
     },
@@ -145,17 +143,31 @@ export default function AdminRafflesPage() {
         </Select>
       </div>
 
-      {/* Table */}
-      <DataTable
-        columns={columns}
-        data={filtered as unknown as RaffleRow[]}
-        pagination={{
-          page,
-          pages: 1,
-          total: filtered.length,
-          onPageChange: setPage,
-        }}
-      />
+      {/* Table or Empty State */}
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border border-[var(--border)] py-16 text-[var(--muted-foreground)]">
+          <Ticket className="mb-3 h-12 w-12 opacity-40" />
+          <p className="text-lg font-medium">Nenhuma rifa criada</p>
+          <p className="mt-1 text-sm">Crie sua primeira rifa de skin CS2!</p>
+          <Link href="/admin/raffles/new" className="mt-4">
+            <Button>
+              <Plus className="h-4 w-4" />
+              Nova Rifa
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filtered as unknown as RaffleRow[]}
+          pagination={{
+            page,
+            pages: 1,
+            total: filtered.length,
+            onPageChange: setPage,
+          }}
+        />
+      )}
     </div>
   );
 }

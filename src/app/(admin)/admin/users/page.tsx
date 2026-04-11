@@ -3,58 +3,32 @@
 import { useState } from "react";
 import {
   Search,
-  MoreHorizontal,
-  Eye,
-  Shield,
-  Ban,
-  Unlock,
+  Users,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type Column } from "@/components/admin/data-table";
-import {
-  Dialog,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
 import { formatDate } from "@/lib/utils";
 
-const mockUsers = [
-  { id: "u1", name: "Maria Silva", email: "maria@email.com", role: "USER", status: "ACTIVE", orders: 12, createdAt: "2026-01-15" },
-  { id: "u2", name: "Joao Santos", email: "joao@email.com", role: "USER", status: "ACTIVE", orders: 8, createdAt: "2026-02-01" },
-  { id: "u3", name: "Ana Costa", email: "ana@email.com", role: "ADMIN", status: "ACTIVE", orders: 3, createdAt: "2026-01-10" },
-  { id: "u4", name: "Pedro Lima", email: "pedro@email.com", role: "USER", status: "BLOCKED", orders: 0, createdAt: "2026-03-05" },
-  { id: "u5", name: "Julia Rocha", email: "julia@email.com", role: "USER", status: "ACTIVE", orders: 25, createdAt: "2025-12-20" },
-  { id: "u6", name: "Lucas Alves", email: "lucas@email.com", role: "USER", status: "ACTIVE", orders: 5, createdAt: "2026-03-18" },
-  { id: "u7", name: "Carla Souza", email: "carla@email.com", role: "USER", status: "ACTIVE", orders: 15, createdAt: "2026-01-25" },
-  { id: "u8", name: "Rafael Dias", email: "rafael@email.com", role: "USER", status: "BLOCKED", orders: 1, createdAt: "2026-04-01" },
-];
+const users: {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  orders: number;
+  createdAt: string;
+}[] = [];
 
-const roleVariant: Record<string, "default" | "accent"> = {
-  ADMIN: "accent",
-  USER: "outline" as "default",
-};
-
-type UserRow = (typeof mockUsers)[number] & Record<string, unknown>;
+type UserRow = (typeof users)[number] & Record<string, unknown>;
 
 export default function UsersPage() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("ALL");
   const [page, setPage] = useState(1);
-  const [actionsOpen, setActionsOpen] = useState<string | null>(null);
-  const [confirmDialog, setConfirmDialog] = useState<{
-    open: boolean;
-    title: string;
-    description: string;
-    action: () => void;
-  }>({ open: false, title: "", description: "", action: () => {} });
 
-  const filtered = mockUsers.filter((u) => {
+  const filtered = users.filter((u) => {
     if (roleFilter !== "ALL" && u.role !== roleFilter) return false;
     if (search) {
       const q = search.toLowerCase();
@@ -98,67 +72,6 @@ export default function UsersPage() {
       label: "Cadastro",
       render: (item) => formatDate(item.createdAt as string),
     },
-    {
-      key: "actions",
-      label: "Acoes",
-      render: (item) => (
-        <div className="relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() =>
-              setActionsOpen(actionsOpen === (item.id as string) ? null : (item.id as string))
-            }
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-          {actionsOpen === (item.id as string) && (
-            <div className="absolute right-0 top-full z-10 mt-1 w-48 rounded-lg border border-[var(--border)] bg-[var(--card)] py-1 shadow-xl">
-              <button className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--muted)]/50">
-                <Eye className="h-4 w-4" /> Ver perfil
-              </button>
-              <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--muted)]/50"
-                onClick={() => {
-                  setActionsOpen(null);
-                  setConfirmDialog({
-                    open: true,
-                    title: "Alterar Role",
-                    description: `Alterar role de ${item.name} para ${(item.role as string) === "ADMIN" ? "USER" : "ADMIN"}?`,
-                    action: () => setConfirmDialog((prev) => ({ ...prev, open: false })),
-                  });
-                }}
-              >
-                <Shield className="h-4 w-4" /> Alterar role
-              </button>
-              <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-[var(--muted)]/50"
-                onClick={() => {
-                  setActionsOpen(null);
-                  const isBlocked = (item.status as string) === "BLOCKED";
-                  setConfirmDialog({
-                    open: true,
-                    title: isBlocked ? "Desbloquear Usuario" : "Bloquear Usuario",
-                    description: isBlocked
-                      ? `Desbloquear ${item.name}? O usuario podera acessar a plataforma novamente.`
-                      : `Bloquear ${item.name}? O usuario nao podera acessar a plataforma.`,
-                    action: () => setConfirmDialog((prev) => ({ ...prev, open: false })),
-                  });
-                }}
-              >
-                {(item.status as string) === "BLOCKED" ? (
-                  <Unlock className="h-4 w-4" />
-                ) : (
-                  <Ban className="h-4 w-4" />
-                )}
-                {(item.status as string) === "BLOCKED" ? "Desbloquear" : "Bloquear"}
-              </button>
-            </div>
-          )}
-        </div>
-      ),
-    },
   ];
 
   return (
@@ -187,38 +100,24 @@ export default function UsersPage() {
         </Select>
       </div>
 
-      {/* Table */}
-      <DataTable
-        columns={columns}
-        data={filtered as unknown as UserRow[]}
-        pagination={{
-          page,
-          pages: Math.max(1, Math.ceil(filtered.length / 10)),
-          total: filtered.length,
-          onPageChange: setPage,
-        }}
-      />
-
-      {/* Confirmation Dialog */}
-      <Dialog
-        open={confirmDialog.open}
-        onOpenChange={(open) => setConfirmDialog((prev) => ({ ...prev, open }))}
-      >
-        <DialogClose onClick={() => setConfirmDialog((prev) => ({ ...prev, open: false }))} />
-        <DialogHeader>
-          <DialogTitle>{confirmDialog.title}</DialogTitle>
-          <DialogDescription>{confirmDialog.description}</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => setConfirmDialog((prev) => ({ ...prev, open: false }))}
-          >
-            Cancelar
-          </Button>
-          <Button onClick={confirmDialog.action}>Confirmar</Button>
-        </DialogFooter>
-      </Dialog>
+      {/* Table or Empty State */}
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border border-[var(--border)] py-16 text-[var(--muted-foreground)]">
+          <Users className="mb-3 h-12 w-12 opacity-40" />
+          <p className="text-lg font-medium">Nenhum usuario encontrado</p>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filtered as unknown as UserRow[]}
+          pagination={{
+            page,
+            pages: Math.max(1, Math.ceil(filtered.length / 10)),
+            total: filtered.length,
+            onPageChange: setPage,
+          }}
+        />
+      )}
     </div>
   );
 }

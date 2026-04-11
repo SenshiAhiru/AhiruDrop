@@ -8,23 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingCart, ChevronLeft, ChevronRight, Package } from "lucide-react";
 
-// Mock data
-const allOrders = [
-  { id: "ord_a1b2c3", raffleName: "iPhone 15 Pro Max", quantity: 5, total: 25.0, status: "confirmed" as const, date: "2026-04-10" },
-  { id: "ord_d4e5f6", raffleName: "PlayStation 5", quantity: 10, total: 30.0, status: "pending" as const, date: "2026-04-09" },
-  { id: "ord_g7h8i9", raffleName: "MacBook Air M3", quantity: 3, total: 45.0, status: "confirmed" as const, date: "2026-04-08" },
-  { id: "ord_j0k1l2", raffleName: "Smart TV 65\"", quantity: 8, total: 40.0, status: "cancelled" as const, date: "2026-04-07" },
-  { id: "ord_m3n4o5", raffleName: "AirPods Pro", quantity: 2, total: 10.0, status: "confirmed" as const, date: "2026-04-06" },
-  { id: "ord_p6q7r8", raffleName: "Nintendo Switch OLED", quantity: 15, total: 75.0, status: "confirmed" as const, date: "2026-04-05" },
-  { id: "ord_s9t0u1", raffleName: "Apple Watch Ultra 2", quantity: 4, total: 60.0, status: "pending" as const, date: "2026-04-04" },
-  { id: "ord_v2w3x4", raffleName: "Samsung Galaxy S24", quantity: 6, total: 18.0, status: "confirmed" as const, date: "2026-04-03" },
-  { id: "ord_y5z6a7", raffleName: "iPad Pro M4", quantity: 1, total: 15.0, status: "cancelled" as const, date: "2026-04-02" },
-  { id: "ord_b8c9d0", raffleName: "Xbox Series X", quantity: 20, total: 100.0, status: "confirmed" as const, date: "2026-04-01" },
-  { id: "ord_e1f2g3", raffleName: "DJI Mini 4 Pro", quantity: 7, total: 35.0, status: "pending" as const, date: "2026-03-30" },
-  { id: "ord_h4i5j6", raffleName: "GoPro Hero 12", quantity: 3, total: 9.0, status: "confirmed" as const, date: "2026-03-28" },
-];
+type OrderStatus = "pending" | "confirmed" | "cancelled";
+type StatusFilter = "all" | OrderStatus;
 
-type StatusFilter = "all" | "pending" | "confirmed" | "cancelled";
+// Empty until API is connected
+const allOrders: {
+  id: string;
+  raffleName: string;
+  quantity: number;
+  total: number;
+  status: OrderStatus;
+  date: string;
+}[] = [];
 
 const statusConfig = {
   pending: { label: "Pendente", variant: "warning" as const },
@@ -115,7 +110,7 @@ export default function OrdersPage() {
                 Nenhum pedido encontrado
               </h3>
               <p className="text-sm text-[var(--muted-foreground)] max-w-xs">
-                Voce ainda nao possui pedidos com esse filtro. Explore nossas rifas!
+                Voce ainda nao fez nenhum pedido. Participe de uma rifa!
               </p>
               <Link href="/raffles">
                 <Button variant="default" className="mt-2">

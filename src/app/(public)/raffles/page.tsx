@@ -8,122 +8,22 @@ import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-/* ── Mock data (fallback until API is connected) ── */
+/* ── Data (empty until API is connected) ── */
 
-const MOCK_RAFFLES = [
-  {
-    id: "1",
-    title: "AK-47 | Asiimov (Field-Tested)",
-    slug: "ak47-asiimov-ft",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 2.50,
-    stats: { available: 720, paid: 280, total: 1000 },
-    status: "ACTIVE" as const,
-    scheduledDrawAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    skinRarity: "Classified",
-    skinRarityColor: "#d32ce6",
-    skinWear: "Field-Tested",
-    skinWeapon: "AK-47",
-  },
-  {
-    id: "2",
-    title: "Karambit | Doppler (Factory New)",
-    slug: "karambit-doppler-fn",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 10.00,
-    stats: { available: 150, paid: 850, total: 1000 },
-    status: "ACTIVE" as const,
-    scheduledDrawAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-    skinRarity: "Covert",
-    skinRarityColor: "#eb4b4b",
-    skinWear: "Factory New",
-    skinWeapon: "Karambit",
-  },
-  {
-    id: "3",
-    title: "AWP | Dragon Lore (Minimal Wear)",
-    slug: "awp-dragon-lore-mw",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 25.00,
-    stats: { available: 5000, paid: 5000, total: 10000 },
-    status: "DRAWN" as const,
-    scheduledDrawAt: null,
-    skinRarity: "Covert",
-    skinRarityColor: "#eb4b4b",
-    skinWear: "Minimal Wear",
-    skinWeapon: "AWP",
-  },
-  {
-    id: "4",
-    title: "Sport Gloves | Pandora's Box (Minimal Wear)",
-    slug: "sport-gloves-pandoras-box-mw",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 5.00,
-    stats: { available: 300, paid: 200, total: 500 },
-    status: "ACTIVE" as const,
-    scheduledDrawAt: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-    skinRarity: "Extraordinary",
-    skinRarityColor: "#e4ae39",
-    skinWear: "Minimal Wear",
-    skinWeapon: "Sport Gloves",
-  },
-  {
-    id: "5",
-    title: "M4A4 | Howl (Factory New)",
-    slug: "m4a4-howl-fn",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 15.00,
-    stats: { available: 400, paid: 600, total: 1000 },
-    status: "ACTIVE" as const,
-    scheduledDrawAt: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
-    skinRarity: "Contraband",
-    skinRarityColor: "#e4ae39",
-    skinWear: "Factory New",
-    skinWeapon: "M4A4",
-  },
-  {
-    id: "6",
-    title: "Desert Eagle | Blaze (Factory New)",
-    slug: "deagle-blaze-fn",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 2.00,
-    stats: { available: 50, paid: 250, total: 300 },
-    status: "ACTIVE" as const,
-    scheduledDrawAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-    skinRarity: "Restricted",
-    skinRarityColor: "#8847ff",
-    skinWear: "Factory New",
-    skinWeapon: "Desert Eagle",
-  },
-  {
-    id: "7",
-    title: "Butterfly Knife | Fade (Factory New)",
-    slug: "butterfly-fade-fn",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 8.00,
-    stats: { available: 0, paid: 500, total: 500 },
-    status: "DRAWN" as const,
-    scheduledDrawAt: null,
-    skinRarity: "Covert",
-    skinRarityColor: "#eb4b4b",
-    skinWear: "Factory New",
-    skinWeapon: "Butterfly Knife",
-  },
-  {
-    id: "8",
-    title: "Specialist Gloves | Crimson Kimono (Field-Tested)",
-    slug: "specialist-gloves-crimson-kimono-ft",
-    featuredImage: "https://community.fastly.steamstatic.com/economy/image/-9a81dlWLwJ2UXp-K9FDG6SUIOYyJz_BlO9RkbaYMhk/",
-    pricePerNumber: 4.00,
-    stats: { available: 180, paid: 120, total: 300 },
-    status: "PAUSED" as const,
-    scheduledDrawAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    skinRarity: "Extraordinary",
-    skinRarityColor: "#e4ae39",
-    skinWear: "Field-Tested",
-    skinWeapon: "Specialist Gloves",
-  },
-];
+const RAFFLES: {
+  id: string;
+  title: string;
+  slug: string;
+  featuredImage: string;
+  pricePerNumber: number;
+  stats: { available: number; paid: number; total: number };
+  status: "ACTIVE" | "PAUSED" | "DRAWN" | "CLOSED" | "CANCELLED";
+  scheduledDrawAt: string | null;
+  skinRarity: string;
+  skinRarityColor: string;
+  skinWear: string;
+  skinWeapon: string;
+}[] = [];
 
 type CategoryFilter = "ALL" | "Rifle" | "Knife" | "Gloves" | "Pistol" | "Sniper Rifle";
 
@@ -133,9 +33,8 @@ export default function RafflesPage() {
   const [page, setPage] = useState(1);
   const perPage = 8;
 
-  /* For now use mock data; later this will be replaced by useQuery */
   const filteredRaffles = useMemo(() => {
-    let result = MOCK_RAFFLES;
+    let result = RAFFLES;
 
     if (categoryFilter !== "ALL") {
       result = result.filter((r) => r.skinWeapon && getCategoryFromWeapon(r.skinWeapon) === categoryFilter);
@@ -204,13 +103,25 @@ export default function RafflesPage() {
       </div>
 
       {/* Grid */}
-      <RaffleGrid loading={false} emptyMessage="Nenhuma skin encontrada com os filtros selecionados.">
-        {paginatedRaffles.length > 0
-          ? paginatedRaffles.map((raffle) => (
-              <RaffleCard key={raffle.id} raffle={raffle} />
-            ))
-          : null}
-      </RaffleGrid>
+      {paginatedRaffles.length > 0 ? (
+        <RaffleGrid loading={false} emptyMessage="Nenhuma skin encontrada com os filtros selecionados.">
+          {paginatedRaffles.map((raffle) => (
+            <RaffleCard key={raffle.id} raffle={raffle} />
+          ))}
+        </RaffleGrid>
+      ) : (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card)] py-16 text-center">
+          <svg className="h-12 w-12 text-[var(--muted-foreground)] mb-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
+          </svg>
+          <p className="text-lg font-semibold text-[var(--foreground)]">
+            Nenhuma rifa disponivel no momento
+          </p>
+          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+            Volte em breve para conferir novas rifas de skins CS2.
+          </p>
+        </div>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (

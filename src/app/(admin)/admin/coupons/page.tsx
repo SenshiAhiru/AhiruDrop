@@ -4,9 +4,6 @@ import { useState } from "react";
 import {
   Plus,
   Search,
-  MoreHorizontal,
-  Pencil,
-  Trash2,
   X,
   Tag,
 } from "lucide-react";
@@ -30,41 +27,7 @@ interface Coupon {
   isActive: boolean;
 }
 
-const mockCoupons: Coupon[] = [
-  {
-    id: "c1",
-    code: "AHIRU10",
-    discountType: "PERCENTAGE",
-    discountValue: 10,
-    usesCount: 45,
-    maxUses: 100,
-    minOrderAmount: 20,
-    validUntil: "2026-06-30",
-    isActive: true,
-  },
-  {
-    id: "c2",
-    code: "BEMVINDO",
-    discountType: "FIXED",
-    discountValue: 5,
-    usesCount: 120,
-    maxUses: 200,
-    minOrderAmount: 10,
-    validUntil: "2026-12-31",
-    isActive: true,
-  },
-  {
-    id: "c3",
-    code: "SUMMER25",
-    discountType: "PERCENTAGE",
-    discountValue: 25,
-    usesCount: 50,
-    maxUses: 50,
-    minOrderAmount: 30,
-    validUntil: "2026-03-31",
-    isActive: false,
-  },
-];
+const coupons: Coupon[] = [];
 
 type CouponRow = Coupon & Record<string, unknown>;
 
@@ -83,9 +46,8 @@ export default function CouponsPage() {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
-  const [actionsOpen, setActionsOpen] = useState<string | null>(null);
 
-  const filtered = mockCoupons.filter((c) => {
+  const filtered = coupons.filter((c) => {
     if (search) {
       return c.code.toLowerCase().includes(search.toLowerCase());
     }
@@ -142,36 +104,6 @@ export default function CouponsPage() {
         <Badge variant={(item.isActive as boolean) ? "success" : "outline"}>
           {(item.isActive as boolean) ? "Ativo" : "Inativo"}
         </Badge>
-      ),
-    },
-    {
-      key: "actions",
-      label: "Acoes",
-      render: (item) => (
-        <div className="relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() =>
-              setActionsOpen(
-                actionsOpen === (item.id as string) ? null : (item.id as string)
-              )
-            }
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-          {actionsOpen === (item.id as string) && (
-            <div className="absolute right-0 top-full z-10 mt-1 w-40 rounded-lg border border-[var(--border)] bg-[var(--card)] py-1 shadow-xl">
-              <button className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--muted)]/50">
-                <Pencil className="h-4 w-4" /> Editar
-              </button>
-              <button className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-[var(--muted)]/50">
-                <Trash2 className="h-4 w-4" /> Excluir
-              </button>
-            </div>
-          )}
-        </div>
       ),
     },
   ];
@@ -321,7 +253,13 @@ export default function CouponsPage() {
               >
                 Cancelar
               </Button>
-              <Button>Criar Cupom</Button>
+              <Button
+                onClick={() => {
+                  alert("Funcionalidade em desenvolvimento");
+                }}
+              >
+                Criar Cupom
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -338,17 +276,24 @@ export default function CouponsPage() {
         />
       </div>
 
-      {/* Table */}
-      <DataTable
-        columns={columns}
-        data={filtered as unknown as CouponRow[]}
-        pagination={{
-          page,
-          pages: Math.max(1, Math.ceil(filtered.length / 10)),
-          total: filtered.length,
-          onPageChange: setPage,
-        }}
-      />
+      {/* Table or Empty State */}
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border border-[var(--border)] py-16 text-[var(--muted-foreground)]">
+          <Tag className="mb-3 h-12 w-12 opacity-40" />
+          <p className="text-lg font-medium">Nenhum cupom criado</p>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filtered as unknown as CouponRow[]}
+          pagination={{
+            page,
+            pages: Math.max(1, Math.ceil(filtered.length / 10)),
+            total: filtered.length,
+            onPageChange: setPage,
+          }}
+        />
+      )}
     </div>
   );
 }

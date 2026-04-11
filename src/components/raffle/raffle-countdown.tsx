@@ -1,0 +1,98 @@
+"use client";
+
+import { cn } from "@/lib/utils";
+import { useCountdown } from "@/hooks/use-countdown";
+import { Badge } from "@/components/ui/badge";
+
+interface RaffleCountdownProps {
+  targetDate: string | Date;
+  label?: string;
+  compact?: boolean;
+  className?: string;
+}
+
+interface TimeBoxProps {
+  value: string;
+  unit: string;
+  compact?: boolean;
+}
+
+function TimeBox({ value, unit, compact }: TimeBoxProps) {
+  if (compact) {
+    return (
+      <span className="font-mono font-bold text-primary-500">
+        {value}
+      </span>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary-600 text-xl font-bold text-white font-mono shadow-sm shadow-primary-600/25">
+        {value}
+      </div>
+      <span className="mt-1 text-[10px] uppercase tracking-wider text-[var(--muted-foreground)]">
+        {unit}
+      </span>
+    </div>
+  );
+}
+
+export function RaffleCountdown({
+  targetDate,
+  label = "Encerra em:",
+  compact = false,
+  className,
+}: RaffleCountdownProps) {
+  const { days, hours, minutes, seconds, isExpired } = useCountdown(targetDate);
+
+  if (isExpired) {
+    return (
+      <Badge variant="danger" className={cn("text-xs", className)}>
+        Encerrada
+      </Badge>
+    );
+  }
+
+  if (compact) {
+    return (
+      <div className={cn("flex items-center gap-1.5 text-xs text-[var(--muted-foreground)]", className)}>
+        <svg
+          className="h-3.5 w-3.5 text-primary-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+          />
+        </svg>
+        <span>{label}</span>
+        <span className="font-mono font-semibold text-[var(--foreground)]">
+          {days !== "00" && <><TimeBox value={days} unit="d" compact />d </>}
+          <TimeBox value={hours} unit="h" compact />:
+          <TimeBox value={minutes} unit="m" compact />:
+          <TimeBox value={seconds} unit="s" compact />
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("space-y-2", className)}>
+      <p className="text-sm font-medium text-[var(--muted-foreground)]">{label}</p>
+      <div className="flex items-center gap-2">
+        <TimeBox value={days} unit="dias" />
+        <span className="text-xl font-bold text-[var(--muted-foreground)] self-start mt-3">:</span>
+        <TimeBox value={hours} unit="horas" />
+        <span className="text-xl font-bold text-[var(--muted-foreground)] self-start mt-3">:</span>
+        <TimeBox value={minutes} unit="min" />
+        <span className="text-xl font-bold text-[var(--muted-foreground)] self-start mt-3">:</span>
+        <TimeBox value={seconds} unit="seg" />
+      </div>
+    </div>
+  );
+}

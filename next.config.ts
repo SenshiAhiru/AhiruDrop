@@ -9,10 +9,10 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**.supabase.co",
-      },
+      { protocol: "https", hostname: "**.supabase.co" },
+      { protocol: "https", hostname: "**.steamstatic.com" },
+      { protocol: "https", hostname: "**.akamaihd.net" },
+      { protocol: "https", hostname: "raw.githubusercontent.com" },
     ],
   },
   async headers() {

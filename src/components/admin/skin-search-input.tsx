@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/utils";
@@ -65,7 +65,8 @@ export function SkinSearchInput({ onSelect, selected, onClear }: SkinSearchInput
       if (activeFilter) params.set("type", activeFilter);
       const res = await fetch(`/api/skins?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch skins");
-      const data: CS2SkinSearchResult[] = await res.json();
+      const json = await res.json();
+      const data: CS2SkinSearchResult[] = json.data || json || [];
       setResults(data);
       setShowDropdown(true);
     } catch {
@@ -92,8 +93,9 @@ export function SkinSearchInput({ onSelect, selected, onClear }: SkinSearchInput
         });
         const res = await fetch(`/api/skins/price?${params.toString()}`);
         if (!res.ok) throw new Error("Failed to fetch price");
-        const data = await res.json();
-        setMarketPrice(data.price ?? null);
+        const json = await res.json();
+        const priceData = json.data || json;
+        setMarketPrice(priceData.price ?? null);
       } catch {
         setMarketPrice(null);
       } finally {
@@ -131,11 +133,9 @@ export function SkinSearchInput({ onSelect, selected, onClear }: SkinSearchInput
       <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden">
         {/* Image */}
         <div className="relative flex items-center justify-center h-[200px] bg-gradient-to-b from-surface-900 to-surface-800 rounded-t-xl">
-          <Image
+          <img
             src={selected.skinImage}
             alt={selected.skinName}
-            width={280}
-            height={180}
             className="object-contain max-h-[180px] drop-shadow-2xl"
           />
         </div>
@@ -253,12 +253,10 @@ export function SkinSearchInput({ onSelect, selected, onClear }: SkinSearchInput
             >
               {/* Skin image */}
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-800">
-                <Image
+                <img
                   src={skin.image}
                   alt={skin.name}
-                  width={48}
-                  height={48}
-                  className="object-contain"
+                  className="h-12 w-12 object-contain"
                 />
               </div>
 

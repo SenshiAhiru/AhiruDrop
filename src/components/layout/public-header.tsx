@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Menu, Sun, Moon, User, LogOut, ChevronDown } from "lucide-react";
+import { Menu, Sun, Moon, User, LogOut, ChevronDown, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
 import { MobileNav, type MobileNavItem } from "@/components/layout/mobile-nav";
@@ -119,6 +119,15 @@ export function PublicHeader() {
                         <User className="h-4 w-4" />
                         Minha Conta
                       </Link>
+                      {(session.user as any).role === "ADMIN" || (session.user as any).role === "SUPER_ADMIN" ? (
+                        <Link
+                          href="/admin"
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm text-accent-500 hover:bg-[var(--muted)] transition-colors"
+                        >
+                          <Shield className="h-4 w-4" />
+                          Painel Admin
+                        </Link>
+                      ) : null}
                       <hr className="border-[var(--border)] my-1" />
                       <Link
                         href="/api/auth/signout"
@@ -185,6 +194,15 @@ export function PublicHeader() {
               <User className="h-4 w-4" />
               Minha Conta
             </Link>
+            {(session.user as any).role === "ADMIN" || (session.user as any).role === "SUPER_ADMIN" ? (
+              <Link
+                href="/admin"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-accent-500 hover:bg-[var(--muted)] transition-colors"
+              >
+                <Shield className="h-4 w-4" />
+                Painel Admin
+              </Link>
+            ) : null}
             <Link
               href="/api/auth/signout"
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-danger hover:bg-[var(--muted)] transition-colors"

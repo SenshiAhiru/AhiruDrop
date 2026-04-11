@@ -4,11 +4,9 @@ import {
   errorResponse,
   handleApiError,
   requireAdmin,
-  validateBody,
 } from "@/lib/api-utils";
 import { raffleService } from "@/services/raffle.service";
 import { auditService } from "@/services/audit.service";
-import { createRaffleSchema } from "@/validators/raffle.validator";
 import type { RaffleStatus } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
@@ -45,24 +43,73 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await requireAdmin();
-    const { data, error } = await validateBody(req, createRaffleSchema);
 
-    if (error) {
-      return errorResponse(error, 422);
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return errorResponse("JSON invalido", 400);
     }
 
-    const raffle = await raffleService.create(data!);
+    // Validate required fields
+    if (!body.title || !body.description) {
+      return errorResponse("Titulo e descricao sao obrigatorios", 422);
+    }
+    if (!body.pricePerNumber || !body.totalNumbers) {
+      return errorResponse("Preco e total de numeros sao obrigatorios", 422);
+    }
 
-    await auditService.log(
-      session.user.id,
-      "RAFFLE_CREATED",
-      "raffle",
-      raffle.id,
-      { title: raffle.title }
-    );
+    // Map form fields to service fields
+    const createData = {
+      title: String(body.title),
+      description: String(body.description),
+      pricePerNumber: Number(body.pricePerNumber),
+      totalNumbers: Number(body.totalNumbers),
+      minPerPurchase: Number(body.minPerPurchase || 1),
+      maxPerPurchase: Number(body.maxPerPurchase || 10),
+      status: body.status === "ACTIVE" ? "ACTIVE" : "DRAFT",
+      // Map imageUrl -> featuredImage, drawDate -> scheduledDrawAt
+      featuredImage: body.skinImage || body.imageUrl || body.featuredImage || undefined,
+      scheduledDrawAt: body.drawDate || body.scheduledDrawAt
+        ? new Date(body.drawDate || body.scheduledDrawAt)
+        : undefined,
+      isFeatured: Boolean(body.isFeatured),
+      regulation: body.regulation || undefined,
+      category: body.skinCategory || body.category || undefined,
+      prizeType: body.prizeType || "skin",
+      // CS2 Skin fields
+      skinName: body.skinName || undefined,
+      skinImage: body.skinImage || undefined,
+      skinWeapon: body.skinWeapon || undefined,
+      skinCategory: body.skinCategory || undefined,
+      skinRarity: body.skinRarity || undefined,
+      skinRarityColor: body.skinRarityColor || undefined,
+      skinWear: body.skinWear || undefined,
+      skinFloat: body.skinFloat != null ? Number(body.skinFloat) : undefined,
+      skinStatTrak: Boolean(body.skinStatTrak),
+      skinSouvenir: Boolean(body.skinSouvenir),
+      skinExteriorMin: body.skinExteriorMin != null ? Number(body.skinExteriorMin) : undefined,
+      skinExteriorMax: body.skinExteriorMax != null ? Number(body.skinExteriorMax) : undefined,
+      skinMarketPrice: body.skinMarketPrice != null ? Number(body.skinMarketPrice) : undefined,
+    };
+
+    const raffle = await raffleService.create(createData);
+
+    try {
+      await auditService.log(
+        session.user.id,
+        "RAFFLE_CREATED",
+        "raffle",
+        raffle.id,
+        { title: raffle.title }
+      );
+    } catch {
+      // Audit log failure should not block raffle creation
+    }
 
     return successResponse(raffle, 201);
   } catch (error) {
+    console.error("POST /api/admin/raffles error:", error);
     return handleApiError(error);
   }
 }

@@ -78,34 +78,46 @@ export default function NewRafflePage() {
     if (!validate()) return;
     setIsSubmitting(true);
     try {
-      const body = {
-        ...form,
+      const body: Record<string, unknown> = {
+        title: form.title,
+        description: form.description,
         pricePerNumber: Number(form.pricePerNumber),
         totalNumbers: Number(form.totalNumbers),
         minPerPurchase: Number(form.minPerPurchase),
         maxPerPurchase: Number(form.maxPerPurchase),
+        regulation: form.regulation || undefined,
+        imageUrl: form.imageUrl || undefined,
+        isFeatured: form.isFeatured,
         status: activate ? "ACTIVE" : "DRAFT",
-        skin: skin
-          ? {
-              name: skin.skinName,
-              image: skin.skinImage,
-              weapon: skin.skinWeapon,
-              category: skin.skinCategory,
-              rarity: skin.skinRarity,
-              rarityColor: skin.skinRarityColor,
-              wear: skin.skinWear,
-              float: skin.skinFloat,
-              statTrak: skin.skinStatTrak,
-              souvenir: skin.skinSouvenir,
-              marketPrice: skin.skinMarketPrice,
-            }
-          : null,
       };
-      await fetch("/api/admin/raffles", {
+      if (form.scheduledDrawAt) {
+        body.drawDate = form.scheduledDrawAt;
+      }
+      if (skin) {
+        body.skinName = skin.skinName;
+        body.skinImage = skin.skinImage;
+        body.skinWeapon = skin.skinWeapon;
+        body.skinCategory = skin.skinCategory;
+        body.skinRarity = skin.skinRarity;
+        body.skinRarityColor = skin.skinRarityColor;
+        body.skinWear = skin.skinWear;
+        body.skinFloat = skin.skinFloat;
+        body.skinStatTrak = skin.skinStatTrak;
+        body.skinSouvenir = skin.skinSouvenir;
+        body.skinExteriorMin = skin.skinExteriorMin;
+        body.skinExteriorMax = skin.skinExteriorMax;
+        body.skinMarketPrice = skin.skinMarketPrice;
+      }
+      const res = await fetch("/api/admin/raffles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      const json = await res.json();
+      if (!res.ok) {
+        alert(json.error || "Erro ao criar rifa");
+        return;
+      }
       router.push("/admin/raffles");
     } catch {
       // handle error

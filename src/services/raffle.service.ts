@@ -53,14 +53,31 @@ export const raffleService = {
     featuredImage?: string;
     scheduledDrawAt?: Date;
     isFeatured?: boolean;
+    status?: string;
+    // CS2 Skin fields
+    skinName?: string;
+    skinImage?: string;
+    skinWeapon?: string;
+    skinCategory?: string;
+    skinRarity?: string;
+    skinRarityColor?: string;
+    skinWear?: string;
+    skinFloat?: number | null;
+    skinStatTrak?: boolean;
+    skinSouvenir?: boolean;
+    skinExteriorMin?: number | null;
+    skinExteriorMax?: number | null;
+    skinMarketPrice?: number | null;
   }) {
     const slug = generateSlug(data.title);
+    const status = (data.status === "ACTIVE" ? "ACTIVE" : "DRAFT") as "ACTIVE" | "DRAFT";
 
     const raffle = await raffleRepository.create({
       ...data,
       slug,
       pricePerNumber: data.pricePerNumber,
-      status: "DRAFT",
+      featuredImage: data.skinImage || data.featuredImage,
+      status,
     });
 
     // Generate all numbers for this raffle

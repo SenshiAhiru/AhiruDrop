@@ -59,9 +59,15 @@ export function SkinSearchInput({ onSelect, selected, onClear }: SkinSearchInput
   }, [query, activeFilter]);
 
   const fetchResults = useCallback(async () => {
+    if (query.length < 2 && !activeFilter) {
+      setResults([]);
+      setShowDropdown(false);
+      return;
+    }
     setLoading(true);
     try {
-      const params = new URLSearchParams({ q: query, limit: "30" });
+      const params = new URLSearchParams({ limit: "30" });
+      if (query.length >= 2) params.set("q", query);
       if (activeFilter) params.set("type", activeFilter);
       const res = await fetch(`/api/skins?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch skins");

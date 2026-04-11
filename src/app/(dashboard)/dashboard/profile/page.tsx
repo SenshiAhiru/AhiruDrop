@@ -12,7 +12,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { User, Lock, Eye, EyeOff, Save, Camera } from "lucide-react";
+import { User, Lock, Eye, EyeOff, Save } from "lucide-react";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -161,24 +161,15 @@ export default function ProfilePage() {
           <form onSubmit={handleSaveProfile} className="space-y-4">
             {/* Avatar */}
             <div className="flex items-center gap-4 pb-2">
-              <div className="relative">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/20 ring-2 ring-primary-500/30 text-primary-400 text-xl font-bold">
-                  {(session?.user?.name || "U")[0].toUpperCase()}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => alert("Upload de avatar em breve")}
-                  className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-primary-600 text-white shadow-sm hover:bg-primary-700 transition-colors"
-                >
-                  <Camera className="h-3.5 w-3.5" />
-                </button>
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/20 ring-2 ring-primary-500/30 text-primary-400 text-xl font-bold">
+                {(session?.user?.name || "U")[0].toUpperCase()}
               </div>
               <div>
                 <p className="text-sm font-medium text-[var(--foreground)]">
                   {session?.user?.name || "Usuario"}
                 </p>
                 <p className="text-xs text-[var(--muted-foreground)]">
-                  JPG, PNG ou GIF. Max 2MB.
+                  {session?.user?.email || ""}
                 </p>
               </div>
             </div>

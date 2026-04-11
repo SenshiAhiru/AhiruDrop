@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
-import { Grid3X3, List, Search } from "lucide-react";
+import { Grid3X3, List, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { cn } from "@/lib/utils";
 
@@ -19,29 +19,6 @@ interface RaffleNumber {
   orderId?: string;
   user?: string;
 }
-
-// Generate mock numbers
-const generateNumbers = (total: number): RaffleNumber[] => {
-  return Array.from({ length: total }, (_, i) => {
-    const rand = Math.random();
-    let status: NumberStatus = "AVAILABLE";
-    let orderId: string | undefined;
-    let user: string | undefined;
-    if (rand < 0.6) {
-      status = "PAID";
-      orderId = `ORD-${String(Math.floor(Math.random() * 999) + 1).padStart(3, "0")}`;
-      user = ["Maria Silva", "Joao Santos", "Ana Costa", "Pedro Lima", "Julia Rocha"][
-        Math.floor(Math.random() * 5)
-      ];
-    } else if (rand < 0.75) {
-      status = "RESERVED";
-      orderId = `ORD-${String(Math.floor(Math.random() * 999) + 1).padStart(3, "0")}`;
-    }
-    return { number: i + 1, status, orderId, user };
-  });
-};
-
-const mockNumbers = generateNumbers(200);
 
 const statusColor: Record<NumberStatus, string> = {
   AVAILABLE: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
@@ -59,22 +36,50 @@ type NumberRow = RaffleNumber & Record<string, unknown>;
 
 export default function RaffleNumbersPage() {
   const params = useParams();
+  const raffleId = params.raffleId as string;
+
+  const [numbers, setNumbers] = useState<RaffleNumber[]>([]);
+  const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  const filtered = mockNumbers.filter((n) => {
-    if (statusFilter !== "ALL" && n.status !== statusFilter) return false;
-    if (search && !String(n.number).includes(search)) return false;
-    return true;
-  });
+  useEffect(() => {
+    async function fetchNumbers() {
+      try {
+        const res = await fetch(`/api/admin/raffles/${raffleId}/numbers`);
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          setNumbers(json.data);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar numeros:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchNumbers();
+  }, [raffleId]);
 
-  const counts = {
-    available: mockNumbers.filter((n) => n.status === "AVAILABLE").length,
-    reserved: mockNumbers.filter((n) => n.status === "RESERVED").length,
-    paid: mockNumbers.filter((n) => n.status === "PAID").length,
-  };
+  const filtered = useMemo(
+    () =>
+      numbers.filter((n) => {
+        if (statusFilter !== "ALL" && n.status !== statusFilter) return false;
+        if (search && !String(n.number).includes(search)) return false;
+        return true;
+      }),
+    [numbers, statusFilter, search]
+  );
+
+  const counts = useMemo(
+    () => ({
+      available: numbers.filter((n) => n.status === "AVAILABLE").length,
+      reserved: numbers.filter((n) => n.status === "RESERVED").length,
+      paid: numbers.filter((n) => n.status === "PAID").length,
+    }),
+    [numbers]
+  );
 
   const listColumns: Column<NumberRow>[] = [
     {
@@ -118,10 +123,18 @@ export default function RaffleNumbersPage() {
   const perPage = 100;
   const paginatedGrid = filtered.slice((page - 1) * perPage, page * perPage);
 
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--muted-foreground)]" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold tracking-tight">
-        Numeros da Rifa: iPhone 15 Pro Max
+        Numeros da Rifa
       </h1>
 
       {/* Stats Bar */}
@@ -182,20 +195,26 @@ export default function RaffleNumbersPage() {
       {viewMode === "grid" ? (
         <Card>
           <CardContent className="p-4">
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(52px,1fr))] gap-1.5">
-              {paginatedGrid.map((n) => (
-                <div
-                  key={n.number}
-                  className={cn(
-                    "flex h-11 items-center justify-center rounded-lg border text-xs font-mono font-semibold transition-colors",
-                    statusColor[n.status]
-                  )}
-                  title={`#${n.number} - ${statusLabel[n.status]}${n.user ? ` (${n.user})` : ""}`}
-                >
-                  {String(n.number).padStart(3, "0")}
-                </div>
-              ))}
-            </div>
+            {paginatedGrid.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-[var(--muted-foreground)]">
+                <p className="text-sm">Nenhum numero encontrado</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(52px,1fr))] gap-1.5">
+                {paginatedGrid.map((n) => (
+                  <div
+                    key={n.number}
+                    className={cn(
+                      "flex h-11 items-center justify-center rounded-lg border text-xs font-mono font-semibold transition-colors",
+                      statusColor[n.status]
+                    )}
+                    title={`#${n.number} - ${statusLabel[n.status]}${n.user ? ` (${n.user})` : ""}`}
+                  >
+                    {String(n.number).padStart(3, "0")}
+                  </div>
+                ))}
+              </div>
+            )}
             {filtered.length > perPage && (
               <div className="mt-4 flex justify-center gap-2">
                 {Array.from({ length: Math.ceil(filtered.length / perPage) }).map((_, i) => (

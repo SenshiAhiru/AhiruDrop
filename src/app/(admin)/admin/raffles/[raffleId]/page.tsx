@@ -3,20 +3,17 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
-  Upload,
   Save,
   Play,
   Pause,
   XCircle,
   Lock,
-  Copy,
   Trash2,
   CalendarDays,
   BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -67,6 +64,7 @@ export default function EditRafflePage() {
   const [notFound, setNotFound] = useState(false);
   const [raffle, setRaffle] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     title: string;
@@ -88,8 +86,6 @@ export default function EditRafflePage() {
     totalNumbers: "",
     minPerPurchase: "",
     maxPerPurchase: "",
-    category: "",
-    prizeType: "",
     regulation: "",
     scheduledDrawAt: "",
     isFeatured: false,
@@ -111,8 +107,6 @@ export default function EditRafflePage() {
             totalNumbers: String(data.totalNumbers || ""),
             minPerPurchase: String(data.minPerPurchase || "1"),
             maxPerPurchase: String(data.maxPerPurchase || "100"),
-            category: data.category || "",
-            prizeType: data.prizeType || "",
             regulation: data.regulation || "",
             scheduledDrawAt: data.scheduledDrawAt ? data.scheduledDrawAt.slice(0, 16) : "",
             isFeatured: data.isFeatured || false,
@@ -175,11 +169,32 @@ export default function EditRafflePage() {
   };
 
   const handleDelete = () => {
-    alert("Em desenvolvimento");
-  };
-
-  const handleDuplicate = () => {
-    alert("Em desenvolvimento");
+    setConfirmDialog({
+      open: true,
+      title: "Excluir Rifa",
+      description:
+        "Tem certeza que deseja excluir esta rifa permanentemente? Esta acao nao pode ser desfeita.",
+      action: async () => {
+        setIsDeleting(true);
+        try {
+          const res = await fetch(`/api/admin/raffles/${raffleId}`, {
+            method: "DELETE",
+          });
+          const json = await res.json();
+          if (json.success) {
+            router.push("/admin/raffles");
+            return;
+          }
+          console.error("Erro ao excluir rifa:", json);
+        } catch (err) {
+          console.error("Erro ao excluir rifa:", err);
+        } finally {
+          setIsDeleting(false);
+        }
+        setConfirmDialog((prev) => ({ ...prev, open: false }));
+      },
+      destructive: true,
+    });
   };
 
   if (loading) {
@@ -377,52 +392,6 @@ export default function EditRafflePage() {
         </CardContent>
       </Card>
 
-      {/* Categoria */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Categoria</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Categoria</label>
-              <Select value={form.category} onChange={(e) => updateField("category", e.target.value)}>
-                <option value="">Selecione...</option>
-                <option value="electronics">Eletronicos</option>
-                <option value="vehicles">Veiculos</option>
-                <option value="cash">Dinheiro</option>
-                <option value="fashion">Moda</option>
-                <option value="other">Outros</option>
-              </Select>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium">Tipo de Premio</label>
-              <Select value={form.prizeType} onChange={(e) => updateField("prizeType", e.target.value)}>
-                <option value="">Selecione...</option>
-                <option value="product">Produto</option>
-                <option value="cash">Dinheiro</option>
-                <option value="experience">Experiencia</option>
-                <option value="service">Servico</option>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Imagem */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Imagem</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--muted)]/30 p-10 text-center transition-colors hover:border-primary-500/50">
-            <Upload className="mb-3 h-10 w-10 text-[var(--muted-foreground)]" />
-            <p className="text-sm font-medium">Arraste uma imagem ou clique para fazer upload</p>
-            <p className="mt-1 text-xs text-[var(--muted-foreground)]">PNG, JPG ou WebP ate 5MB</p>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Regulamento */}
       <Card>
         <CardHeader>
@@ -465,16 +434,15 @@ export default function EditRafflePage() {
 
       {/* Actions */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleDuplicate}>
-            <Copy className="h-4 w-4" />
-            Duplicar Rifa
-          </Button>
-          <Button variant="destructive" size="sm" onClick={handleDelete}>
-            <Trash2 className="h-4 w-4" />
-            Excluir Rifa
-          </Button>
-        </div>
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={handleDelete}
+          isLoading={isDeleting}
+        >
+          <Trash2 className="h-4 w-4" />
+          Excluir Rifa
+        </Button>
         <Button isLoading={isSubmitting} onClick={handleSave}>
           <Save className="h-4 w-4" />
           Salvar Alteracoes

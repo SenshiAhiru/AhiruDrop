@@ -31,10 +31,91 @@ export default function SettingsPage() {
   });
 
   const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [saving, setSaving] = useState<string | null>(null);
 
-  const handleSave = () => {
-    alert("Configuracoes salvas!");
-  };
+  async function handleSaveSite() {
+    setSaving("site");
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(siteSettings),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Erro ao salvar configuracoes do site.");
+        return;
+      }
+      alert("Configuracoes salvas!");
+    } catch {
+      alert("Erro ao salvar configuracoes do site.");
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  async function handleSaveContact() {
+    setSaving("contact");
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(contactSettings),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Erro ao salvar configuracoes de contato.");
+        return;
+      }
+      alert("Configuracoes salvas!");
+    } catch {
+      alert("Erro ao salvar configuracoes de contato.");
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  async function handleSaveRaffles() {
+    setSaving("raffles");
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(raffleSettings),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Erro ao salvar configuracoes de rifas.");
+        return;
+      }
+      alert("Configuracoes salvas!");
+    } catch {
+      alert("Erro ao salvar configuracoes de rifas.");
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  async function handleSaveMaintenance() {
+    setSaving("maintenance");
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ maintenance_mode: maintenanceMode }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Erro ao salvar configuracao de manutencao.");
+        return;
+      }
+      alert("Configuracoes salvas!");
+    } catch {
+      alert("Erro ao salvar configuracao de manutencao.");
+    } finally {
+      setSaving(null);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -79,9 +160,9 @@ export default function SettingsPage() {
             />
           </div>
           <div className="flex justify-end">
-            <Button onClick={handleSave}>
+            <Button onClick={handleSaveSite} disabled={saving === "site"}>
               <Save className="h-4 w-4" />
-              Salvar
+              {saving === "site" ? "Salvando..." : "Salvar"}
             </Button>
           </div>
         </CardContent>
@@ -128,9 +209,9 @@ export default function SettingsPage() {
             />
           </div>
           <div className="flex justify-end">
-            <Button onClick={handleSave}>
+            <Button onClick={handleSaveContact} disabled={saving === "contact"}>
               <Save className="h-4 w-4" />
-              Salvar
+              {saving === "contact" ? "Salvando..." : "Salvar"}
             </Button>
           </div>
         </CardContent>
@@ -200,9 +281,9 @@ export default function SettingsPage() {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button onClick={handleSave}>
+            <Button onClick={handleSaveRaffles} disabled={saving === "raffles"}>
               <Save className="h-4 w-4" />
-              Salvar
+              {saving === "raffles" ? "Salvando..." : "Salvar"}
             </Button>
           </div>
         </CardContent>
@@ -247,9 +328,9 @@ export default function SettingsPage() {
             </p>
           )}
           <div className="mt-4 flex justify-end">
-            <Button onClick={handleSave}>
+            <Button onClick={handleSaveMaintenance} disabled={saving === "maintenance"}>
               <Save className="h-4 w-4" />
-              Salvar
+              {saving === "maintenance" ? "Salvando..." : "Salvar"}
             </Button>
           </div>
         </CardContent>

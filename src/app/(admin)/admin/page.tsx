@@ -14,17 +14,6 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
-const revenueData: { date: string; revenue: number }[] = [];
 
 const recentOrders: {
   id: string;
@@ -110,58 +99,15 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      {/* Revenue Chart */}
+      {/* Revenue Chart Placeholder */}
       <Card>
         <CardHeader>
           <CardTitle>Receita - Ultimos 30 dias</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-72">
-            {revenueData.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center text-[var(--muted-foreground)]">
-                <BarChart3 className="mb-2 h-10 w-10 opacity-40" />
-                <p className="text-sm">Sem dados de receita</p>
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueData}>
-                  <defs>
-                    <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis
-                    dataKey="date"
-                    tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(v) => `R$${v}`}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "var(--card)",
-                      border: "1px solid var(--border)",
-                      borderRadius: "8px",
-                    }}
-                    formatter={(v: number) => [formatCurrency(v), "Receita"]}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="#7c3aed"
-                    strokeWidth={2}
-                    fill="url(#revenueGrad)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            )}
+          <div className="flex h-72 flex-col items-center justify-center text-[var(--muted-foreground)]">
+            <BarChart3 className="mb-2 h-10 w-10 opacity-40" />
+            <p className="text-sm">Graficos disponiveis quando houver vendas</p>
           </div>
         </CardContent>
       </Card>

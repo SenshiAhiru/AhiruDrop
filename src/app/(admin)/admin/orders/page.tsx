@@ -123,8 +123,6 @@ export default function OrdersPage() {
             className="pl-9"
           />
         </div>
-        <Input type="date" className="w-full sm:w-40" />
-        <Input type="date" className="w-full sm:w-40" />
       </div>
 
       {/* Table or Empty State */}

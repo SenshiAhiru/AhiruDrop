@@ -107,8 +107,6 @@ export default function PaymentsPage() {
           <option value="Stripe">Stripe</option>
           <option value="PushinPay">PushinPay</option>
         </Select>
-        <Input type="date" className="w-full sm:w-40" />
-        <Input type="date" className="w-full sm:w-40" />
       </div>
 
       {/* Table or Empty State */}

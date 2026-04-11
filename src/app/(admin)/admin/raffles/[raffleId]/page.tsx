@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
   Upload,
@@ -28,44 +28,23 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate, formatCurrency } from "@/lib/utils";
 
-// Mock raffle data
-const mockRaffle = {
-  id: "r1",
-  title: "iPhone 15 Pro Max 256GB",
-  description:
-    "Concorra a um iPhone 15 Pro Max 256GB novinho, lacrado na caixa com nota fiscal. Cor: Titanio Natural.",
-  shortDescription: "iPhone 15 Pro Max 256GB Titanio Natural",
-  pricePerNumber: "5",
-  totalNumbers: "1000",
-  minPerPurchase: "1",
-  maxPerPurchase: "100",
-  category: "electronics",
-  prizeType: "product",
-  regulation: "Regulamento da rifa...",
-  scheduledDrawAt: "2026-04-30T20:00",
-  isFeatured: true,
-  status: "ACTIVE",
-  createdAt: "2026-04-01",
-  soldNumbers: 780,
-  revenue: 3900,
-};
-
-const statusActions: Record<string, { label: string; icon: React.ElementType; variant: "default" | "accent" | "destructive" | "outline" }[]> = {
+const statusActions: Record<string, { label: string; newStatus: string; icon: React.ElementType; variant: "default" | "accent" | "destructive" | "outline" }[]> = {
   ACTIVE: [
-    { label: "Pausar", icon: Pause, variant: "outline" },
-    { label: "Encerrar", icon: Lock, variant: "accent" },
-    { label: "Cancelar", icon: XCircle, variant: "destructive" },
+    { label: "Pausar", newStatus: "PAUSED", icon: Pause, variant: "outline" },
+    { label: "Encerrar", newStatus: "CLOSED", icon: Lock, variant: "accent" },
+    { label: "Cancelar", newStatus: "CANCELLED", icon: XCircle, variant: "destructive" },
   ],
   DRAFT: [
-    { label: "Ativar", icon: Play, variant: "default" },
-    { label: "Cancelar", icon: XCircle, variant: "destructive" },
+    { label: "Ativar", newStatus: "ACTIVE", icon: Play, variant: "default" },
+    { label: "Cancelar", newStatus: "CANCELLED", icon: XCircle, variant: "destructive" },
   ],
   PAUSED: [
-    { label: "Ativar", icon: Play, variant: "default" },
-    { label: "Encerrar", icon: Lock, variant: "accent" },
-    { label: "Cancelar", icon: XCircle, variant: "destructive" },
+    { label: "Ativar", newStatus: "ACTIVE", icon: Play, variant: "default" },
+    { label: "Encerrar", newStatus: "CLOSED", icon: Lock, variant: "accent" },
+    { label: "Cancelar", newStatus: "CANCELLED", icon: XCircle, variant: "destructive" },
   ],
   CLOSED: [],
   CANCELLED: [],
@@ -82,6 +61,11 @@ const statusVariant: Record<string, "success" | "warning" | "danger" | "outline"
 export default function EditRafflePage() {
   const router = useRouter();
   const params = useParams();
+  const raffleId = params.raffleId as string;
+
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [raffle, setRaffle] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
@@ -97,19 +81,54 @@ export default function EditRafflePage() {
   });
 
   const [form, setForm] = useState({
-    title: mockRaffle.title,
-    description: mockRaffle.description,
-    shortDescription: mockRaffle.shortDescription,
-    pricePerNumber: mockRaffle.pricePerNumber,
-    totalNumbers: mockRaffle.totalNumbers,
-    minPerPurchase: mockRaffle.minPerPurchase,
-    maxPerPurchase: mockRaffle.maxPerPurchase,
-    category: mockRaffle.category,
-    prizeType: mockRaffle.prizeType,
-    regulation: mockRaffle.regulation,
-    scheduledDrawAt: mockRaffle.scheduledDrawAt,
-    isFeatured: mockRaffle.isFeatured,
+    title: "",
+    description: "",
+    shortDescription: "",
+    pricePerNumber: "",
+    totalNumbers: "",
+    minPerPurchase: "",
+    maxPerPurchase: "",
+    category: "",
+    prizeType: "",
+    regulation: "",
+    scheduledDrawAt: "",
+    isFeatured: false,
   });
+
+  useEffect(() => {
+    async function fetchRaffle() {
+      try {
+        const res = await fetch(`/api/admin/raffles/${raffleId}`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          const data = json.data;
+          setRaffle(data);
+          setForm({
+            title: data.title || "",
+            description: data.description || "",
+            shortDescription: data.shortDescription || "",
+            pricePerNumber: String(data.pricePerNumber || ""),
+            totalNumbers: String(data.totalNumbers || ""),
+            minPerPurchase: String(data.minPerPurchase || "1"),
+            maxPerPurchase: String(data.maxPerPurchase || "100"),
+            category: data.category || "",
+            prizeType: data.prizeType || "",
+            regulation: data.regulation || "",
+            scheduledDrawAt: data.scheduledDrawAt ? data.scheduledDrawAt.slice(0, 16) : "",
+            isFeatured: data.isFeatured || false,
+          });
+        } else {
+          setNotFound(true);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar rifa:", err);
+        setNotFound(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchRaffle();
+  }, [raffleId]);
 
   const updateField = (field: string, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -118,7 +137,7 @@ export default function EditRafflePage() {
   const handleSave = async () => {
     setIsSubmitting(true);
     try {
-      await fetch(`/api/admin/raffles/${params.raffleId}`, {
+      await fetch(`/api/admin/raffles/${raffleId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -130,13 +149,25 @@ export default function EditRafflePage() {
     }
   };
 
-  const handleStatusChange = (label: string) => {
+  const handleStatusChange = (label: string, newStatus: string) => {
     setConfirmDialog({
       open: true,
       title: `${label} Rifa`,
       description: `Tem certeza que deseja ${label.toLowerCase()} esta rifa? Esta acao pode afetar pedidos em andamento.`,
-      action: () => {
-        // API call
+      action: async () => {
+        try {
+          const res = await fetch(`/api/admin/raffles/${raffleId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: newStatus }),
+          });
+          const json = await res.json();
+          if (json.success) {
+            setRaffle((prev: any) => ({ ...prev, status: newStatus }));
+          }
+        } catch (err) {
+          console.error("Erro ao alterar status:", err);
+        }
         setConfirmDialog((prev) => ({ ...prev, open: false }));
       },
       destructive: label === "Cancelar",
@@ -144,30 +175,46 @@ export default function EditRafflePage() {
   };
 
   const handleDelete = () => {
-    setConfirmDialog({
-      open: true,
-      title: "Excluir Rifa",
-      description:
-        "Esta acao e irreversivel. Todos os dados da rifa, numeros e pedidos relacionados serao permanentemente removidos.",
-      action: () => {
-        router.push("/admin/raffles");
-      },
-      destructive: true,
-    });
+    alert("Em desenvolvimento");
   };
 
   const handleDuplicate = () => {
-    setConfirmDialog({
-      open: true,
-      title: "Duplicar Rifa",
-      description: "Uma copia desta rifa sera criada como rascunho. Deseja continuar?",
-      action: () => {
-        router.push("/admin/raffles/new");
-      },
-    });
+    alert("Em desenvolvimento");
   };
 
-  const actions = statusActions[mockRaffle.status] ?? [];
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-3xl space-y-6">
+        <Skeleton className="h-10 w-64" />
+        <div className="grid gap-4 sm:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
+        </div>
+        <Skeleton className="h-64 rounded-xl" />
+        <Skeleton className="h-48 rounded-xl" />
+      </div>
+    );
+  }
+
+  if (notFound || !raffle) {
+    return (
+      <div className="mx-auto max-w-3xl py-20 text-center">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Rifa nao encontrada</h1>
+        <p className="mt-2 text-[var(--muted-foreground)]">
+          A rifa solicitada nao existe ou foi removida.
+        </p>
+        <Button variant="outline" className="mt-6" onClick={() => router.push("/admin/raffles")}>
+          Voltar para Rifas
+        </Button>
+      </div>
+    );
+  }
+
+  const stats = raffle.stats || { available: 0, reserved: 0, paid: 0, total: 0 };
+  const revenue = stats.paid * Number(raffle.pricePerNumber || 0);
+  const progress = stats.total > 0 ? Math.round((stats.paid / stats.total) * 100) : 0;
+  const actions = statusActions[raffle.status] ?? [];
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -176,8 +223,8 @@ export default function EditRafflePage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Editar Rifa</h1>
           <div className="mt-1 flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
-            <Badge variant={statusVariant[mockRaffle.status]}>{mockRaffle.status}</Badge>
-            <span>Criada em {formatDate(mockRaffle.createdAt)}</span>
+            <Badge variant={statusVariant[raffle.status] || "default"}>{raffle.status}</Badge>
+            {raffle.createdAt && <span>Criada em {formatDate(raffle.createdAt)}</span>}
           </div>
         </div>
         <div className="flex gap-2">
@@ -186,7 +233,7 @@ export default function EditRafflePage() {
               key={action.label}
               variant={action.variant}
               size="sm"
-              onClick={() => handleStatusChange(action.label)}
+              onClick={() => handleStatusChange(action.label, action.newStatus)}
             >
               <action.icon className="h-4 w-4" />
               {action.label}
@@ -194,6 +241,33 @@ export default function EditRafflePage() {
           ))}
         </div>
       </div>
+
+      {/* Skin Image & Info */}
+      {raffle.skinImage && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex flex-col items-center gap-4 sm:flex-row">
+              <img
+                src={raffle.skinImage}
+                alt={raffle.title}
+                className="h-32 w-auto rounded-lg object-contain"
+              />
+              <div className="flex flex-wrap gap-2">
+                {raffle.skinRarity && (
+                  <Badge
+                    variant="outline"
+                    style={raffle.skinRarityColor ? { borderColor: raffle.skinRarityColor, color: raffle.skinRarityColor } : undefined}
+                  >
+                    {raffle.skinRarity}
+                  </Badge>
+                )}
+                {raffle.skinWear && <Badge variant="outline">{raffle.skinWear}</Badge>}
+                {raffle.skinWeapon && <Badge variant="outline">{raffle.skinWeapon}</Badge>}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats Row */}
       <div className="grid gap-4 sm:grid-cols-3">
@@ -203,7 +277,7 @@ export default function EditRafflePage() {
             <div>
               <p className="text-xs text-[var(--muted-foreground)]">Vendidos</p>
               <p className="text-lg font-bold">
-                {mockRaffle.soldNumbers}/{mockRaffle.totalNumbers}
+                {stats.paid}/{stats.total}
               </p>
             </div>
           </CardContent>
@@ -213,7 +287,7 @@ export default function EditRafflePage() {
             <CalendarDays className="h-5 w-5 text-primary-600" />
             <div>
               <p className="text-xs text-[var(--muted-foreground)]">Receita</p>
-              <p className="text-lg font-bold">{formatCurrency(mockRaffle.revenue)}</p>
+              <p className="text-lg font-bold">{formatCurrency(revenue)}</p>
             </div>
           </CardContent>
         </Card>
@@ -222,9 +296,7 @@ export default function EditRafflePage() {
             <CalendarDays className="h-5 w-5 text-primary-600" />
             <div>
               <p className="text-xs text-[var(--muted-foreground)]">Progresso</p>
-              <p className="text-lg font-bold">
-                {Math.round((mockRaffle.soldNumbers / Number(mockRaffle.totalNumbers)) * 100)}%
-              </p>
+              <p className="text-lg font-bold">{progress}%</p>
             </div>
           </CardContent>
         </Card>

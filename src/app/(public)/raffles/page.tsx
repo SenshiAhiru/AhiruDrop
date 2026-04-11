@@ -1,16 +1,15 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { RaffleCard } from "@/components/raffle/raffle-card";
 import { RaffleGrid } from "@/components/raffle/raffle-grid";
 import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
-/* ── Data (empty until API is connected) ── */
-
-const RAFFLES: {
+type Raffle = {
   id: string;
   title: string;
   slug: string;
@@ -23,18 +22,51 @@ const RAFFLES: {
   skinRarityColor: string;
   skinWear: string;
   skinWeapon: string;
-}[] = [];
+};
 
 type CategoryFilter = "ALL" | "Rifle" | "Knife" | "Gloves" | "Pistol" | "Sniper Rifle";
 
 export default function RafflesPage() {
+  const [raffles, setRaffles] = useState<Raffle[]>([]);
+  const [loading, setLoading] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("ALL");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 8;
 
+  useEffect(() => {
+    async function fetchRaffles() {
+      try {
+        const res = await fetch("/api/raffles?status=ACTIVE&limit=20");
+        const json = await res.json();
+        if (json.success && json.data?.data) {
+          const mapped: Raffle[] = json.data.data.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            slug: item.slug,
+            featuredImage: item.skinImage || item.featuredImage,
+            pricePerNumber: Number(item.pricePerNumber),
+            stats: item.stats || { available: 0, paid: 0, total: 0 },
+            status: item.status,
+            scheduledDrawAt: item.scheduledDrawAt || null,
+            skinRarity: item.skinRarity || "",
+            skinRarityColor: item.skinRarityColor || "",
+            skinWear: item.skinWear || "",
+            skinWeapon: item.skinWeapon || "",
+          }));
+          setRaffles(mapped);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar rifas:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchRaffles();
+  }, []);
+
   const filteredRaffles = useMemo(() => {
-    let result = RAFFLES;
+    let result = raffles;
 
     if (categoryFilter !== "ALL") {
       result = result.filter((r) => r.skinWeapon && getCategoryFromWeapon(r.skinWeapon) === categoryFilter);
@@ -46,7 +78,7 @@ export default function RafflesPage() {
     }
 
     return result;
-  }, [categoryFilter, search]);
+  }, [raffles, categoryFilter, search]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRaffles.length / perPage));
   const paginatedRaffles = filteredRaffles.slice((page - 1) * perPage, page * perPage);
@@ -103,7 +135,18 @@ export default function RafflesPage() {
       </div>
 
       {/* Grid */}
-      {paginatedRaffles.length > 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 space-y-4">
+              <Skeleton className="h-48 w-full rounded-lg" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-8 w-full rounded-md" />
+            </div>
+          ))}
+        </div>
+      ) : paginatedRaffles.length > 0 ? (
         <RaffleGrid loading={false} emptyMessage="Nenhuma skin encontrada com os filtros selecionados.">
           {paginatedRaffles.map((raffle) => (
             <RaffleCard key={raffle.id} raffle={raffle} />

@@ -1,9 +1,13 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { RaffleCard } from "@/components/raffle/raffle-card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /* ── Data ── */
 
-const FEATURED_RAFFLES: {
+type Raffle = {
   id: string;
   title: string;
   slug: string;
@@ -16,7 +20,7 @@ const FEATURED_RAFFLES: {
   skinRarityColor: string;
   skinWear: string;
   skinWeapon: string;
-}[] = [];
+};
 
 const STEPS = [
   {
@@ -39,6 +43,40 @@ const STEPS = [
 /* ── Page ── */
 
 export default function HomePage() {
+  const [featuredRaffles, setFeaturedRaffles] = useState<Raffle[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchFeatured() {
+      try {
+        const res = await fetch("/api/raffles?limit=4");
+        const json = await res.json();
+        if (json.success && json.data?.data) {
+          const mapped: Raffle[] = json.data.data.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            slug: item.slug,
+            featuredImage: item.skinImage || item.featuredImage,
+            pricePerNumber: Number(item.pricePerNumber),
+            stats: item.stats || { available: 0, paid: 0, total: 0 },
+            status: item.status,
+            scheduledDrawAt: item.scheduledDrawAt || null,
+            skinRarity: item.skinRarity || "",
+            skinRarityColor: item.skinRarityColor || "",
+            skinWear: item.skinWear || "",
+            skinWeapon: item.skinWeapon || "",
+          }));
+          setFeaturedRaffles(mapped);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar rifas em destaque:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchFeatured();
+  }, []);
+
   return (
     <>
       {/* ── Hero ── */}
@@ -98,9 +136,20 @@ export default function HomePage() {
           <div className="mt-3 h-1 w-16 rounded-full bg-accent-500" />
         </div>
 
-        {FEATURED_RAFFLES.length > 0 ? (
+        {loading ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {FEATURED_RAFFLES.map((raffle) => (
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 space-y-4">
+                <Skeleton className="h-48 w-full rounded-lg" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-8 w-full rounded-md" />
+              </div>
+            ))}
+          </div>
+        ) : featuredRaffles.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {featuredRaffles.map((raffle) => (
               <RaffleCard key={raffle.id} raffle={raffle} />
             ))}
           </div>

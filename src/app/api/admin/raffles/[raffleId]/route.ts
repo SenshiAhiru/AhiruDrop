@@ -4,11 +4,9 @@ import {
   errorResponse,
   handleApiError,
   requireAdmin,
-  validateBody,
 } from "@/lib/api-utils";
 import { raffleService } from "@/services/raffle.service";
 import { auditService } from "@/services/audit.service";
-import { updateRaffleSchema } from "@/validators/raffle.validator";
 
 export async function GET(
   req: NextRequest,
@@ -36,29 +34,50 @@ export async function PATCH(
   try {
     const session = await requireAdmin();
     const { raffleId } = await params;
-    const { data, error } = await validateBody(req, updateRaffleSchema);
 
-    if (error) {
-      return errorResponse(error, 422);
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return errorResponse("JSON invalido", 400);
     }
 
-    const updated = await raffleService.update(raffleId, data!);
+    // If only changing status, use the status transition method
+    if (body.status && Object.keys(body).length === 1) {
+      const updated = await raffleService.updateStatus(raffleId, body.status);
+      try {
+        await auditService.log(
+          session.user.id,
+          "RAFFLE_STATUS_CHANGED",
+          "raffle",
+          raffleId,
+          { newStatus: body.status }
+        );
+      } catch {}
+      return successResponse(updated);
+    }
 
-    await auditService.log(
-      session.user.id,
-      "RAFFLE_UPDATED",
-      "raffle",
-      raffleId,
-      { changes: Object.keys(data!) }
-    );
+    // General update
+    const updated = await raffleService.update(raffleId, body);
+
+    try {
+      await auditService.log(
+        session.user.id,
+        "RAFFLE_UPDATED",
+        "raffle",
+        raffleId,
+        { changes: Object.keys(body) }
+      );
+    } catch {}
 
     return successResponse(updated);
   } catch (error) {
+    console.error("PATCH raffle error:", error);
     if (error instanceof Error) {
       if (error.message === "Rifa nao encontrada") {
         return errorResponse(error.message, 404);
       }
-      if (error.message.includes("Nao e possivel alterar")) {
+      if (error.message.includes("Nao e possivel") || error.message.includes("Transicao")) {
         return errorResponse(error.message, 400);
       }
     }
@@ -76,12 +95,14 @@ export async function DELETE(
 
     await raffleService.delete(raffleId);
 
-    await auditService.log(
-      session.user.id,
-      "RAFFLE_DELETED",
-      "raffle",
-      raffleId
-    );
+    try {
+      await auditService.log(
+        session.user.id,
+        "RAFFLE_DELETED",
+        "raffle",
+        raffleId
+      );
+    } catch {}
 
     return successResponse({ message: "Rifa excluida com sucesso" });
   } catch (error) {

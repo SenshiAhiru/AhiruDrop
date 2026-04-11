@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/library";
 import { OrderStatus, Prisma } from "@prisma/client";
 
 export const orderRepository = {
@@ -21,17 +20,17 @@ export const orderRepository = {
       const order = await tx.order.create({
         data: {
           userId: data.userId,
-          totalAmount: new Decimal(data.totalAmount),
-          discount: new Decimal(data.discount),
-          finalAmount: new Decimal(data.finalAmount),
+          totalAmount: Number(data.totalAmount),
+          discount: Number(data.discount),
+          finalAmount: Number(data.finalAmount),
           couponId: data.couponId,
           expiresAt: data.expiresAt,
           items: {
             create: data.items.map((item) => ({
               raffleId: item.raffleId,
               quantity: item.quantity,
-              pricePerNumber: new Decimal(item.pricePerNumber),
-              subtotal: new Decimal(item.subtotal),
+              pricePerNumber: Number(item.pricePerNumber),
+              subtotal: Number(item.subtotal),
             })),
           },
         },

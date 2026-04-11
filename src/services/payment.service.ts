@@ -37,8 +37,8 @@ export const paymentService = {
     }
 
     // Get gateway adapter via dynamic import
-    const { getGatewayAdapter } = await import("@/lib/payment-gateways");
-    const adapter = getGatewayAdapter(gateway.name, configMap);
+    const { PaymentGatewayFactory } = await import("@/gateways/payment-gateway.factory");
+    const adapter = await PaymentGatewayFactory.create(gateway.name);
 
     // Call adapter to create payment
     const paymentResult = await adapter.createPayment({

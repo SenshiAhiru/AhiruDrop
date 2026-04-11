@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { Decimal } from "@prisma/client/runtime/library";
 import { PaymentStatus, Prisma } from "@prisma/client";
 
 export const paymentRepository = {
@@ -14,7 +13,7 @@ export const paymentRepository = {
       data: {
         orderId: data.orderId,
         gatewayId: data.gatewayId,
-        amount: new Decimal(data.amount),
+        amount: Number(data.amount),
         method: data.method,
         expiresAt: data.expiresAt,
       },

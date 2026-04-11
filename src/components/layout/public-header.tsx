@@ -61,18 +61,18 @@ export function PublicHeader() {
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
-                  <Link
+                  <a
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                      "px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
                       isActive
                         ? "text-primary-500 bg-primary-600/10"
                         : "text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)]"
                     )}
                   >
                     {link.label}
-                  </Link>
+                  </a>
                 );
               })}
             </nav>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface CountdownResult {
   days: string;
@@ -10,51 +10,37 @@ interface CountdownResult {
   isExpired: boolean;
 }
 
-function calculateTimeLeft(targetDate: Date): CountdownResult {
-  const now = new Date().getTime();
-  const target = targetDate.getTime();
-  const diff = target - now;
+function calculateTimeLeft(targetMs: number): CountdownResult {
+  const diff = targetMs - Date.now();
 
   if (diff <= 0) {
-    return {
-      days: "00",
-      hours: "00",
-      minutes: "00",
-      seconds: "00",
-      isExpired: true,
-    };
+    return { days: "00", hours: "00", minutes: "00", seconds: "00", isExpired: true };
   }
 
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
   return {
-    days: String(days).padStart(2, "0"),
-    hours: String(hours).padStart(2, "0"),
-    minutes: String(minutes).padStart(2, "0"),
-    seconds: String(seconds).padStart(2, "0"),
+    days: String(Math.floor(diff / 86400000)).padStart(2, "0"),
+    hours: String(Math.floor((diff % 86400000) / 3600000)).padStart(2, "0"),
+    minutes: String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0"),
+    seconds: String(Math.floor((diff % 60000) / 1000)).padStart(2, "0"),
     isExpired: false,
   };
 }
 
 export function useCountdown(targetDate: string | Date): CountdownResult {
-  const target = typeof targetDate === "string" ? new Date(targetDate) : targetDate;
+  const targetMs = useRef(
+    typeof targetDate === "string" ? new Date(targetDate).getTime() : targetDate.getTime()
+  ).current;
 
   const [timeLeft, setTimeLeft] = useState<CountdownResult>(() =>
-    calculateTimeLeft(target)
+    calculateTimeLeft(targetMs)
   );
 
-  const update = useCallback(() => {
-    setTimeLeft(calculateTimeLeft(target));
-  }, [target]);
-
   useEffect(() => {
-    update();
-    const interval = setInterval(update, 1000);
+    const interval = setInterval(() => {
+      setTimeLeft(calculateTimeLeft(targetMs));
+    }, 1000);
     return () => clearInterval(interval);
-  }, [update]);
+  }, [targetMs]);
 
   return timeLeft;
 }

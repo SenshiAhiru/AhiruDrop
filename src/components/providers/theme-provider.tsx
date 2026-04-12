@@ -24,25 +24,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("dark");
 
   useEffect(() => {
-    const stored = localStorage.getItem("ahiru-theme") as Theme | null;
-    if (stored) {
-      setThemeState(stored);
-      document.documentElement.classList.toggle("dark", stored === "dark");
-    } else {
+    try {
+      const stored = localStorage.getItem("ahiru-theme") as Theme | null;
+      if (stored && stored !== theme) {
+        setThemeState(stored);
+      }
       document.documentElement.classList.add("dark");
-    }
+    } catch {}
   }, []);
 
   const setTheme = useCallback((next: Theme) => {
     setThemeState(next);
-    localStorage.setItem("ahiru-theme", next);
+    try { localStorage.setItem("ahiru-theme", next); } catch {}
     document.documentElement.classList.toggle("dark", next === "dark");
   }, []);
 
   const toggleTheme = useCallback(() => {
     setThemeState((prev) => {
       const next = prev === "dark" ? "light" : "dark";
-      localStorage.setItem("ahiru-theme", next);
+      try { localStorage.setItem("ahiru-theme", next); } catch {}
       document.documentElement.classList.toggle("dark", next === "dark");
       return next;
     });

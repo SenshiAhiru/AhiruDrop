@@ -1,7 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import {
   Card,
   CardHeader,
@@ -43,14 +43,36 @@ export default function DashboardPage() {
     date: string;
   }[] = [];
 
-  const activeRaffles: {
+  const [activeRaffles, setActiveRaffles] = useState<{
     id: string;
     name: string;
+    slug: string;
+    skinImage: string;
     drawDate: string;
-    myNumbers: number[];
     totalNumbers: number;
     soldNumbers: number;
-  }[] = [];
+  }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/raffles?limit=4")
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success && json.data?.data) {
+          setActiveRaffles(
+            json.data.data.map((r: any) => ({
+              id: r.id,
+              name: r.title,
+              slug: r.slug,
+              skinImage: r.skinImage || r.featuredImage || "",
+              drawDate: r.scheduledDrawAt || "",
+              totalNumbers: r.totalNumbers,
+              soldNumbers: r.stats?.paid || 0,
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -94,18 +116,18 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-base">Pedidos Recentes</CardTitle>
-            <Link
+            <a
               href="/dashboard/orders"
               className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300 transition-colors"
             >
               Ver todos <ArrowRight className="h-3 w-3" />
-            </Link>
+            </a>
           </CardHeader>
           <CardContent>
             {recentOrders.length > 0 ? (
               <div className="space-y-3">
                 {recentOrders.map((order) => (
-                  <Link
+                  <a
                     key={order.id}
                     href={`/dashboard/orders/${order.id}`}
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--muted)] transition-colors group"
@@ -126,7 +148,7 @@ export default function DashboardPage() {
                         {statusConfig[order.status].label}
                       </Badge>
                     </div>
-                  </Link>
+                  </a>
                 ))}
               </div>
             ) : (
@@ -144,42 +166,41 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-base">Rifas Ativas</CardTitle>
-            <Link
+            <a
               href="/raffles"
               className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300 transition-colors"
             >
               Explorar <ArrowRight className="h-3 w-3" />
-            </Link>
+            </a>
           </CardHeader>
           <CardContent>
             {activeRaffles.length > 0 ? (
               <div className="space-y-3">
                 {activeRaffles.map((raffle) => {
-                  const progress = Math.round(
-                    (raffle.soldNumbers / raffle.totalNumbers) * 100
-                  );
+                  const progress = raffle.totalNumbers > 0 ? Math.round((raffle.soldNumbers / raffle.totalNumbers) * 100) : 0;
                   return (
-                    <div
+                    <a
                       key={raffle.id}
-                      className="p-3 rounded-lg border border-[var(--border)] hover:border-primary-500/30 transition-colors"
+                      href={`/raffles/${raffle.slug}`}
+                      className="block p-3 rounded-lg border border-[var(--border)] hover:border-primary-500/30 transition-colors"
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500/10 flex-shrink-0">
+                      <div className="flex items-center gap-3 mb-2">
+                        {raffle.skinImage ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={raffle.skinImage} alt="" className="h-10 w-10 rounded-lg bg-surface-800 object-contain flex-shrink-0" />
+                        ) : (
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-500/10 flex-shrink-0">
                             <Trophy className="h-4 w-4 text-primary-400" />
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium text-[var(--foreground)] truncate">
-                              {raffle.name}
-                            </p>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-[var(--foreground)] truncate">{raffle.name}</p>
+                          {raffle.drawDate && (
                             <p className="text-xs text-[var(--muted-foreground)]">
                               Sorteio: {new Date(raffle.drawDate).toLocaleDateString("pt-BR")}
                             </p>
-                          </div>
+                          )}
                         </div>
-                        <Badge variant="outline" className="flex-shrink-0 ml-2">
-                          {raffle.myNumbers.length} cotas
-                        </Badge>
                       </div>
                       <div className="space-y-1">
                         <div className="flex justify-between text-xs text-[var(--muted-foreground)]">
@@ -187,13 +208,10 @@ export default function DashboardPage() {
                           <span>{raffle.soldNumbers}/{raffle.totalNumbers}</span>
                         </div>
                         <div className="h-1.5 w-full rounded-full bg-surface-800 overflow-hidden">
-                          <div
-                            className="h-full rounded-full bg-primary-500 transition-all duration-500"
-                            style={{ width: `${progress}%` }}
-                          />
+                          <div className="h-full rounded-full bg-primary-500 transition-all duration-500" style={{ width: `${progress}%` }} />
                         </div>
                       </div>
-                    </div>
+                    </a>
                   );
                 })}
               </div>

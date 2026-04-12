@@ -55,9 +55,9 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
     >
       {/* Logo */}
       <div className="flex items-center h-16 px-5 border-b border-[var(--border)] shrink-0">
-        <Link href="/admin">
+        <a href="/">
           <Logo size="md" />
-        </Link>
+        </a>
       </div>
 
       {/* Navigation */}
@@ -72,7 +72,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 
             return (
               <li key={item.href}>
-                <Link
+                <a
                   href={item.href}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative",
@@ -86,7 +86,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
                   )}
                   <Icon className="h-5 w-5 shrink-0" />
                   {item.label}
-                </Link>
+                </a>
               </li>
             );
           })}

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { SessionProvider } from "@/components/providers/session-provider";
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { MobileNav } from "@/components/layout/mobile-nav";
@@ -23,8 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <SessionProvider>
-      <div className="min-h-screen bg-[var(--background)]">
+    <div className="min-h-screen bg-[var(--background)]">
         {/* Desktop sidebar */}
         <DashboardSidebar className="hidden lg:flex" />
 
@@ -42,6 +40,5 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <main className="flex-1 p-4 lg:p-6">{children}</main>
         </div>
       </div>
-    </SessionProvider>
   );
 }

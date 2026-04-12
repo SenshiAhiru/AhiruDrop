@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -42,9 +43,9 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
     >
       {/* Logo */}
       <div className="flex items-center h-16 px-5 border-b border-[var(--border)] shrink-0">
-        <a href="/dashboard">
+        <Link href="/dashboard">
           <Logo size="md" />
-        </a>
+        </Link>
       </div>
 
       {/* Navigation */}
@@ -59,7 +60,7 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
 
             return (
               <li key={item.href}>
-                <a
+                <Link
                   href={item.href}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative",
@@ -73,7 +74,7 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
                   )}
                   <Icon className="h-5 w-5 shrink-0" />
                   {item.label}
-                </a>
+                </Link>
               </li>
             );
           })}
@@ -82,13 +83,13 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
 
       {/* Bottom actions */}
       <div className="shrink-0 border-t border-[var(--border)] p-3 space-y-1">
-        <a
+        <Link
           href="/"
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
         >
           <ArrowLeft className="h-5 w-5 shrink-0" />
           Voltar ao site
-        </a>
+        </Link>
         <a
           href="/api/auth/signout"
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-danger hover:bg-[var(--muted)] transition-colors"

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { cn, formatCurrency, calculatePercentage } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,7 +59,7 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
   const isDrawn = status === "DRAWN";
 
   return (
-    <a
+    <Link
       href={`/raffles/${slug}`}
       className={cn(
         "group block w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] shadow-sm",
@@ -185,6 +186,6 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
           {isDrawn ? "Ver Resultado" : "Participar"}
         </Button>
       </div>
-    </a>
+    </Link>
   );
 }

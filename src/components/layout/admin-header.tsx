@@ -72,13 +72,13 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
               className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-[var(--card)] border border-[var(--border)] shadow-xl py-1 z-50"
               onClick={(e) => e.stopPropagation()}
             >
-              <a
+              <Link
                 href="/dashboard/profile"
                 className="flex items-center gap-2 px-4 py-2.5 text-sm text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
               >
                 <User className="h-4 w-4" />
                 Perfil
-              </a>
+              </Link>
               <hr className="border-[var(--border)] my-1" />
               <a
                 href="/api/auth/signout"

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function TermsPage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-16">
@@ -120,9 +122,9 @@ export default function TermsPage() {
               suporte@ahirudrop.com
             </a>{" "}
             ou pela nossa página de{" "}
-            <a href="/contact" className="text-primary-500 hover:underline">
+            <Link href="/contact" className="text-primary-500 hover:underline">
               Contato
-            </a>
+            </Link>
             .
           </p>
         </section>

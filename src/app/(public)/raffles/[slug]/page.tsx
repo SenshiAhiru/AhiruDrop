@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -197,7 +198,7 @@ export default function RaffleDetailPage() {
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
             A rifa que você procura não existe ou foi removida.
           </p>
-          <a href="/raffles">
+          <Link href="/raffles">
             <Button variant="outline" className="mt-6">
               <svg
                 className="h-4 w-4 mr-2"
@@ -214,7 +215,7 @@ export default function RaffleDetailPage() {
               </svg>
               Voltar para rifas
             </Button>
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -235,12 +236,12 @@ export default function RaffleDetailPage() {
         }}
       >
         <div className="mx-auto max-w-7xl px-6 py-10">
-          <a href="/raffles" className="inline-flex items-center gap-2 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors mb-8">
+          <Link href="/raffles" className="inline-flex items-center gap-2 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors mb-8">
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
             </svg>
             Voltar para rifas
-          </a>
+          </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
             {/* Left: Skin Image */}
@@ -363,11 +364,11 @@ export default function RaffleDetailPage() {
               )}
 
               {/* CTA */}
-              <a href="/login">
+              <Link href="/login">
                 <Button size="lg" className="w-full shadow-lg shadow-primary-600/25 text-lg h-14">
                   Participar
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

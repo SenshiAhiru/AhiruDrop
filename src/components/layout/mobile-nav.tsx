@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -77,7 +78,7 @@ export function MobileNav({ isOpen, onClose, items, title, children }: MobileNav
               const Icon = item.icon;
               return (
                 <li key={item.href}>
-                  <a
+                  <Link
                     href={item.href}
                     onClick={onClose}
                     className={cn(
@@ -89,7 +90,7 @@ export function MobileNav({ isOpen, onClose, items, title, children }: MobileNav
                   >
                     {Icon && <Icon className="h-5 w-5 shrink-0" />}
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               );
             })}

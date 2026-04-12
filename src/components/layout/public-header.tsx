@@ -52,16 +52,16 @@ export function PublicHeader() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Left: Logo */}
-            <a href="/">
+            <Link href="/">
               <Logo size="md" />
-            </a>
+            </Link>
 
             {/* Center: Desktop nav */}
             <nav className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
-                  <a
+                  <Link
                     key={link.href}
                     href={link.href}
                     className={cn(
@@ -72,7 +72,7 @@ export function PublicHeader() {
                     )}
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 );
               })}
             </nav>
@@ -115,21 +115,21 @@ export function PublicHeader() {
                       className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-[var(--card)] border border-[var(--border)] shadow-xl py-1"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <a
+                      <Link
                         href="/dashboard"
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
                       >
                         <User className="h-4 w-4" />
                         Minha Conta
-                      </a>
+                      </Link>
                       {(session.user as any).role === "ADMIN" || (session.user as any).role === "SUPER_ADMIN" ? (
-                        <a
+                        <Link
                           href="/admin"
                           className="flex items-center gap-2 px-4 py-2.5 text-sm text-accent-500 hover:bg-[var(--muted)] transition-colors"
                         >
                           <Shield className="h-4 w-4" />
                           Painel Admin
-                        </a>
+                        </Link>
                       ) : null}
                       <hr className="border-[var(--border)] my-1" />
                       <a
@@ -144,18 +144,18 @@ export function PublicHeader() {
                 </div>
               ) : (
                 <div className="hidden md:flex items-center gap-2">
-                  <a
+                  <Link
                     href="/login"
                     className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors"
                   >
                     Entrar
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/register"
                     className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md bg-primary-600 text-white hover:bg-primary-700 shadow-sm transition-colors"
                   >
                     Cadastrar
-                  </a>
+                  </Link>
                 </div>
               )}
 
@@ -190,21 +190,21 @@ export function PublicHeader() {
                 <p className="text-xs text-surface-500">{session.user.email}</p>
               </div>
             </div>
-            <a
+            <Link
               href="/dashboard"
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
             >
               <User className="h-4 w-4" />
               Minha Conta
-            </a>
+            </Link>
             {(session.user as any).role === "ADMIN" || (session.user as any).role === "SUPER_ADMIN" ? (
-              <a
+              <Link
                 href="/admin"
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-accent-500 hover:bg-[var(--muted)] transition-colors"
               >
                 <Shield className="h-4 w-4" />
                 Painel Admin
-              </a>
+              </Link>
             ) : null}
             <a
               href="/api/auth/signout"
@@ -216,18 +216,18 @@ export function PublicHeader() {
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            <a
+            <Link
               href="/login"
               className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors"
             >
               Entrar
-            </a>
-            <a
+            </Link>
+            <Link
               href="/register"
               className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md bg-primary-600 text-white hover:bg-primary-700 shadow-sm transition-colors"
             >
               Cadastrar
-            </a>
+            </Link>
           </div>
         )}
       </MobileNav>

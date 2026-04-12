@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import {
   Card,
@@ -116,18 +117,18 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-base">Pedidos Recentes</CardTitle>
-            <a
+            <Link
               href="/dashboard/orders"
               className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300 transition-colors"
             >
               Ver todos <ArrowRight className="h-3 w-3" />
-            </a>
+            </Link>
           </CardHeader>
           <CardContent>
             {recentOrders.length > 0 ? (
               <div className="space-y-3">
                 {recentOrders.map((order) => (
-                  <a
+                  <Link
                     key={order.id}
                     href={`/dashboard/orders/${order.id}`}
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--muted)] transition-colors group"
@@ -148,7 +149,7 @@ export default function DashboardPage() {
                         {statusConfig[order.status].label}
                       </Badge>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             ) : (
@@ -166,12 +167,12 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-base">Rifas Ativas</CardTitle>
-            <a
+            <Link
               href="/raffles"
               className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300 transition-colors"
             >
               Explorar <ArrowRight className="h-3 w-3" />
-            </a>
+            </Link>
           </CardHeader>
           <CardContent>
             {activeRaffles.length > 0 ? (
@@ -179,7 +180,7 @@ export default function DashboardPage() {
                 {activeRaffles.map((raffle) => {
                   const progress = raffle.totalNumbers > 0 ? Math.round((raffle.soldNumbers / raffle.totalNumbers) * 100) : 0;
                   return (
-                    <a
+                    <Link
                       key={raffle.id}
                       href={`/raffles/${raffle.slug}`}
                       className="block p-3 rounded-lg border border-[var(--border)] hover:border-primary-500/30 transition-colors"
@@ -211,7 +212,7 @@ export default function DashboardPage() {
                           <div className="h-full rounded-full bg-primary-500 transition-all duration-500" style={{ width: `${progress}%` }} />
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   );
                 })}
               </div>

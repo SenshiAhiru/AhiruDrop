@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 type Theme = "light" | "dark";
 
@@ -22,29 +22,31 @@ export function useTheme() {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const stored = localStorage.getItem("ahiru-theme") as Theme | null;
-    const initial = stored ?? "dark";
-    setThemeState(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
+    if (stored) {
+      setThemeState(stored);
+      document.documentElement.classList.toggle("dark", stored === "dark");
+    } else {
+      document.documentElement.classList.add("dark");
+    }
   }, []);
 
-  const setTheme = (next: Theme) => {
+  const setTheme = useCallback((next: Theme) => {
     setThemeState(next);
     localStorage.setItem("ahiru-theme", next);
     document.documentElement.classList.toggle("dark", next === "dark");
-  };
+  }, []);
 
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
-
-  if (!mounted) {
-    return <>{children}</>;
-  }
+  const toggleTheme = useCallback(() => {
+    setThemeState((prev) => {
+      const next = prev === "dark" ? "light" : "dark";
+      localStorage.setItem("ahiru-theme", next);
+      document.documentElement.classList.toggle("dark", next === "dark");
+      return next;
+    });
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>

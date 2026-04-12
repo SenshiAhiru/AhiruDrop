@@ -68,22 +68,25 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
           </button>
 
           {dropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-[var(--card)] border border-[var(--border)] shadow-xl py-1 animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-              <Link
-                href="/admin/profile"
+            <div
+              className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-[var(--card)] border border-[var(--border)] shadow-xl py-1 z-50"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <a
+                href="/dashboard/profile"
                 className="flex items-center gap-2 px-4 py-2.5 text-sm text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
               >
                 <User className="h-4 w-4" />
                 Perfil
-              </Link>
+              </a>
               <hr className="border-[var(--border)] my-1" />
-              <Link
+              <a
                 href="/api/auth/signout"
                 className="flex items-center gap-2 px-4 py-2.5 text-sm text-danger hover:bg-[var(--muted)] transition-colors"
               >
                 <LogOut className="h-4 w-4" />
                 Sair
-              </Link>
+              </a>
             </div>
           )}
         </div>

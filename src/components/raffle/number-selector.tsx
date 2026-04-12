@@ -55,19 +55,19 @@ export function NumberSelector({
     const selected = selectedNumbers.includes(num);
 
     if (selected) {
-      return "bg-primary-600 text-white shadow-md ring-2 ring-primary-400/50 scale-105";
+      return "bg-primary-500/20 text-primary-400 ring-1 ring-primary-500/40 scale-105";
     }
 
     switch (status) {
       case "AVAILABLE":
         return cn(
-          "bg-surface-100 dark:bg-surface-800 text-[var(--foreground)]",
-          canSelectMore && "hover:bg-primary-100 dark:hover:bg-primary-900/30 hover:ring-1 hover:ring-primary-500/30 cursor-pointer"
+          "bg-surface-800/60 text-surface-300",
+          canSelectMore && "hover:bg-surface-700/80 hover:text-white hover:ring-1 hover:ring-surface-600 cursor-pointer"
         );
       case "RESERVED":
-        return "bg-surface-300 dark:bg-surface-700 text-surface-500 cursor-not-allowed opacity-60";
+        return "bg-surface-800/30 text-surface-600 cursor-not-allowed";
       case "PAID":
-        return "bg-surface-400 dark:bg-surface-600 text-surface-500 cursor-not-allowed opacity-40";
+        return "bg-surface-800/20 text-surface-700 cursor-not-allowed";
     }
   }
 
@@ -180,14 +180,14 @@ export function NumberSelector({
           Pago
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-sm bg-primary-600 shadow-sm" />
+          <span className="inline-block h-3 w-3 rounded-sm bg-primary-500/30 ring-1 ring-primary-500/50" />
           Selecionado
         </span>
       </div>
 
       {/* Bottom summary */}
       {selectedNumbers.length > 0 && (
-        <div className="flex items-center justify-between rounded-xl border border-primary-600/30 bg-primary-600/5 p-4">
+        <div className="flex items-center justify-between rounded-xl border border-surface-700 bg-surface-800/50 p-4">
           <div>
             <p className="text-sm text-[var(--muted-foreground)]">
               {selectedNumbers.length} {selectedNumbers.length === 1 ? "cota selecionada" : "cotas selecionadas"}

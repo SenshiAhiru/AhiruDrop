@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -24,6 +24,7 @@ export function PublicHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -31,13 +32,29 @@ export function PublicHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close user menu on outside click
+  // Close dropdown on outside click - only checks the dropdown ref
   useEffect(() => {
     if (!userMenuOpen) return;
-    const handleClick = () => setUserMenuOpen(false);
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    // Use setTimeout to avoid catching the same click that opened the menu
+    const timer = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [userMenuOpen]);
+
+  // Close dropdown on navigation
+  useEffect(() => {
+    setUserMenuOpen(false);
+    setMobileOpen(false);
+  }, [pathname]);
 
   return (
     <>
@@ -51,13 +68,13 @@ export function PublicHeader() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Left: Logo */}
+            {/* Logo */}
             <Link href="/">
               <Logo size="md" />
             </Link>
 
-            {/* Center: Desktop nav */}
-            <nav className="hidden md:flex items-center gap-1 relative z-10">
+            {/* Nav */}
+            <nav className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
@@ -65,7 +82,7 @@ export function PublicHeader() {
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      "px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                      "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
                       isActive
                         ? "text-primary-500 bg-primary-600/10"
                         : "text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)]"
@@ -77,29 +94,20 @@ export function PublicHeader() {
               })}
             </nav>
 
-            {/* Right: Actions */}
+            {/* Right */}
             <div className="flex items-center gap-2">
-              {/* Theme toggle */}
               <button
                 onClick={toggleTheme}
                 className="p-2 rounded-lg text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
                 aria-label="Alternar tema"
               >
-                {theme === "dark" ? (
-                  <Sun className="h-5 w-5" />
-                ) : (
-                  <Moon className="h-5 w-5" />
-                )}
+                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </button>
 
-              {/* Auth section */}
               {session?.user ? (
-                <div className="relative hidden md:block">
+                <div className="relative hidden md:block" ref={dropdownRef}>
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setUserMenuOpen((prev) => !prev);
-                    }}
+                    onClick={() => setUserMenuOpen((prev) => !prev)}
                     className="flex items-center gap-2 p-2 rounded-lg text-sm font-medium text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
                   >
                     <span className="flex items-center justify-center h-7 w-7 rounded-full bg-primary-600 text-white text-xs font-bold">
@@ -109,28 +117,26 @@ export function PublicHeader() {
                     <ChevronDown className="h-4 w-4" />
                   </button>
 
-                  {/* Dropdown */}
                   {userMenuOpen && (
-                    <div
-                      className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-[var(--card)] border border-[var(--border)] shadow-xl py-1"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-[var(--card)] border border-[var(--border)] shadow-xl py-1 z-50">
                       <Link
                         href="/dashboard"
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
+                        onClick={() => setUserMenuOpen(false)}
                       >
                         <User className="h-4 w-4" />
                         Minha Conta
                       </Link>
-                      {(session.user as any).role === "ADMIN" || (session.user as any).role === "SUPER_ADMIN" ? (
+                      {((session.user as any).role === "ADMIN" || (session.user as any).role === "SUPER_ADMIN") && (
                         <Link
                           href="/admin"
                           className="flex items-center gap-2 px-4 py-2.5 text-sm text-accent-500 hover:bg-[var(--muted)] transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
                         >
                           <Shield className="h-4 w-4" />
                           Painel Admin
                         </Link>
-                      ) : null}
+                      )}
                       <hr className="border-[var(--border)] my-1" />
                       <a
                         href="/api/auth/signout"
@@ -159,7 +165,6 @@ export function PublicHeader() {
                 </div>
               )}
 
-              {/* Mobile menu button */}
               <button
                 onClick={() => setMobileOpen(true)}
                 className="md:hidden p-2 rounded-lg text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
@@ -172,7 +177,6 @@ export function PublicHeader() {
         </div>
       </header>
 
-      {/* Mobile navigation */}
       <MobileNav
         isOpen={mobileOpen}
         onClose={() => setMobileOpen(false)}
@@ -190,42 +194,24 @@ export function PublicHeader() {
                 <p className="text-xs text-surface-500">{session.user.email}</p>
               </div>
             </div>
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
-            >
-              <User className="h-4 w-4" />
-              Minha Conta
+            <Link href="/dashboard" className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors">
+              <User className="h-4 w-4" /> Minha Conta
             </Link>
-            {(session.user as any).role === "ADMIN" || (session.user as any).role === "SUPER_ADMIN" ? (
-              <Link
-                href="/admin"
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-accent-500 hover:bg-[var(--muted)] transition-colors"
-              >
-                <Shield className="h-4 w-4" />
-                Painel Admin
+            {((session.user as any).role === "ADMIN" || (session.user as any).role === "SUPER_ADMIN") && (
+              <Link href="/admin" className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-accent-500 hover:bg-[var(--muted)] transition-colors">
+                <Shield className="h-4 w-4" /> Painel Admin
               </Link>
-            ) : null}
-            <a
-              href="/api/auth/signout"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-danger hover:bg-[var(--muted)] transition-colors"
-            >
-              <LogOut className="h-4 w-4" />
-              Sair
+            )}
+            <a href="/api/auth/signout" className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-danger hover:bg-[var(--muted)] transition-colors">
+              <LogOut className="h-4 w-4" /> Sair
             </a>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors"
-            >
+            <Link href="/login" className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors">
               Entrar
             </Link>
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md bg-primary-600 text-white hover:bg-primary-700 shadow-sm transition-colors"
-            >
+            <Link href="/register" className="inline-flex items-center justify-center h-8 px-3 text-xs font-semibold rounded-md bg-primary-600 text-white hover:bg-primary-700 shadow-sm transition-colors">
               Cadastrar
             </Link>
           </div>

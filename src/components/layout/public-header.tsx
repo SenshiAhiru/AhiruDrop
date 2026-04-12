@@ -45,8 +45,8 @@ export function PublicHeader() {
         className={cn(
           "fixed top-0 w-full z-50 transition-all duration-300",
           scrolled
-            ? "bg-[var(--card)]/80 backdrop-blur-lg border-b border-[var(--border)] shadow-sm"
-            : "bg-transparent"
+            ? "backdrop-blur-lg border-b border-[var(--border)] shadow-sm bg-surface-950/90"
+            : "bg-surface-950/50 backdrop-blur-sm"
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,7 +57,7 @@ export function PublicHeader() {
             </Link>
 
             {/* Center: Desktop nav */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-1 relative z-10">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (

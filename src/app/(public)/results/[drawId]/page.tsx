@@ -18,10 +18,10 @@ export default async function DrawResultPage({
           <Ticket className="mb-4 h-16 w-16 text-[var(--muted-foreground)] opacity-40" />
         </div>
         <h1 className="text-2xl font-bold text-[var(--foreground)]">
-          Resultado nao encontrado
+          Resultado não encontrado
         </h1>
         <p className="mt-3 text-[var(--muted-foreground)]">
-          O sorteio solicitado nao existe ou ainda nao foi realizado.
+          O sorteio solicitado não existe ou ainda não foi realizado.
         </p>
         <div className="mt-8 flex justify-center">
           <Link

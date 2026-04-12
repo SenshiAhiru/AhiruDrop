@@ -113,12 +113,12 @@ export default function AdminRafflesPage() {
     },
     {
       key: "pricePerNumber",
-      label: "Preco",
+      label: "Preço",
       render: (item) => formatCurrency(Number(item.pricePerNumber)),
     },
     {
       key: "numbers",
-      label: "Numeros",
+      label: "Números",
       render: (item) => {
         const stats = item.stats as RaffleItem["stats"];
         const sold = stats ? stats.paid + stats.reserved : 0;

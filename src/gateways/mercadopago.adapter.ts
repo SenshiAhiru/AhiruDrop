@@ -39,7 +39,7 @@ export class MercadoPagoAdapter implements PaymentGatewayAdapter {
     private readonly sandbox: boolean,
   ) {
     if (!config.access_token) {
-      throw new Error("MercadoPago: access_token e obrigatorio");
+      throw new Error("MercadoPago: access_token é obrigatório");
     }
     this.accessToken = config.access_token;
     this.webhookSecret = config.webhook_secret || undefined;
@@ -131,7 +131,7 @@ export class MercadoPagoAdapter implements PaymentGatewayAdapter {
     }
 
     if (!paymentId) {
-      throw new Error("MercadoPago webhook: payment ID nao encontrado no payload");
+      throw new Error("MercadoPago webhook: payment ID não encontrado no payload");
     }
 
     return this.checkStatus(paymentId);
@@ -139,7 +139,7 @@ export class MercadoPagoAdapter implements PaymentGatewayAdapter {
 
   verifyWebhookSignature(headers: Record<string, string>, rawBody: string): boolean {
     if (!this.webhookSecret) {
-      console.warn("MercadoPago: webhook_secret nao configurado, pulando verificacao de assinatura");
+      console.warn("MercadoPago: webhook_secret não configurado, pulando verificação de assinatura");
       return true;
     }
 

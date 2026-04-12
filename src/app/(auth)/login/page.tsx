@@ -170,7 +170,7 @@ export default function LoginPage() {
 
       <CardFooter className="justify-center">
         <p className="text-sm text-[var(--muted-foreground)]">
-          Nao tem conta?{" "}
+          Não tem conta?{" "}
           <Link href="/register" className="text-primary-400 hover:text-primary-300 font-medium transition-colors">
             Cadastre-se
           </Link>

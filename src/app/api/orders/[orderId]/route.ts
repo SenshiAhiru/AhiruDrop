@@ -20,7 +20,7 @@ export async function GET(
     return successResponse(order);
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message === "Pedido nao encontrado") {
+      if (error.message === "Pedido não encontrado") {
         return errorResponse(error.message, 404);
       }
       if (error.message === "Acesso negado a este pedido") {

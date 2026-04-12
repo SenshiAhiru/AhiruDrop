@@ -6,23 +6,23 @@ const raffleStatusValues = Object.values(RAFFLE_STATUS) as [string, ...string[]]
 export const createRaffleSchema = z.object({
   title: z
     .string()
-    .min(1, "Titulo e obrigatorio")
-    .max(200, "Titulo deve ter no maximo 200 caracteres"),
+    .min(1, "Título é obrigatório")
+    .max(200, "Título deve ter no máximo 200 caracteres"),
   description: z
     .string()
-    .min(1, "Descricao e obrigatoria")
-    .max(5000, "Descricao deve ter no maximo 5000 caracteres"),
+    .min(1, "Descrição é obrigatória")
+    .max(5000, "Descrição deve ter no máximo 5000 caracteres"),
   pricePerNumber: z
     .number()
-    .positive("Preco deve ser positivo"),
+    .positive("Preço deve ser positivo"),
   totalNumbers: z
     .number()
-    .int("Total de numeros deve ser inteiro")
-    .positive("Total de numeros deve ser positivo"),
+    .int("Total de números deve ser inteiro")
+    .positive("Total de números deve ser positivo"),
   maxPerPurchase: z
     .number()
-    .int("Maximo por compra deve ser inteiro")
-    .positive("Maximo por compra deve ser positivo")
+    .int("Máximo por compra deve ser inteiro")
+    .positive("Máximo por compra deve ser positivo")
     .optional()
     .default(10),
   category: z.string().optional(),
@@ -31,7 +31,7 @@ export const createRaffleSchema = z.object({
     .enum(raffleStatusValues)
     .optional()
     .default(RAFFLE_STATUS.DRAFT),
-  imageUrl: z.string().url("URL da imagem invalida").optional(),
+  imageUrl: z.string().url("URL da imagem inválida").optional(),
   drawDate: z.coerce.date().optional(),
   // CS2 Skin fields
   skinName: z.string().optional(),

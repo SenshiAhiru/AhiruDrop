@@ -2,54 +2,54 @@ import Link from "next/link";
 
 const FAQ_ITEMS = [
   {
-    question: "O que e o AhiruDrop?",
+    question: "O que é o AhiruDrop?",
     answer:
-      "O AhiruDrop e uma plataforma de rifas online que conecta organizadores e participantes em um ambiente seguro, transparente e moderno. Nosso objetivo e proporcionar uma experiencia premium de sorteios, com total rastreabilidade e verificacao publica dos resultados.",
+      "O AhiruDrop é uma plataforma de rifas online que conecta organizadores e participantes em um ambiente seguro, transparente e moderno. Nosso objetivo é proporcionar uma experiência premium de sorteios, com total rastreabilidade e verificação pública dos resultados.",
   },
   {
     question: "Como funciona uma rifa?",
     answer:
-      "Cada rifa possui um numero definido de cotas (numeros) disponiveis para compra. Os participantes escolhem seus numeros e realizam o pagamento. Quando todas as cotas sao vendidas ou quando a data do sorteio chega, um numero e sorteado de forma aleatoria e verificavel. O participante que possui o numero sorteado ganha o premio.",
+      "Cada rifa possui um número definido de cotas (números) disponíveis para compra. Os participantes escolhem seus números e realizam o pagamento. Quando todas as cotas são vendidas ou quando a data do sorteio chega, um número é sorteado de forma aleatória e verificável. O participante que possui o número sorteado ganha o prêmio.",
   },
   {
-    question: "Como eu compro numeros?",
+    question: "Como eu compro números?",
     answer:
-      "Acesse a pagina da rifa desejada, selecione os numeros manualmente ou gere numeros aleatorios, e clique em 'Comprar'. Voce sera direcionado para a tela de pagamento. Apos a confirmacao do pagamento, os numeros ficam vinculados a sua conta automaticamente.",
+      "Acesse a página da rifa desejada, selecione os números manualmente ou gere números aleatórios, e clique em 'Comprar'. Você será direcionado para a tela de pagamento. Após a confirmação do pagamento, os números ficam vinculados à sua conta automaticamente.",
   },
   {
-    question: "Quais formas de pagamento sao aceitas?",
+    question: "Quais formas de pagamento são aceitas?",
     answer:
-      "Atualmente aceitamos pagamentos via PIX, que oferece confirmacao instantanea. O PIX e o metodo mais rapido e seguro, e a confirmacao dos seus numeros acontece em poucos segundos apos o pagamento.",
+      "Atualmente aceitamos pagamentos via PIX, que oferece confirmação instantânea. O PIX é o método mais rápido e seguro, e a confirmação dos seus números acontece em poucos segundos após o pagamento.",
   },
   {
     question: "Como sei se ganhei?",
     answer:
-      "Voce sera notificado por e-mail e na propria plataforma caso seja o vencedor de um sorteio. Alem disso, todos os resultados sao publicados na pagina de resultados com total transparencia, incluindo o numero sorteado e a verificacao criptografica.",
+      "Você será notificado por e-mail e na própria plataforma caso seja o vencedor de um sorteio. Além disso, todos os resultados são publicados na página de resultados com total transparência, incluindo o número sorteado e a verificação criptográfica.",
   },
   {
-    question: "O sorteio e justo?",
+    question: "O sorteio é justo?",
     answer:
-      "Sim. Cada sorteio gera um hash criptografico unico utilizando um seed publico combinado com dados verificaveis. O algoritmo e aberto e qualquer pessoa pode verificar a integridade do resultado. Nao ha possibilidade de manipulacao.",
+      "Sim. Cada sorteio gera um hash criptográfico único utilizando um seed público combinado com dados verificáveis. O algoritmo é aberto e qualquer pessoa pode verificar a integridade do resultado. Não há possibilidade de manipulação.",
   },
   {
     question: "Posso cancelar minha compra?",
     answer:
-      "Uma vez confirmado o pagamento e os numeros vinculados, nao e possivel cancelar a compra, pois os numeros ja ficam reservados para voce. Caso tenha algum problema com o pagamento, entre em contato com nosso suporte para analise.",
+      "Uma vez confirmado o pagamento e os números vinculados, não é possível cancelar a compra, pois os números já ficam reservados para você. Caso tenha algum problema com o pagamento, entre em contato com nosso suporte para análise.",
   },
   {
-    question: "Como recebo meu premio?",
+    question: "Como recebo meu prêmio?",
     answer:
-      "Apos o sorteio, o vencedor e contatado por e-mail com instrucoes para retirada ou envio do premio. Premios fisicos podem ser enviados pelos Correios ou retirados presencialmente, dependendo da rifa. Premios digitais sao entregues diretamente na plataforma.",
+      "Após o sorteio, o vencedor é contatado por e-mail com instruções para retirada ou envio do prêmio. Prêmios físicos podem ser enviados pelos Correios ou retirados presencialmente, dependendo da rifa. Prêmios digitais são entregues diretamente na plataforma.",
   },
   {
-    question: "Meus dados estao seguros?",
+    question: "Meus dados estão seguros?",
     answer:
-      "Sim. Utilizamos criptografia em todas as comunicacoes, armazenamento seguro de dados e seguimos as melhores praticas de seguranca da informacao. Seus dados pessoais e financeiros sao tratados com total sigilo, em conformidade com a LGPD.",
+      "Sim. Utilizamos criptografia em todas as comunicações, armazenamento seguro de dados e seguimos as melhores práticas de segurança da informação. Seus dados pessoais e financeiros são tratados com total sigilo, em conformidade com a LGPD.",
   },
   {
     question: "Como entro em contato com o suporte?",
     answer:
-      "Voce pode entrar em contato conosco atraves da pagina de Contato, por e-mail em suporte@ahirudrop.com ou pelas nossas redes sociais. Nosso horario de atendimento e de segunda a sexta, das 9h as 18h.",
+      "Você pode entrar em contato conosco através da página de Contato, por e-mail em suporte@ahirudrop.com ou pelas nossas redes sociais. Nosso horário de atendimento é de segunda a sexta, das 9h às 18h.",
   },
 ];
 
@@ -62,7 +62,7 @@ export default function FaqPage() {
           Perguntas Frequentes
         </h1>
         <p className="mt-3 text-[var(--muted-foreground)]">
-          Encontre respostas para as duvidas mais comuns sobre o AhiruDrop.
+          Encontre respostas para as dúvidas mais comuns sobre o AhiruDrop.
         </p>
       </div>
 
@@ -92,7 +92,7 @@ export default function FaqPage() {
       {/* Bottom CTA */}
       <div className="mt-12 text-center">
         <p className="text-[var(--muted-foreground)]">
-          Nao encontrou o que procurava?
+          Não encontrou o que procurava?
         </p>
         <Link
           href="/contact"

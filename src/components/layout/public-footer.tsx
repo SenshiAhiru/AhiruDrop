@@ -33,7 +33,7 @@ export function PublicFooter() {
               <Logo size="md" />
             </a>
             <p className="mt-4 text-sm text-surface-500 leading-relaxed max-w-xs">
-              Plataforma de rifas online com experiencia premium, confiavel e transparente.
+              Plataforma de rifas online com experiência premium, confiável e transparente.
             </p>
           </div>
 

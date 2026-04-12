@@ -21,15 +21,15 @@ export class PaymentGatewayFactory {
     });
 
     if (!gateway) {
-      throw new Error(`Gateway "${gatewayName}" nao encontrado`);
+      throw new Error(`Gateway "${gatewayName}" não encontrado`);
     }
     if (!gateway.isActive) {
-      throw new Error(`Gateway "${gatewayName}" esta desativado`);
+      throw new Error(`Gateway "${gatewayName}" está desativado`);
     }
 
     const AdapterClass = adapterRegistry[gateway.name];
     if (!AdapterClass) {
-      throw new Error(`Adapter nao registrado para "${gateway.name}"`);
+      throw new Error(`Adapter não registrado para "${gateway.name}"`);
     }
 
     const config: Record<string, string> = {};
@@ -50,7 +50,7 @@ export class PaymentGatewayFactory {
     });
 
     if (!gateway) {
-      throw new Error("Nenhum gateway de pagamento padrao configurado");
+      throw new Error("Nenhum gateway de pagamento padrão configurado");
     }
 
     return this.create(gateway.name);

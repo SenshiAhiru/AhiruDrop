@@ -35,9 +35,9 @@ export async function PATCH(req: NextRequest) {
   } catch (error) {
     if (error instanceof Error) {
       const knownErrors = [
-        "telefone ja esta cadastrado",
-        "CPF ja esta cadastrado",
-        "Usuario nao encontrado",
+        "telefone já está cadastrado",
+        "CPF já está cadastrado",
+        "Usuário não encontrado",
       ];
 
       if (knownErrors.some((msg) => error.message.includes(msg))) {

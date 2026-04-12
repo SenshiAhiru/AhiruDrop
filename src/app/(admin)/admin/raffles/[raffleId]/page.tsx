@@ -147,7 +147,7 @@ export default function EditRafflePage() {
     setConfirmDialog({
       open: true,
       title: `${label} Rifa`,
-      description: `Tem certeza que deseja ${label.toLowerCase()} esta rifa? Esta acao pode afetar pedidos em andamento.`,
+      description: `Tem certeza que deseja ${label.toLowerCase()} esta rifa? Esta ação pode afetar pedidos em andamento.`,
       action: async () => {
         try {
           const res = await fetch(`/api/admin/raffles/${raffleId}`, {
@@ -173,7 +173,7 @@ export default function EditRafflePage() {
       open: true,
       title: "Excluir Rifa",
       description:
-        "Tem certeza que deseja excluir esta rifa permanentemente? Esta acao nao pode ser desfeita.",
+        "Tem certeza que deseja excluir esta rifa permanentemente? Esta ação não pode ser desfeita.",
       action: async () => {
         setIsDeleting(true);
         try {
@@ -215,9 +215,9 @@ export default function EditRafflePage() {
   if (notFound || !raffle) {
     return (
       <div className="mx-auto max-w-3xl py-20 text-center">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Rifa nao encontrada</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Rifa não encontrada</h1>
         <p className="mt-2 text-[var(--muted-foreground)]">
-          A rifa solicitada nao existe ou foi removida.
+          A rifa solicitada não existe ou foi removida.
         </p>
         <Button variant="outline" className="mt-6" onClick={() => router.push("/admin/raffles")}>
           Voltar para Rifas
@@ -317,21 +317,21 @@ export default function EditRafflePage() {
         </Card>
       </div>
 
-      {/* Informacoes Basicas */}
+      {/* Informações Básicas */}
       <Card>
         <CardHeader>
-          <CardTitle>Informacoes Basicas</CardTitle>
+          <CardTitle>Informações Básicas</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Titulo</label>
+            <label className="mb-1.5 block text-sm font-medium">Título</label>
             <Input
               value={form.title}
               onChange={(e) => updateField("title", e.target.value)}
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Descricao</label>
+            <label className="mb-1.5 block text-sm font-medium">Descrição</label>
             <Textarea
               value={form.description}
               onChange={(e) => updateField("description", e.target.value)}
@@ -339,7 +339,7 @@ export default function EditRafflePage() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Descricao Curta</label>
+            <label className="mb-1.5 block text-sm font-medium">Descrição Curta</label>
             <Input
               value={form.shortDescription}
               onChange={(e) => updateField("shortDescription", e.target.value)}
@@ -348,15 +348,15 @@ export default function EditRafflePage() {
         </CardContent>
       </Card>
 
-      {/* Configuracao */}
+      {/* Configuração */}
       <Card>
         <CardHeader>
-          <CardTitle>Configuracao</CardTitle>
+          <CardTitle>Configuração</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-sm font-medium">Preco por Numero (R$)</label>
+              <label className="mb-1.5 block text-sm font-medium">Preço por Número (R$)</label>
               <Input
                 type="number"
                 step="0.01"
@@ -365,7 +365,7 @@ export default function EditRafflePage() {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium">Total de Numeros</label>
+              <label className="mb-1.5 block text-sm font-medium">Total de Números</label>
               <Input
                 type="number"
                 value={form.totalNumbers}
@@ -373,7 +373,7 @@ export default function EditRafflePage() {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium">Minimo por Compra</label>
+              <label className="mb-1.5 block text-sm font-medium">Mínimo por Compra</label>
               <Input
                 type="number"
                 value={form.minPerPurchase}
@@ -381,7 +381,7 @@ export default function EditRafflePage() {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium">Maximo por Compra</label>
+              <label className="mb-1.5 block text-sm font-medium">Máximo por Compra</label>
               <Input
                 type="number"
                 value={form.maxPerPurchase}

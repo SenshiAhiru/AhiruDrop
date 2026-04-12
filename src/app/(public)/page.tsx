@@ -25,17 +25,17 @@ type Raffle = {
 const STEPS = [
   {
     title: "Escolha sua skin",
-    description: "Navegue pelo catalogo e encontre a skin dos seus sonhos.",
+    description: "Navegue pelo catálogo e encontre a skin dos seus sonhos.",
     icon: SearchIcon,
   },
   {
-    title: "Compre seus numeros",
-    description: "Selecione manualmente ou gere numeros aleatorios com facilidade.",
+    title: "Compre seus números",
+    description: "Selecione manualmente ou gere números aleatórios com facilidade.",
     icon: CartIcon,
   },
   {
     title: "Aguarde o sorteio",
-    description: "Acompanhe em tempo real e receba sua skin direto no inventario.",
+    description: "Acompanhe em tempo real e receba sua skin direto no inventário.",
     icon: TrophyIcon,
   },
 ];
@@ -104,7 +104,7 @@ export default function HomePage() {
 
           <p className="max-w-2xl text-lg text-surface-400 sm:text-xl">
             Participe das melhores rifas de skins CS2. Armas, facas e luvas com
-            transparencia total.
+            transparência total.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -159,7 +159,7 @@ export default function HomePage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
             </svg>
             <p className="text-lg font-semibold text-[var(--foreground)]">
-              Nenhuma rifa disponivel no momento.
+              Nenhuma rifa disponível no momento.
             </p>
             <p className="mt-1 text-sm text-[var(--muted-foreground)]">
               Volte em breve!
@@ -188,7 +188,7 @@ export default function HomePage() {
               Como Funciona
             </h2>
             <p className="mt-3 max-w-lg text-[var(--muted-foreground)]">
-              Participar e simples, rapido e seguro.
+              Participar é simples, rápido e seguro.
             </p>
           </div>
 

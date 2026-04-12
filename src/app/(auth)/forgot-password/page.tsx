@@ -61,7 +61,7 @@ export default function ForgotPasswordPage() {
               </p>
             </div>
             <p className="text-xs text-[var(--muted-foreground)]">
-              Nao recebeu? Verifique sua pasta de spam ou{" "}
+              Não recebeu? Verifique sua pasta de spam ou{" "}
               <button
                 onClick={() => setSent(false)}
                 className="text-primary-400 hover:text-primary-300 underline"
@@ -126,7 +126,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-            Enviar link de recuperacao
+            Enviar link de recuperação
           </Button>
         </form>
       </CardContent>

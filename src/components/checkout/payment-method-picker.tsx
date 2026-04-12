@@ -11,9 +11,9 @@ interface PaymentMethod {
 }
 
 const methods: PaymentMethod[] = [
-  { id: "pix", name: "PIX", icon: "pix", description: "Aprovacao instantanea" },
-  { id: "credit_card", name: "Cartao de Credito", icon: "credit_card", description: "Ate 12x" },
-  { id: "boleto", name: "Boleto", icon: "boleto", description: "Ate 3 dias uteis" },
+  { id: "pix", name: "PIX", icon: "pix", description: "Aprovação instantânea" },
+  { id: "credit_card", name: "Cartão de Crédito", icon: "credit_card", description: "Até 12x" },
+  { id: "boleto", name: "Boleto", icon: "boleto", description: "Até 3 dias úteis" },
 ];
 
 const icons = {

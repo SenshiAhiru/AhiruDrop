@@ -40,7 +40,7 @@ export class StripeAdapter implements PaymentGatewayAdapter {
     private readonly sandbox: boolean,
   ) {
     if (!config.secret_key) {
-      throw new Error("Stripe: secret_key e obrigatorio");
+      throw new Error("Stripe: secret_key é obrigatório");
     }
     this.secretKey = config.secret_key;
     this.webhookSecret = config.webhook_secret || undefined;
@@ -132,7 +132,7 @@ export class StripeAdapter implements PaymentGatewayAdapter {
     const object = data?.object as Record<string, unknown>;
 
     if (!object || !object.id) {
-      throw new Error("Stripe webhook: objeto de evento invalido");
+      throw new Error("Stripe webhook: objeto de evento inválido");
     }
 
     // For checkout.session events, fetch the latest session data
@@ -163,18 +163,18 @@ export class StripeAdapter implements PaymentGatewayAdapter {
       };
     }
 
-    throw new Error(`Stripe webhook: tipo de evento nao suportado "${eventType}"`);
+    throw new Error(`Stripe webhook: tipo de evento não suportado "${eventType}"`);
   }
 
   verifyWebhookSignature(headers: Record<string, string>, rawBody: string): boolean {
     if (!this.webhookSecret) {
-      console.warn("Stripe: webhook_secret nao configurado, pulando verificacao de assinatura");
+      console.warn("Stripe: webhook_secret não configurado, pulando verificação de assinatura");
       return true;
     }
 
     const signature = headers["stripe-signature"] || headers["Stripe-Signature"];
     if (!signature) {
-      console.warn("Stripe: header Stripe-Signature nao encontrado");
+      console.warn("Stripe: header Stripe-Signature não encontrado");
       return false;
     }
 

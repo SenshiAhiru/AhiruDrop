@@ -5,42 +5,42 @@ const STEPS = [
     number: "01",
     title: "Cadastre-se",
     description:
-      "Crie sua conta em poucos segundos usando e-mail ou redes sociais. O processo e simples, rapido e seguro.",
+      "Crie sua conta em poucos segundos usando e-mail ou redes sociais. O processo é simples, rápido e seguro.",
     icon: UserPlusIcon,
   },
   {
     number: "02",
     title: "Escolha uma rifa",
     description:
-      "Navegue pelo catalogo de rifas ativas. Veja detalhes do premio, quantidade de numeros, precos e datas de sorteio.",
+      "Navegue pelo catálogo de rifas ativas. Veja detalhes do prêmio, quantidade de números, preços e datas de sorteio.",
     icon: SearchIcon,
   },
   {
     number: "03",
-    title: "Escolha seus numeros",
+    title: "Escolha seus números",
     description:
-      "Selecione seus numeros da sorte manualmente ou gere numeros aleatorios. Voce escolhe quantos quiser, dentro do limite por compra.",
+      "Selecione seus números da sorte manualmente ou gere números aleatórios. Você escolhe quantos quiser, dentro do limite por compra.",
     icon: GridIcon,
   },
   {
     number: "04",
     title: "Realize o pagamento",
     description:
-      "Pague via PIX de forma instantanea e segura. Seu pagamento e confirmado em segundos e os numeros sao reservados automaticamente.",
+      "Pague via PIX de forma instantânea e segura. Seu pagamento é confirmado em segundos e os números são reservados automaticamente.",
     icon: CreditCardIcon,
   },
   {
     number: "05",
     title: "Aguarde o sorteio",
     description:
-      "Acompanhe o progresso da rifa em tempo real. Voce sera notificado quando o sorteio estiver proximo e quando for realizado.",
+      "Acompanhe o progresso da rifa em tempo real. Você será notificado quando o sorteio estiver próximo e quando for realizado.",
     icon: ClockIcon,
   },
   {
     number: "06",
     title: "Confira o resultado",
     description:
-      "Resultados publicos e transparentes. Todo sorteio gera um hash criptografico verificavel, garantindo total integridade.",
+      "Resultados públicos e transparentes. Todo sorteio gera um hash criptográfico verificável, garantindo total integridade.",
     icon: CheckCircleIcon,
   },
 ];
@@ -54,7 +54,7 @@ export default function AboutPage() {
           Como Funciona o <span className="text-gradient">AhiruDrop</span>
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-[var(--muted-foreground)]">
-          Participar de uma rifa no AhiruDrop e simples, seguro e transparente.
+          Participar de uma rifa no AhiruDrop é simples, seguro e transparente.
           Confira o passo a passo completo.
         </p>
       </div>
@@ -124,7 +124,7 @@ export default function AboutPage() {
           Pronto para tentar a sorte?
         </h2>
         <p className="max-w-md text-[var(--muted-foreground)]">
-          Explore as rifas disponiveis e escolha seus numeros da sorte.
+          Explore as rifas disponíveis e escolha seus números da sorte.
         </p>
         <div className="flex flex-wrap items-center gap-4">
           <Link

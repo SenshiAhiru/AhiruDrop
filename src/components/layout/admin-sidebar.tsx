@@ -29,12 +29,12 @@ const navItems: NavItem[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Rifas", href: "/admin/raffles", icon: Ticket },
   { label: "Pedidos", href: "/admin/orders", icon: ShoppingCart },
-  { label: "Usuarios", href: "/admin/users", icon: Users },
+  { label: "Usuários", href: "/admin/users", icon: Users },
   { label: "Pagamentos", href: "/admin/payments", icon: CreditCard },
   { label: "Gateways", href: "/admin/gateways", icon: Settings2 },
   { label: "Cupons", href: "/admin/coupons", icon: Tag },
-  { label: "Configuracoes", href: "/admin/settings", icon: Settings },
-  { label: "Relatorios", href: "/admin/reports", icon: BarChart3 },
+  { label: "Configurações", href: "/admin/settings", icon: Settings },
+  { label: "Relatórios", href: "/admin/reports", icon: BarChart3 },
   { label: "Suporte", href: "/admin/support", icon: MessageSquare },
 ];
 

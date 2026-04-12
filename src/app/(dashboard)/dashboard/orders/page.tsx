@@ -110,7 +110,7 @@ export default function OrdersPage() {
                 Nenhum pedido encontrado
               </h3>
               <p className="text-sm text-[var(--muted-foreground)] max-w-xs">
-                Voce ainda nao fez nenhum pedido. Participe de uma rifa!
+                Você ainda não fez nenhum pedido. Participe de uma rifa!
               </p>
               <Link href="/raffles">
                 <Button variant="default" className="mt-2">

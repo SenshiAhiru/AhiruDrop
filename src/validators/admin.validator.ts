@@ -9,18 +9,18 @@ export const updateUserSchema = z.object({
 });
 
 export const drawRaffleSchema = z.object({
-  raffleId: z.string().min(1, "ID da rifa e obrigatorio"),
+  raffleId: z.string().min(1, "ID da rifa é obrigatório"),
 });
 
 export const systemSettingsSchema = z.object({
   key: z
     .string()
-    .min(1, "Chave e obrigatoria")
-    .max(100, "Chave deve ter no maximo 100 caracteres"),
-  value: z.string().min(1, "Valor e obrigatorio"),
+    .min(1, "Chave é obrigatória")
+    .max(100, "Chave deve ter no máximo 100 caracteres"),
+  value: z.string().min(1, "Valor é obrigatório"),
   type: z
     .string()
-    .min(1, "Tipo e obrigatorio"),
+    .min(1, "Tipo é obrigatório"),
 });
 
 export type UpdateUserSchema = z.infer<typeof updateUserSchema>;

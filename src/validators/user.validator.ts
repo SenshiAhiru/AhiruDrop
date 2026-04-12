@@ -3,20 +3,20 @@ import { z } from "zod";
 export const updateProfileSchema = z.object({
   name: z
     .string()
-    .min(2, "Nome deve ter no minimo 2 caracteres")
+    .min(2, "Nome deve ter no mínimo 2 caracteres")
     .optional(),
   phone: z
     .string()
-    .min(10, "Telefone invalido")
-    .max(15, "Telefone invalido")
+    .min(10, "Telefone inválido")
+    .max(15, "Telefone inválido")
     .optional(),
   cpf: z
     .string()
-    .length(11, "CPF deve ter 11 digitos")
+    .length(11, "CPF deve ter 11 dígitos")
     .optional(),
   avatarUrl: z
     .string()
-    .url("URL do avatar invalida")
+    .url("URL do avatar inválida")
     .optional(),
 });
 
@@ -24,16 +24,16 @@ export const changePasswordSchema = z
   .object({
     currentPassword: z
       .string()
-      .min(1, "Senha atual e obrigatoria"),
+      .min(1, "Senha atual é obrigatória"),
     newPassword: z
       .string()
-      .min(6, "Nova senha deve ter no minimo 6 caracteres"),
+      .min(6, "Nova senha deve ter no mínimo 6 caracteres"),
     confirmNewPassword: z
       .string()
-      .min(1, "Confirmacao de senha e obrigatoria"),
+      .min(1, "Confirmação de senha é obrigatória"),
   })
   .refine((data) => data.newPassword === data.confirmNewPassword, {
-    message: "As senhas nao coincidem",
+    message: "As senhas não coincidem",
     path: ["confirmNewPassword"],
   });
 

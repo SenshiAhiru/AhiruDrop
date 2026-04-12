@@ -17,11 +17,11 @@ export default function NotFound() {
         {/* Message */}
         <div className="space-y-2">
           <h2 className="text-2xl font-bold text-[var(--foreground)]">
-            Pagina nao encontrada
+            Página não encontrada
           </h2>
           <p className="mx-auto max-w-md text-[var(--muted-foreground)]">
-            A pagina que voce esta procurando nao existe ou foi movida.
-            Verifique o endereco ou volte ao inicio.
+            A página que você está procurando não existe ou foi movida.
+            Verifique o endereço ou volte ao início.
           </p>
         </div>
 
@@ -33,7 +33,7 @@ export default function NotFound() {
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
           </svg>
-          Voltar ao inicio
+          Voltar ao início
         </Link>
       </div>
     </div>

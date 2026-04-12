@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     if (error instanceof Error) {
       const knownErrors = [
-        "Pedido nao encontrado",
+        "Pedido não encontrado",
         "Apenas pedidos pendentes",
         "Nenhum gateway",
       ];

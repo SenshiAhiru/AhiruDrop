@@ -14,21 +14,21 @@ export const publicNav: NavItem[] = [
 ];
 
 export const dashboardNav: NavItem[] = [
-  { label: "Visao Geral", href: ROUTES.DASHBOARD, icon: "LayoutDashboard" },
+  { label: "Visão Geral", href: ROUTES.DASHBOARD, icon: "LayoutDashboard" },
   { label: "Meus Pedidos", href: ROUTES.DASHBOARD_ORDERS, icon: "ShoppingBag" },
   { label: "Perfil", href: ROUTES.DASHBOARD_PROFILE, icon: "User" },
-  { label: "Notificacoes", href: ROUTES.DASHBOARD_NOTIFICATIONS, icon: "Bell" },
+  { label: "Notificações", href: ROUTES.DASHBOARD_NOTIFICATIONS, icon: "Bell" },
 ];
 
 export const adminNav: NavItem[] = [
   { label: "Dashboard", href: ROUTES.ADMIN, icon: "BarChart3" },
   { label: "Rifas", href: ROUTES.ADMIN_RAFFLES, icon: "Ticket" },
   { label: "Pedidos", href: ROUTES.ADMIN_ORDERS, icon: "ShoppingCart" },
-  { label: "Usuarios", href: ROUTES.ADMIN_USERS, icon: "Users" },
+  { label: "Usuários", href: ROUTES.ADMIN_USERS, icon: "Users" },
   { label: "Pagamentos", href: ROUTES.ADMIN_PAYMENTS, icon: "CreditCard" },
   { label: "Gateways", href: ROUTES.ADMIN_GATEWAYS, icon: "Plug" },
   { label: "Cupons", href: ROUTES.ADMIN_COUPONS, icon: "Tag" },
-  { label: "Configuracoes", href: ROUTES.ADMIN_SETTINGS, icon: "Settings" },
-  { label: "Relatorios", href: ROUTES.ADMIN_REPORTS, icon: "FileBarChart" },
+  { label: "Configurações", href: ROUTES.ADMIN_SETTINGS, icon: "Settings" },
+  { label: "Relatórios", href: ROUTES.ADMIN_REPORTS, icon: "FileBarChart" },
   { label: "Suporte", href: ROUTES.ADMIN_SUPPORT, icon: "Headphones" },
 ];

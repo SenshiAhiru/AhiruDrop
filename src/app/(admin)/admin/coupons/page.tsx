@@ -42,7 +42,7 @@ export default function CouponsPage() {
   const columns: Column<CouponRow>[] = [
     {
       key: "code",
-      label: "Codigo",
+      label: "Código",
       render: (item) => (
         <span className="font-mono font-semibold text-primary-600">
           {item.code as string}
@@ -109,7 +109,7 @@ export default function CouponsPage() {
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]" />
         <Input
-          placeholder="Buscar por codigo..."
+          placeholder="Buscar por código..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"

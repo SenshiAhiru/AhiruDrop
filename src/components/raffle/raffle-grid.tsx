@@ -66,7 +66,7 @@ export function RaffleGrid({
             />
           </svg>
         }
-        title="Nenhuma rifa disponivel"
+        title="Nenhuma rifa disponível"
         description={emptyMessage}
       />
     );

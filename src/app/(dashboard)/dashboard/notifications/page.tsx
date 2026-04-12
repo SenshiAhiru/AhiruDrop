@@ -57,11 +57,11 @@ export default function NotificationsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">Notificacoes</h1>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">Notificações</h1>
           <p className="text-[var(--muted-foreground)] mt-1">
             {unreadCount > 0
-              ? `Voce tem ${unreadCount} notificacao${unreadCount > 1 ? "es" : ""} nao lida${unreadCount > 1 ? "s" : ""}`
-              : "Todas as notificacoes foram lidas"}
+              ? `Você tem ${unreadCount} notificação${unreadCount > 1 ? "ões" : ""} não lida${unreadCount > 1 ? "s" : ""}`
+              : "Todas as notificações foram lidas"}
           </p>
         </div>
         {unreadCount > 0 && (
@@ -81,10 +81,10 @@ export default function NotificationsPage() {
                 <BellOff className="h-8 w-8 text-[var(--muted-foreground)]" />
               </div>
               <h3 className="text-lg font-semibold text-[var(--foreground)]">
-                Nenhuma notificacao
+                Nenhuma notificação
               </h3>
               <p className="text-sm text-[var(--muted-foreground)] max-w-xs">
-                Voce ainda nao tem notificacoes. Elas aparecerao aqui quando houver novidades.
+                Você ainda não tem notificações. Elas aparecerão aqui quando houver novidades.
               </p>
             </div>
           </CardContent>

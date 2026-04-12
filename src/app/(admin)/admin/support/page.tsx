@@ -78,7 +78,7 @@ export default function SupportPage() {
     },
     {
       key: "usuario",
-      label: "Usuario",
+      label: "Usuário",
       render: (item) => (
         <span className="font-medium">{item.usuario as string}</span>
       ),
@@ -151,7 +151,7 @@ export default function SupportPage() {
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]" />
         <Input
-          placeholder="Buscar por ID, usuario ou assunto..."
+          placeholder="Buscar por ID, usuário ou assunto..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"

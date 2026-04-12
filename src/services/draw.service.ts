@@ -7,7 +7,7 @@ import { notificationService } from "./notification.service";
 export const drawService = {
   async executeDraw(raffleId: string, adminId: string) {
     const raffle = await raffleRepository.findById(raffleId);
-    if (!raffle) throw new Error("Rifa nao encontrada");
+    if (!raffle) throw new Error("Rifa não encontrada");
     if (raffle.status !== "CLOSED") {
       throw new Error("A rifa precisa estar fechada para realizar o sorteio");
     }
@@ -17,7 +17,7 @@ export const drawService = {
     const eligibleNumbers = paidNumbers.filter((n) => n.status === "PAID");
 
     if (eligibleNumbers.length === 0) {
-      throw new Error("Nenhum numero foi vendido para esta rifa");
+      throw new Error("Nenhum número foi vendido para esta rifa");
     }
 
     // Cryptographically secure random selection

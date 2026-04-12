@@ -12,21 +12,21 @@ export const orderService = {
     input: { raffleId: string; numbers: number[]; couponCode?: string }
   ) {
     const raffle = await raffleRepository.findById(input.raffleId);
-    if (!raffle) throw new Error("Rifa nao encontrada");
+    if (!raffle) throw new Error("Rifa não encontrada");
     if (raffle.status !== "ACTIVE") {
-      throw new Error("Esta rifa nao esta ativa para compras");
+      throw new Error("Esta rifa não está ativa para compras");
     }
 
     // Validate number count within min/maxPerPurchase
     const count = input.numbers.length;
     if (count < raffle.minPerPurchase) {
       throw new Error(
-        `Minimo de ${raffle.minPerPurchase} numero(s) por compra`
+        `Mínimo de ${raffle.minPerPurchase} número(s) por compra`
       );
     }
     if (count > raffle.maxPerPurchase) {
       throw new Error(
-        `Maximo de ${raffle.maxPerPurchase} numero(s) por compra`
+        `Máximo de ${raffle.maxPerPurchase} número(s) por compra`
       );
     }
 
@@ -39,7 +39,7 @@ export const orderService = {
       const availableSet = new Set(availableNumbers.map((n) => n.number));
       const unavailable = input.numbers.filter((n) => !availableSet.has(n));
       throw new Error(
-        `Os seguintes numeros nao estao disponiveis: ${unavailable.join(", ")}`
+        `Os seguintes números não estão disponíveis: ${unavailable.join(", ")}`
       );
     }
 
@@ -109,7 +109,7 @@ export const orderService = {
 
   async getById(id: string, userId?: string) {
     const order = await orderRepository.findById(id);
-    if (!order) throw new Error("Pedido nao encontrado");
+    if (!order) throw new Error("Pedido não encontrado");
 
     if (userId && order.userId !== userId) {
       throw new Error("Acesso negado a este pedido");
@@ -136,7 +136,7 @@ export const orderService = {
 
   async cancel(id: string, userId?: string) {
     const order = await orderRepository.findById(id);
-    if (!order) throw new Error("Pedido nao encontrado");
+    if (!order) throw new Error("Pedido não encontrado");
 
     if (userId && order.userId !== userId) {
       throw new Error("Acesso negado a este pedido");
@@ -155,7 +155,7 @@ export const orderService = {
 
   async expire(id: string) {
     const order = await orderRepository.findById(id);
-    if (!order) throw new Error("Pedido nao encontrado");
+    if (!order) throw new Error("Pedido não encontrado");
 
     if (order.status !== "PENDING") return order;
 

@@ -48,7 +48,7 @@ export async function PATCH(req: NextRequest) {
     const { userId, ...updateData } = body;
 
     if (!userId) {
-      return errorResponse("userId e obrigatorio", 422);
+      return errorResponse("userId é obrigatório", 422);
     }
 
     // Validate the update fields

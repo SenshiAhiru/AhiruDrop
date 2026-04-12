@@ -18,7 +18,7 @@ export async function GET(
 
     const raffle = await raffleService.getById(raffleId);
     if (!raffle) {
-      return errorResponse("Rifa nao encontrada", 404);
+      return errorResponse("Rifa não encontrada", 404);
     }
 
     return successResponse(raffle);
@@ -39,7 +39,7 @@ export async function PATCH(
     try {
       body = await req.json();
     } catch {
-      return errorResponse("JSON invalido", 400);
+      return errorResponse("JSON inválido", 400);
     }
 
     // If only changing status, use the status transition method
@@ -74,10 +74,10 @@ export async function PATCH(
   } catch (error) {
     console.error("PATCH raffle error:", error);
     if (error instanceof Error) {
-      if (error.message === "Rifa nao encontrada") {
+      if (error.message === "Rifa não encontrada") {
         return errorResponse(error.message, 404);
       }
-      if (error.message.includes("Nao e possivel") || error.message.includes("Transicao")) {
+      if (error.message.includes("Não é possível") || error.message.includes("Transição")) {
         return errorResponse(error.message, 400);
       }
     }
@@ -104,10 +104,10 @@ export async function DELETE(
       );
     } catch {}
 
-    return successResponse({ message: "Rifa excluida com sucesso" });
+    return successResponse({ message: "Rifa excluída com sucesso" });
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message === "Rifa nao encontrada") {
+      if (error.message === "Rifa não encontrada") {
         return errorResponse(error.message, 404);
       }
       if (error.message.includes("Apenas rifas em rascunho")) {

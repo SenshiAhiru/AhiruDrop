@@ -68,8 +68,8 @@ export const notificationService = {
     return this.create(
       userId,
       "WINNER_NOTIFICATION",
-      "Parabens! Voce ganhou!",
-      `Voce foi sorteado na rifa "${raffleTitle}" com o numero ${number}! Entre em contato para retirar seu premio.`,
+      "Parabéns! Você ganhou!",
+      `Você foi sorteado na rifa "${raffleTitle}" com o número ${number}! Entre em contato para retirar seu prêmio.`,
       { raffleTitle, number }
     );
   },
@@ -98,7 +98,7 @@ export const notificationService = {
       userId,
       "ORDER_CONFIRMED",
       "Pedido confirmado",
-      `Seu pedido #${orderId.slice(0, 8)} foi confirmado! Seus numeros estao garantidos. Boa sorte!`,
+      `Seu pedido #${orderId.slice(0, 8)} foi confirmado! Seus números estão garantidos. Boa sorte!`,
       { orderId }
     );
   },

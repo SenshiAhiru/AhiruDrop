@@ -127,7 +127,7 @@ export function DataTable<T extends Record<string, unknown>>({
       {pagination && pagination.pages > 1 && (
         <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-3">
           <p className="text-xs text-[var(--muted-foreground)]">
-            Mostrando pagina {pagination.page} de {pagination.pages} ({pagination.total} registros)
+            Mostrando página {pagination.page} de {pagination.pages} ({pagination.total} registros)
           </p>
           <div className="flex items-center gap-1">
             <Button

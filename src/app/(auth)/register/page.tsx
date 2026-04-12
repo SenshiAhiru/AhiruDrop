@@ -32,7 +32,7 @@ function getPasswordStrength(password: string): PasswordStrength {
 
 const strengthConfig: Record<PasswordStrength, { label: string; color: string; width: string }> = {
   weak: { label: "Fraca", color: "bg-danger", width: "w-1/3" },
-  medium: { label: "Media", color: "bg-warning", width: "w-2/3" },
+  medium: { label: "Média", color: "bg-warning", width: "w-2/3" },
   strong: { label: "Forte", color: "bg-success", width: "w-full" },
 };
 
@@ -56,17 +56,17 @@ export default function RegisterPage() {
     setError("");
 
     if (password !== confirmPassword) {
-      setError("As senhas nao coincidem.");
+      setError("As senhas não coincidem.");
       return;
     }
 
     if (password.length < 6) {
-      setError("A senha deve ter no minimo 6 caracteres.");
+      setError("A senha deve ter no mínimo 6 caracteres.");
       return;
     }
 
     if (!acceptTerms) {
-      setError("Voce deve aceitar os termos de uso.");
+      setError("Você deve aceitar os termos de uso.");
       return;
     }
 
@@ -199,7 +199,7 @@ export default function RegisterPage() {
                   />
                 </div>
                 <p className="text-xs text-[var(--muted-foreground)]">
-                  Forca da senha:{" "}
+                  Força da senha:{" "}
                   <span
                     className={
                       passwordStrength === "strong"
@@ -241,7 +241,7 @@ export default function RegisterPage() {
               </button>
             </div>
             {confirmPassword.length > 0 && password !== confirmPassword && (
-              <p className="text-xs text-danger">As senhas nao coincidem</p>
+              <p className="text-xs text-danger">As senhas não coincidem</p>
             )}
           </div>
 
@@ -260,7 +260,7 @@ export default function RegisterPage() {
               </Link>{" "}
               e{" "}
               <Link href="/privacy" className="text-primary-400 hover:text-primary-300 underline">
-                Politica de Privacidade
+                Política de Privacidade
               </Link>
             </label>
           </div>
@@ -279,7 +279,7 @@ export default function RegisterPage() {
 
       <CardFooter className="justify-center">
         <p className="text-sm text-[var(--muted-foreground)]">
-          Ja tem conta?{" "}
+          Já tem conta?{" "}
           <Link href="/login" className="text-primary-400 hover:text-primary-300 font-medium transition-colors">
             Entrar
           </Link>

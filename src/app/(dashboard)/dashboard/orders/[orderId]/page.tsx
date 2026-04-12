@@ -47,10 +47,10 @@ export default function OrderDetailPage({
                 <Package className="h-8 w-8 text-[var(--muted-foreground)]" />
               </div>
               <h3 className="text-lg font-semibold text-[var(--foreground)]">
-                Pedido nao encontrado
+                Pedido não encontrado
               </h3>
               <p className="text-sm text-[var(--muted-foreground)] max-w-xs">
-                O pedido que voce procura nao existe ou foi removido.
+                O pedido que você procura não existe ou foi removido.
               </p>
               <Link href="/dashboard/orders">
                 <Button variant="outline" className="mt-2">

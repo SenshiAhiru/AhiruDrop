@@ -142,11 +142,11 @@ export default function GatewaysPage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">
-          Configuracao de Gateways
+          Configuração de Gateways
         </h1>
         <p className="mt-1 text-sm text-[var(--muted-foreground)]">
           Configure os meios de pagamento da plataforma. Altere gateways sem
-          modificar codigo.
+          modificar código.
         </p>
       </div>
 

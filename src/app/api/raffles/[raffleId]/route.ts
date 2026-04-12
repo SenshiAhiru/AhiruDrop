@@ -16,7 +16,7 @@ export async function GET(
     }
 
     if (!raffle) {
-      return errorResponse("Rifa nao encontrada", 404);
+      return errorResponse("Rifa não encontrada", 404);
     }
 
     return successResponse(raffle);

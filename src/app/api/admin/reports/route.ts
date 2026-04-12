@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get("type") || "summary";
 
     if (!from || !to) {
-      return errorResponse("Parametros 'from' e 'to' sao obrigatorios", 422);
+      return errorResponse("Parâmetros 'from' e 'to' são obrigatórios", 422);
     }
 
     const fromDate = new Date(from);

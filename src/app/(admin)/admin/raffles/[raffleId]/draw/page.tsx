@@ -49,11 +49,11 @@ export default function DrawPage() {
 
   const checklist = [
     {
-      label: "Rifa esta encerrada (CLOSED)",
+      label: "Rifa está encerrada (CLOSED)",
       passed: mockRaffle.status === "CLOSED",
     },
     {
-      label: "Possui numeros pagos",
+      label: "Possui números pagos",
       passed: mockRaffle.totalPaidNumbers > 0,
     },
   ];
@@ -139,10 +139,10 @@ export default function DrawPage() {
           <div className="flex items-start gap-3 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-yellow-500" />
             <div className="text-sm">
-              <p className="font-semibold text-yellow-500">Atencao</p>
+              <p className="font-semibold text-yellow-500">Atenção</p>
               <p className="mt-1 text-[var(--muted-foreground)]">
-                O sorteio e uma acao irreversivel. Uma vez realizado, o resultado nao
-                podera ser alterado. Certifique-se de que tudo esta correto antes de
+                O sorteio é uma ação irreversível. Uma vez realizado, o resultado não
+                poderá ser alterado. Certifique-se de que tudo está correto antes de
                 prosseguir.
               </p>
             </div>
@@ -172,7 +172,7 @@ export default function DrawPage() {
             <CardContent className="p-8 text-center">
               <Sparkles className="mx-auto mb-4 h-12 w-12 text-accent-500" />
               <p className="text-sm font-medium text-[var(--muted-foreground)]">
-                Numero Sorteado
+                Número Sorteado
               </p>
               <p className="mt-2 text-6xl font-black tracking-tight text-accent-500">
                 {String(result.winningNumber).padStart(4, "0")}
@@ -198,7 +198,7 @@ export default function DrawPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Verificacao</CardTitle>
+              <CardTitle>Verificação</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
@@ -224,8 +224,8 @@ export default function DrawPage() {
         <DialogHeader>
           <DialogTitle>Confirmar Sorteio</DialogTitle>
           <DialogDescription>
-            Tem certeza que deseja realizar o sorteio agora? Esta acao e irreversivel
-            e o resultado sera publicado imediatamente.
+            Tem certeza que deseja realizar o sorteio agora? Esta ação é irreversível
+            e o resultado será publicado imediatamente.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

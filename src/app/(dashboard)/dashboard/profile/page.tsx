@@ -93,12 +93,12 @@ export default function ProfilePage() {
     setPasswordMessage(null);
 
     if (newPassword !== confirmPassword) {
-      setPasswordMessage({ type: "error", text: "As senhas nao coincidem." });
+      setPasswordMessage({ type: "error", text: "As senhas não coincidem." });
       return;
     }
 
     if (newPassword.length < 6) {
-      setPasswordMessage({ type: "error", text: "A nova senha deve ter no minimo 6 caracteres." });
+      setPasswordMessage({ type: "error", text: "A nova senha deve ter no mínimo 6 caracteres." });
       return;
     }
 
@@ -140,7 +140,7 @@ export default function ProfilePage() {
       <div>
         <h1 className="text-2xl font-bold text-[var(--foreground)]">Meu Perfil</h1>
         <p className="text-[var(--muted-foreground)] mt-1">
-          Gerencie suas informacoes pessoais e seguranca
+          Gerencie suas informações pessoais e segurança
         </p>
       </div>
 
@@ -152,7 +152,7 @@ export default function ProfilePage() {
               <User className="h-5 w-5 text-primary-400" />
             </div>
             <div>
-              <CardTitle className="text-base">Informacoes Pessoais</CardTitle>
+              <CardTitle className="text-base">Informações Pessoais</CardTitle>
               <CardDescription>Atualize seus dados de perfil</CardDescription>
             </div>
           </div>
@@ -166,7 +166,7 @@ export default function ProfilePage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-[var(--foreground)]">
-                  {session?.user?.name || "Usuario"}
+                  {session?.user?.name || "Usuário"}
                 </p>
                 <p className="text-xs text-[var(--muted-foreground)]">
                   {session?.user?.email || ""}
@@ -236,7 +236,7 @@ export default function ProfilePage() {
 
             <Button type="submit" isLoading={isSavingProfile}>
               <Save className="h-4 w-4 mr-2" />
-              Salvar alteracoes
+              Salvar alterações
             </Button>
           </form>
         </CardContent>

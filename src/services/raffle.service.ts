@@ -88,14 +88,14 @@ export const raffleService = {
 
   async update(id: string, data: Record<string, any>) {
     const raffle = await raffleRepository.findById(id);
-    if (!raffle) throw new Error("Rifa nao encontrada");
+    if (!raffle) throw new Error("Rifa não encontrada");
 
     // Don't allow editing certain fields after activation
     if (raffle.status !== "DRAFT" && raffle.status !== "PAUSED") {
       const protectedFields = ["totalNumbers", "pricePerNumber"];
       for (const field of protectedFields) {
         if (data[field] !== undefined && data[field] !== (raffle as any)[field]) {
-          throw new Error(`Nao e possivel alterar ${field} apos ativacao`);
+          throw new Error(`Não é possível alterar ${field} após ativação`);
         }
       }
     }
@@ -105,7 +105,7 @@ export const raffleService = {
 
   async updateStatus(id: string, status: RaffleStatus) {
     const raffle = await raffleRepository.findById(id);
-    if (!raffle) throw new Error("Rifa nao encontrada");
+    if (!raffle) throw new Error("Rifa não encontrada");
 
     // Validate status transitions
     const validTransitions: Record<string, RaffleStatus[]> = {
@@ -119,7 +119,7 @@ export const raffleService = {
 
     const allowed = validTransitions[raffle.status] || [];
     if (!allowed.includes(status)) {
-      throw new Error(`Transicao de ${raffle.status} para ${status} nao permitida`);
+      throw new Error(`Transição de ${raffle.status} para ${status} não permitida`);
     }
 
     const updateData: any = { status };
@@ -130,10 +130,10 @@ export const raffleService = {
 
   async delete(id: string) {
     const raffle = await raffleRepository.findById(id);
-    if (!raffle) throw new Error("Rifa nao encontrada");
+    if (!raffle) throw new Error("Rifa não encontrada");
 
     if (raffle.status !== "DRAFT" && raffle.status !== "CANCELLED") {
-      throw new Error("Apenas rifas em rascunho ou canceladas podem ser excluidas");
+      throw new Error("Apenas rifas em rascunho ou canceladas podem ser excluídas");
     }
 
     return raffleRepository.delete(id);
@@ -145,13 +145,13 @@ export const raffleService = {
 
   async duplicate(id: string) {
     const raffle = await raffleRepository.findById(id);
-    if (!raffle) throw new Error("Rifa nao encontrada");
+    if (!raffle) throw new Error("Rifa não encontrada");
 
     const { id: _, slug: __, createdAt: ___, updatedAt: ____, ...data } = raffle;
 
     return this.create({
       ...data,
-      title: `${data.title} (copia)`,
+      title: `${data.title} (cópia)`,
       pricePerNumber: Number(data.pricePerNumber),
       status: undefined as any, // Will be set to DRAFT in create
     });

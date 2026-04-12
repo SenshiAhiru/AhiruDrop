@@ -8,17 +8,17 @@ export const couponService = {
     });
 
     if (!coupon) {
-      throw new Error("Cupom nao encontrado");
+      throw new Error("Cupom não encontrado");
     }
 
     if (!coupon.isActive) {
-      throw new Error("Este cupom esta inativo");
+      throw new Error("Este cupom está inativo");
     }
 
     // Check expiration
     const now = new Date();
     if (coupon.validFrom > now) {
-      throw new Error("Este cupom ainda nao esta valido");
+      throw new Error("Este cupom ainda não está válido");
     }
     if (coupon.validUntil && coupon.validUntil < now) {
       throw new Error("Este cupom expirou");
@@ -26,7 +26,7 @@ export const couponService = {
 
     // Check max uses
     if (coupon.maxUses !== null && coupon.currentUses >= coupon.maxUses) {
-      throw new Error("Este cupom atingiu o limite de utilizacoes");
+      throw new Error("Este cupom atingiu o limite de utilizações");
     }
 
     // Check minimum order amount
@@ -35,7 +35,7 @@ export const couponService = {
       orderAmount < Number(coupon.minOrderAmount)
     ) {
       throw new Error(
-        `Valor minimo do pedido para este cupom: R$ ${Number(coupon.minOrderAmount).toFixed(2)}`
+        `Valor mínimo do pedido para este cupom: R$ ${Number(coupon.minOrderAmount).toFixed(2)}`
       );
     }
 
@@ -71,7 +71,7 @@ export const couponService = {
     // Check uniqueness
     const existing = await prisma.coupon.findUnique({ where: { code } });
     if (existing) {
-      throw new Error("Ja existe um cupom com este codigo");
+      throw new Error("Já existe um cupom com este código");
     }
 
     return prisma.coupon.create({
@@ -102,7 +102,7 @@ export const couponService = {
     }
   ) {
     const coupon = await prisma.coupon.findUnique({ where: { id } });
-    if (!coupon) throw new Error("Cupom nao encontrado");
+    if (!coupon) throw new Error("Cupom não encontrado");
 
     // Check code uniqueness if changing
     if (data.code && data.code.toUpperCase() !== coupon.code) {
@@ -110,7 +110,7 @@ export const couponService = {
         where: { code: data.code.toUpperCase() },
       });
       if (existing) {
-        throw new Error("Ja existe um cupom com este codigo");
+        throw new Error("Já existe um cupom com este código");
       }
     }
 
@@ -125,7 +125,7 @@ export const couponService = {
 
   async delete(id: string) {
     const coupon = await prisma.coupon.findUnique({ where: { id } });
-    if (!coupon) throw new Error("Cupom nao encontrado");
+    if (!coupon) throw new Error("Cupom não encontrado");
 
     return prisma.coupon.delete({ where: { id } });
   },

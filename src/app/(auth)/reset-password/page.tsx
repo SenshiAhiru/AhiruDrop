@@ -33,12 +33,12 @@ export default function ResetPasswordPage() {
     setError("");
 
     if (password !== confirmPassword) {
-      setError("As senhas nao coincidem.");
+      setError("As senhas não coincidem.");
       return;
     }
 
     if (password.length < 6) {
-      setError("A senha deve ter no minimo 6 caracteres.");
+      setError("A senha deve ter no mínimo 6 caracteres.");
       return;
     }
 
@@ -78,9 +78,9 @@ export default function ResetPasswordPage() {
               </svg>
             </div>
             <div className="space-y-2">
-              <h2 className="text-xl font-bold text-[var(--foreground)]">Link invalido</h2>
+              <h2 className="text-xl font-bold text-[var(--foreground)]">Link inválido</h2>
               <p className="text-sm text-[var(--muted-foreground)]">
-                O link de recuperacao de senha e invalido ou expirou.
+                O link de recuperação de senha é inválido ou expirou.
               </p>
             </div>
           </div>
@@ -191,7 +191,7 @@ export default function ResetPasswordPage() {
               </button>
             </div>
             {confirmPassword.length > 0 && password !== confirmPassword && (
-              <p className="text-xs text-danger">As senhas nao coincidem</p>
+              <p className="text-xs text-danger">As senhas não coincidem</p>
             )}
           </div>
 

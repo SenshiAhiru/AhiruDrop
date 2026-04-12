@@ -77,7 +77,7 @@ export function NumberSelector({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-bold text-[var(--foreground)]">
-            Escolha seus numeros
+            Escolha seus números
           </h3>
           <p className="text-sm text-[var(--muted-foreground)]">
             <span className="font-semibold text-primary-500">{selectedNumbers.length}</span>
@@ -92,7 +92,7 @@ export function NumberSelector({
             onClick={() => onSelectRandom(numbers, 5)}
             disabled={numbers.filter((n) => n.status === "AVAILABLE").length === 0}
           >
-            5 aleatorios
+            5 aleatórios
           </Button>
           <Button
             variant="outline"
@@ -100,7 +100,7 @@ export function NumberSelector({
             onClick={() => onSelectRandom(numbers, 10)}
             disabled={numbers.filter((n) => n.status === "AVAILABLE").length === 0}
           >
-            10 aleatorios
+            10 aleatórios
           </Button>
           {selectedNumbers.length > 0 && (
             <Button variant="ghost" size="sm" onClick={onClear}>
@@ -127,7 +127,7 @@ export function NumberSelector({
         </svg>
         <Input
           type="text"
-          placeholder="Buscar numero..."
+          placeholder="Buscar número..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-10"
@@ -160,7 +160,7 @@ export function NumberSelector({
 
         {filteredNumbers.length === 0 && (
           <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
-            Nenhum numero encontrado.
+            Nenhum número encontrado.
           </p>
         )}
       </div>
@@ -169,7 +169,7 @@ export function NumberSelector({
       <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--muted-foreground)]">
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-sm bg-surface-100 dark:bg-surface-800 border border-[var(--border)]" />
-          Disponivel
+          Disponível
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-sm bg-surface-300 dark:bg-surface-700 opacity-60" />

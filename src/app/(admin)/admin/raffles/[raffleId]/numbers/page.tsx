@@ -27,7 +27,7 @@ const statusColor: Record<NumberStatus, string> = {
 };
 
 const statusLabel: Record<NumberStatus, string> = {
-  AVAILABLE: "Disponivel",
+  AVAILABLE: "Disponível",
   RESERVED: "Reservado",
   PAID: "Pago",
 };
@@ -54,7 +54,7 @@ export default function RaffleNumbersPage() {
           setNumbers(json.data);
         }
       } catch (err) {
-        console.error("Erro ao buscar numeros:", err);
+        console.error("Erro ao buscar números:", err);
       } finally {
         setLoading(false);
       }
@@ -115,7 +115,7 @@ export default function RaffleNumbersPage() {
     },
     {
       key: "user",
-      label: "Usuario",
+      label: "Usuário",
       render: (item) => (item.user as string) ?? "-",
     },
   ];
@@ -134,13 +134,13 @@ export default function RaffleNumbersPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold tracking-tight">
-        Numeros da Rifa
+        Números da Rifa
       </h1>
 
       {/* Stats Bar */}
       <div className="flex flex-wrap gap-3">
         <Badge variant="success" className="px-3 py-1.5 text-sm">
-          Disponiveis: {counts.available}
+          Disponíveis: {counts.available}
         </Badge>
         <Badge variant="warning" className="px-3 py-1.5 text-sm">
           Reservados: {counts.reserved}
@@ -155,7 +155,7 @@ export default function RaffleNumbersPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]" />
           <Input
-            placeholder="Buscar numero..."
+            placeholder="Buscar número..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -167,7 +167,7 @@ export default function RaffleNumbersPage() {
           className="w-full sm:w-44"
         >
           <option value="ALL">Todos</option>
-          <option value="AVAILABLE">Disponiveis</option>
+          <option value="AVAILABLE">Disponíveis</option>
           <option value="RESERVED">Reservados</option>
           <option value="PAID">Pagos</option>
         </Select>
@@ -197,7 +197,7 @@ export default function RaffleNumbersPage() {
           <CardContent className="p-4">
             {paginatedGrid.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-[var(--muted-foreground)]">
-                <p className="text-sm">Nenhum numero encontrado</p>
+                <p className="text-sm">Nenhum número encontrado</p>
               </div>
             ) : (
               <div className="grid grid-cols-[repeat(auto-fill,minmax(52px,1fr))] gap-1.5">

@@ -3,22 +3,22 @@ import { z } from "zod";
 export const createPaymentSchema = z.object({
   orderId: z
     .string()
-    .min(1, "ID do pedido e obrigatorio"),
+    .min(1, "ID do pedido é obrigatório"),
   gatewayName: z
     .string()
-    .min(1, "Nome do gateway e obrigatorio"),
+    .min(1, "Nome do gateway é obrigatório"),
   method: z.string().optional(),
 });
 
 export const gatewayConfigSchema = z.object({
   name: z
     .string()
-    .min(1, "Nome e obrigatorio")
-    .max(50, "Nome deve ter no maximo 50 caracteres"),
+    .min(1, "Nome é obrigatório")
+    .max(50, "Nome deve ter no máximo 50 caracteres"),
   displayName: z
     .string()
-    .min(1, "Nome de exibicao e obrigatorio")
-    .max(100, "Nome de exibicao deve ter no maximo 100 caracteres"),
+    .min(1, "Nome de exibição é obrigatório")
+    .max(100, "Nome de exibição deve ter no máximo 100 caracteres"),
   isActive: z.boolean(),
   isDefault: z.boolean(),
   sandbox: z.boolean(),

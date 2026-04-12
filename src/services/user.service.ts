@@ -24,7 +24,7 @@ export const userService = {
       where: { email: data.email },
     });
     if (existing) {
-      throw new Error("Este email ja esta cadastrado");
+      throw new Error("Este email já está cadastrado");
     }
 
     const passwordHash = await bcrypt.hash(data.password, 12);
@@ -47,7 +47,7 @@ export const userService = {
       select: userSelect,
     });
 
-    if (!user) throw new Error("Usuario nao encontrado");
+    if (!user) throw new Error("Usuário não encontrado");
 
     return user;
   },
@@ -62,7 +62,7 @@ export const userService = {
     }
   ) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new Error("Usuario nao encontrado");
+    if (!user) throw new Error("Usuário não encontrado");
 
     // Check phone uniqueness if changing
     if (data.phone && data.phone !== user.phone) {
@@ -70,7 +70,7 @@ export const userService = {
         where: { phone: data.phone },
       });
       if (phoneExists) {
-        throw new Error("Este telefone ja esta cadastrado");
+        throw new Error("Este telefone já está cadastrado");
       }
     }
 
@@ -80,7 +80,7 @@ export const userService = {
         where: { cpf: data.cpf },
       });
       if (cpfExists) {
-        throw new Error("Este CPF ja esta cadastrado");
+        throw new Error("Este CPF já está cadastrado");
       }
     }
 
@@ -97,7 +97,7 @@ export const userService = {
     newPassword: string
   ) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new Error("Usuario nao encontrado");
+    if (!user) throw new Error("Usuário não encontrado");
 
     const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
     if (!isValid) {
@@ -148,7 +148,7 @@ export const userService = {
 
   async updateRole(userId: string, role: Role) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new Error("Usuario nao encontrado");
+    if (!user) throw new Error("Usuário não encontrado");
 
     return prisma.user.update({
       where: { id: userId },
@@ -159,7 +159,7 @@ export const userService = {
 
   async toggleActive(userId: string) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new Error("Usuario nao encontrado");
+    if (!user) throw new Error("Usuário não encontrado");
 
     return prisma.user.update({
       where: { id: userId },

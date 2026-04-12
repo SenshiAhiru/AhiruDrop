@@ -25,7 +25,7 @@ export default function DashboardPage() {
     return <DashboardSkeleton />;
   }
 
-  const firstName = session?.user?.name?.split(" ")[0] || "Usuario";
+  const firstName = session?.user?.name?.split(" ")[0] || "Usuário";
 
   // Real data will come from API
   const stats = {
@@ -79,7 +79,7 @@ export default function DashboardPage() {
       {/* Welcome */}
       <div>
         <h1 className="text-2xl font-bold text-[var(--foreground)]">
-          Ola, {firstName}!
+          Olá, {firstName}!
         </h1>
         <p className="text-[var(--muted-foreground)] mt-1">
           Acompanhe suas rifas e pedidos
@@ -155,7 +155,7 @@ export default function DashboardPage() {
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <Package className="h-8 w-8 text-[var(--muted-foreground)] mb-2" />
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Voce ainda nao fez nenhum pedido
+                  Você ainda não fez nenhum pedido
                 </p>
               </div>
             )}
@@ -219,7 +219,7 @@ export default function DashboardPage() {
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <Ticket className="h-8 w-8 text-[var(--muted-foreground)] mb-2" />
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Voce nao esta participando de nenhuma rifa
+                  Você não está participando de nenhuma rifa
                 </p>
               </div>
             )}

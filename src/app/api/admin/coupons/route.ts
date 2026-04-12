@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     return successResponse(coupon, 201);
   } catch (error) {
-    if (error instanceof Error && error.message.includes("Ja existe um cupom")) {
+    if (error instanceof Error && error.message.includes("Já existe um cupom")) {
       return errorResponse(error.message, 409);
     }
     return handleApiError(error);
@@ -68,7 +68,7 @@ export async function PATCH(req: NextRequest) {
     const { id, ...updateData } = body;
 
     if (!id) {
-      return errorResponse("ID do cupom e obrigatorio", 422);
+      return errorResponse("ID do cupom é obrigatório", 422);
     }
 
     const updated = await couponService.update(id, updateData);
@@ -76,10 +76,10 @@ export async function PATCH(req: NextRequest) {
     return successResponse(updated);
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message === "Cupom nao encontrado") {
+      if (error.message === "Cupom não encontrado") {
         return errorResponse(error.message, 404);
       }
-      if (error.message.includes("Ja existe um cupom")) {
+      if (error.message.includes("Já existe um cupom")) {
         return errorResponse(error.message, 409);
       }
     }
@@ -101,14 +101,14 @@ export async function DELETE(req: NextRequest) {
     const { id } = body;
 
     if (!id) {
-      return errorResponse("ID do cupom e obrigatorio", 422);
+      return errorResponse("ID do cupom é obrigatório", 422);
     }
 
     await couponService.delete(id);
 
-    return successResponse({ message: "Cupom excluido com sucesso" });
+    return successResponse({ message: "Cupom excluído com sucesso" });
   } catch (error) {
-    if (error instanceof Error && error.message === "Cupom nao encontrado") {
+    if (error instanceof Error && error.message === "Cupom não encontrado") {
       return errorResponse(error.message, 404);
     }
     return handleApiError(error);

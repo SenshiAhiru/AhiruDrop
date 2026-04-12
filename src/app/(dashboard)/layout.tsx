@@ -13,10 +13,10 @@ import {
 } from "lucide-react";
 
 const mobileNavItems = [
-  { label: "Visao Geral", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Visão Geral", href: "/dashboard", icon: LayoutDashboard },
   { label: "Meus Pedidos", href: "/dashboard/orders", icon: ShoppingCart },
   { label: "Perfil", href: "/dashboard/profile", icon: User },
-  { label: "Notificacoes", href: "/dashboard/notifications", icon: Bell },
+  { label: "Notificações", href: "/dashboard/notifications", icon: Bell },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

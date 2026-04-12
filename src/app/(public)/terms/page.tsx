@@ -5,20 +5,20 @@ export default function TermsPage() {
         Termos de Uso
       </h1>
       <p className="mt-3 text-sm text-[var(--muted-foreground)]">
-        Ultima atualizacao: 10 de abril de 2026
+        Última atualização: 10 de abril de 2026
       </p>
 
       <div className="mt-10 space-y-10 text-sm leading-relaxed text-[var(--muted-foreground)]">
         {/* 1 */}
         <section>
           <h2 className="mb-3 text-lg font-bold text-[var(--foreground)]">
-            1. Aceitacao dos Termos
+            1. Aceitação dos Termos
           </h2>
           <p>
-            Ao acessar e utilizar a plataforma AhiruDrop, voce concorda com estes Termos de Uso
-            em sua totalidade. Caso nao concorde com qualquer clausula, nao utilize nossos
-            servicos. O uso continuado da plataforma constitui aceitacao de eventuais
-            atualizacoes destes termos.
+            Ao acessar e utilizar a plataforma AhiruDrop, você concorda com estes Termos de Uso
+            em sua totalidade. Caso não concorde com qualquer cláusula, não utilize nossos
+            serviços. O uso continuado da plataforma constitui aceitação de eventuais
+            atualizações destes termos.
           </p>
         </section>
 
@@ -28,23 +28,23 @@ export default function TermsPage() {
             2. Cadastro
           </h2>
           <p>
-            Para participar das rifas, e necessario criar uma conta fornecendo informacoes
-            verdadeiras e completas. Voce e responsavel por manter a confidencialidade de suas
-            credenciais de acesso. E obrigatorio ser maior de 18 anos para se cadastrar e
-            participar. Contas com informacoes falsas podem ser suspensas ou encerradas.
+            Para participar das rifas, é necessário criar uma conta fornecendo informações
+            verdadeiras e completas. Você é responsável por manter a confidencialidade de suas
+            credenciais de acesso. É obrigatório ser maior de 18 anos para se cadastrar e
+            participar. Contas com informações falsas podem ser suspensas ou encerradas.
           </p>
         </section>
 
         {/* 3 */}
         <section>
           <h2 className="mb-3 text-lg font-bold text-[var(--foreground)]">
-            3. Rifas e Participacao
+            3. Rifas e Participação
           </h2>
           <p>
-            Cada rifa possui regras proprias, incluindo quantidade de numeros, valor por numero,
-            data de sorteio e premio oferecido. Ao adquirir numeros em uma rifa, voce aceita as
-            regras especificas daquela rifa. A participacao e pessoal e intransferivel. A
-            plataforma reserva o direito de cancelar rifas que nao atinjam o numero minimo de
+            Cada rifa possui regras próprias, incluindo quantidade de números, valor por número,
+            data de sorteio e prêmio oferecido. Ao adquirir números em uma rifa, você aceita as
+            regras específicas daquela rifa. A participação é pessoal e intransferível. A
+            plataforma reserva o direito de cancelar rifas que não atinjam o número mínimo de
             participantes, realizando o reembolso integral dos valores pagos.
           </p>
         </section>
@@ -55,10 +55,10 @@ export default function TermsPage() {
             4. Pagamentos
           </h2>
           <p>
-            Os pagamentos sao processados por meio de provedores de pagamento terceirizados. A
-            confirmacao do pagamento vincula os numeros selecionados a sua conta. Uma vez
-            confirmado, o pagamento nao e passivel de reembolso, exceto em caso de
-            cancelamento da rifa pela plataforma. Eventuais taxas bancarias sao de
+            Os pagamentos são processados por meio de provedores de pagamento terceirizados. A
+            confirmação do pagamento vincula os números selecionados à sua conta. Uma vez
+            confirmado, o pagamento não é passível de reembolso, exceto em caso de
+            cancelamento da rifa pela plataforma. Eventuais taxas bancárias são de
             responsabilidade do participante.
           </p>
         </section>
@@ -69,11 +69,11 @@ export default function TermsPage() {
             5. Sorteios
           </h2>
           <p>
-            Os sorteios sao realizados de forma automatizada, utilizando algoritmos
-            criptograficos verificaveis. Cada sorteio gera um hash publico que pode ser
-            auditado por qualquer pessoa. O resultado e definitivo e irrevogavel apos a
-            publicacao. A plataforma nao se responsabiliza por problemas de conectividade do
-            participante durante a realizacao do sorteio.
+            Os sorteios são realizados de forma automatizada, utilizando algoritmos
+            criptográficos verificáveis. Cada sorteio gera um hash público que pode ser
+            auditado por qualquer pessoa. O resultado é definitivo e irrevogável após a
+            publicação. A plataforma não se responsabiliza por problemas de conectividade do
+            participante durante a realização do sorteio.
           </p>
         </section>
 
@@ -83,10 +83,10 @@ export default function TermsPage() {
             6. Responsabilidades
           </h2>
           <p>
-            A plataforma AhiruDrop atua como intermediaria entre organizadores e participantes.
-            Nao nos responsabilizamos por problemas de entrega de premios causados por
-            informacoes incorretas fornecidas pelo participante. E responsabilidade do
-            participante verificar sua conexao, dados cadastrais e acompanhar os resultados
+            A plataforma AhiruDrop atua como intermediária entre organizadores e participantes.
+            Não nos responsabilizamos por problemas de entrega de prêmios causados por
+            informações incorretas fornecidas pelo participante. É responsabilidade do
+            participante verificar sua conexão, dados cadastrais e acompanhar os resultados
             dos sorteios.
           </p>
         </section>
@@ -97,10 +97,10 @@ export default function TermsPage() {
             7. Privacidade
           </h2>
           <p>
-            Seus dados pessoais sao tratados em conformidade com a Lei Geral de Protecao de
-            Dados (LGPD). Coletamos apenas as informacoes necessarias para o funcionamento da
-            plataforma. Nao compartilhamos dados pessoais com terceiros sem seu consentimento,
-            exceto quando exigido por lei. Para mais detalhes, consulte nossa Politica de
+            Seus dados pessoais são tratados em conformidade com a Lei Geral de Proteção de
+            Dados (LGPD). Coletamos apenas as informações necessárias para o funcionamento da
+            plataforma. Não compartilhamos dados pessoais com terceiros sem seu consentimento,
+            exceto quando exigido por lei. Para mais detalhes, consulte nossa Política de
             Privacidade.
           </p>
         </section>
@@ -111,7 +111,7 @@ export default function TermsPage() {
             8. Contato
           </h2>
           <p>
-            Para duvidas, sugestoes ou reclamacoes sobre estes Termos de Uso, entre em contato
+            Para dúvidas, sugestões ou reclamações sobre estes Termos de Uso, entre em contato
             pelo e-mail{" "}
             <a
               href="mailto:suporte@ahirudrop.com"
@@ -119,7 +119,7 @@ export default function TermsPage() {
             >
               suporte@ahirudrop.com
             </a>{" "}
-            ou pela nossa pagina de{" "}
+            ou pela nossa página de{" "}
             <a href="/contact" className="text-primary-500 hover:underline">
               Contato
             </a>

@@ -76,7 +76,7 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Usuarios</h1>
+      <h1 className="text-2xl font-bold tracking-tight">Usuários</h1>
 
       {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row">
@@ -104,7 +104,7 @@ export default function UsersPage() {
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-[var(--border)] py-16 text-[var(--muted-foreground)]">
           <Users className="mb-3 h-12 w-12 opacity-40" />
-          <p className="text-lg font-medium">Nenhum usuario encontrado</p>
+          <p className="text-lg font-medium">Nenhum usuário encontrado</p>
         </div>
       ) : (
         <DataTable

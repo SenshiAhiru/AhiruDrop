@@ -39,7 +39,7 @@ export function CheckoutSummary({
             <div className="flex items-center gap-2 text-primary-500">
               <ShoppingCart className="h-5 w-5" />
               <span className="font-semibold">
-                {selectedCount} {selectedCount === 1 ? "numero" : "numeros"}
+                {selectedCount} {selectedCount === 1 ? "número" : "números"}
               </span>
             </div>
 

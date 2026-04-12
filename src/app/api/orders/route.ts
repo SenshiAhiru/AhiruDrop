@@ -46,11 +46,11 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     if (error instanceof Error) {
       const knownErrors = [
-        "Rifa nao encontrada",
-        "Esta rifa nao esta ativa",
-        "Minimo de",
-        "Maximo de",
-        "numeros nao estao disponiveis",
+        "Rifa não encontrada",
+        "Esta rifa não está ativa",
+        "Mínimo de",
+        "Máximo de",
+        "números não estão disponíveis",
       ];
 
       if (knownErrors.some((msg) => error.message.includes(msg))) {

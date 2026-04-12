@@ -37,7 +37,7 @@ type OrderRow = (typeof recentOrders)[number] & Record<string, unknown>;
 
 const orderColumns: Column<OrderRow>[] = [
   { key: "id", label: "ID" },
-  { key: "usuario", label: "Usuario" },
+  { key: "usuario", label: "Usuário" },
   { key: "rifa", label: "Rifa" },
   {
     key: "total",
@@ -74,7 +74,7 @@ export default function AdminDashboardPage() {
           value={formatCurrency(0)}
           icon={DollarSign}
           trend={{ value: 0, isPositive: true }}
-          description="vs. mes anterior"
+          description="vs. mês anterior"
         />
         <StatsCard
           title="Rifas Ativas"
@@ -84,11 +84,11 @@ export default function AdminDashboardPage() {
           description="novas esta semana"
         />
         <StatsCard
-          title="Total Usuarios"
+          title="Total Usuários"
           value="0"
           icon={Users}
           trend={{ value: 0, isPositive: true }}
-          description="vs. mes anterior"
+          description="vs. mês anterior"
         />
         <StatsCard
           title="Pedidos Pendentes"
@@ -102,12 +102,12 @@ export default function AdminDashboardPage() {
       {/* Revenue Chart Placeholder */}
       <Card>
         <CardHeader>
-          <CardTitle>Receita - Ultimos 30 dias</CardTitle>
+          <CardTitle>Receita - Últimos 30 dias</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex h-72 flex-col items-center justify-center text-[var(--muted-foreground)]">
             <BarChart3 className="mb-2 h-10 w-10 opacity-40" />
-            <p className="text-sm">Graficos disponiveis quando houver vendas</p>
+            <p className="text-sm">Gráficos disponíveis quando houver vendas</p>
           </div>
         </CardContent>
       </Card>

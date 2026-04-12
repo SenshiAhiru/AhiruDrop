@@ -13,7 +13,7 @@ export const paymentService = {
     method?: string
   ) {
     const order = await orderRepository.findById(orderId);
-    if (!order) throw new Error("Pedido nao encontrado");
+    if (!order) throw new Error("Pedido não encontrado");
     if (order.status !== "PENDING") {
       throw new Error("Apenas pedidos pendentes podem gerar pagamento");
     }
@@ -27,7 +27,7 @@ export const paymentService = {
     });
 
     if (!gateway) {
-      throw new Error("Nenhum gateway de pagamento disponivel");
+      throw new Error("Nenhum gateway de pagamento disponível");
     }
 
     // Build config map for the adapter
@@ -91,7 +91,7 @@ export const paymentService = {
     // Find payment by externalId
     const payment = await paymentRepository.findByExternalId(result.externalId);
     if (!payment) {
-      throw new Error(`Pagamento nao encontrado: ${result.externalId}`);
+      throw new Error(`Pagamento não encontrado: ${result.externalId}`);
     }
 
     // Update payment status
@@ -153,7 +153,7 @@ export const paymentService = {
 
   async checkStatus(paymentId: string) {
     const payment = await paymentRepository.findById(paymentId);
-    if (!payment) throw new Error("Pagamento nao encontrado");
+    if (!payment) throw new Error("Pagamento não encontrado");
 
     return payment;
   },

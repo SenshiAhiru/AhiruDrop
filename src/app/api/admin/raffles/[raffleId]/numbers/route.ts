@@ -18,7 +18,7 @@ export async function GET(
     const numbers = await raffleService.getNumbers(raffleId);
 
     if (!numbers) {
-      return errorResponse("Rifa nao encontrada", 404);
+      return errorResponse("Rifa não encontrada", 404);
     }
 
     return successResponse(numbers);

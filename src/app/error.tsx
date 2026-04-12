@@ -45,8 +45,8 @@ export default function ErrorPage({
             Algo deu errado
           </h1>
           <p className="mx-auto max-w-md text-[var(--muted-foreground)]">
-            Ocorreu um erro inesperado ao carregar esta pagina.
-            Tente novamente ou volte ao inicio.
+            Ocorreu um erro inesperado ao carregar esta página.
+            Tente novamente ou volte ao início.
           </p>
         </div>
 
@@ -67,7 +67,7 @@ export default function ErrorPage({
             href="/"
             className="inline-flex h-12 items-center justify-center rounded-lg border border-[var(--border)] px-6 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-primary-600/40 hover:text-primary-500"
           >
-            Voltar ao inicio
+            Voltar ao início
           </a>
         </div>
       </div>

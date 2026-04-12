@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     template: "%s | AhiruDrop",
   },
   description:
-    "Plataforma de rifas online com experiencia premium, confiavel e transparente.",
-  keywords: ["rifas", "sorteios", "premios", "ahirudrop"],
+    "Plataforma de rifas online com experiência premium, confiável e transparente.",
+  keywords: ["rifas", "sorteios", "prêmios", "ahirudrop"],
 };
 
 export default function RootLayout({

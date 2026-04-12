@@ -45,7 +45,7 @@ export async function PATCH(req: NextRequest) {
     const { orderId, action } = body;
 
     if (!orderId || !action) {
-      return errorResponse("orderId e action sao obrigatorios", 422);
+      return errorResponse("orderId e action são obrigatórios", 422);
     }
 
     let result;
@@ -66,13 +66,13 @@ export async function PATCH(req: NextRequest) {
         break;
       }
       default:
-        return errorResponse(`Acao '${action}' nao reconhecida`, 400);
+        return errorResponse(`Ação '${action}' não reconhecida`, 400);
     }
 
     return successResponse(result);
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message === "Pedido nao encontrado") {
+      if (error.message === "Pedido não encontrado") {
         return errorResponse(error.message, 404);
       }
       if (error.message.includes("Apenas pedidos pendentes")) {

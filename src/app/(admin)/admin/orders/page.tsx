@@ -60,7 +60,7 @@ export default function OrdersPage() {
 
   const columns: Column<OrderRow>[] = [
     { key: "id", label: "ID" },
-    { key: "usuario", label: "Usuario" },
+    { key: "usuario", label: "Usuário" },
     { key: "rifa", label: "Rifa" },
     { key: "qtd", label: "Qtd" },
     {
@@ -117,7 +117,7 @@ export default function OrdersPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]" />
           <Input
-            placeholder="Buscar por ID, usuario ou rifa..."
+            placeholder="Buscar por ID, usuário ou rifa..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"

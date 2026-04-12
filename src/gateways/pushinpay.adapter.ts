@@ -45,7 +45,7 @@ export class PushinPayAdapter implements PaymentGatewayAdapter {
     private readonly sandbox: boolean,
   ) {
     if (!config.api_key) {
-      throw new Error("PushinPay: api_key e obrigatorio");
+      throw new Error("PushinPay: api_key é obrigatório");
     }
     this.apiKey = config.api_key;
     this.webhookSecret = config.webhook_secret || undefined;
@@ -125,7 +125,7 @@ export class PushinPayAdapter implements PaymentGatewayAdapter {
     ) as string | undefined;
 
     if (!transactionId) {
-      throw new Error("PushinPay webhook: transaction ID nao encontrado no payload");
+      throw new Error("PushinPay webhook: transaction ID não encontrado no payload");
     }
 
     // Fetch fresh status from API
@@ -134,7 +134,7 @@ export class PushinPayAdapter implements PaymentGatewayAdapter {
 
   verifyWebhookSignature(headers: Record<string, string>, rawBody: string): boolean {
     if (!this.webhookSecret) {
-      console.warn("PushinPay: webhook_secret nao configurado, pulando verificacao de assinatura");
+      console.warn("PushinPay: webhook_secret não configurado, pulando verificação de assinatura");
       return true;
     }
 
@@ -145,7 +145,7 @@ export class PushinPayAdapter implements PaymentGatewayAdapter {
       headers["X-Signature"];
 
     if (!signature) {
-      console.warn("PushinPay: header de assinatura nao encontrado");
+      console.warn("PushinPay: header de assinatura não encontrado");
       return false;
     }
 

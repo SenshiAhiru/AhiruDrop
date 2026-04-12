@@ -33,9 +33,9 @@ export async function POST(
   } catch (error) {
     if (error instanceof Error) {
       const knownErrors = [
-        "Rifa nao encontrada",
+        "Rifa não encontrada",
         "precisa estar fechada",
-        "Nenhum numero foi vendido",
+        "Nenhum número foi vendido",
       ];
 
       if (knownErrors.some((msg) => error.message.includes(msg))) {

@@ -89,7 +89,7 @@ export default function RafflesPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[var(--foreground)]">Rifas de Skins CS2</h1>
         <p className="mt-2 text-[var(--muted-foreground)]">
-          Explore todas as rifas de skins disponiveis. Armas, facas, luvas e muito mais.
+          Explore todas as rifas de skins disponíveis. Armas, facas, luvas e muito mais.
         </p>
       </div>
 
@@ -158,7 +158,7 @@ export default function RafflesPage() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
           </svg>
           <p className="text-lg font-semibold text-[var(--foreground)]">
-            Nenhuma rifa disponivel no momento
+            Nenhuma rifa disponível no momento
           </p>
           <p className="mt-1 text-sm text-[var(--muted-foreground)]">
             Volte em breve para conferir novas rifas de skins CS2.
@@ -182,7 +182,7 @@ export default function RafflesPage() {
           </Button>
 
           <span className="px-4 text-sm text-[var(--muted-foreground)]">
-            Pagina {page} de {totalPages}
+            Página {page} de {totalPages}
           </span>
 
           <Button

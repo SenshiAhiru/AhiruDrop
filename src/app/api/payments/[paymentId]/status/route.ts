@@ -24,7 +24,7 @@ export async function GET(
       paidAt: payment.paidAt,
     });
   } catch (error) {
-    if (error instanceof Error && error.message === "Pagamento nao encontrado") {
+    if (error instanceof Error && error.message === "Pagamento não encontrado") {
       return errorResponse(error.message, 404);
     }
     return handleApiError(error);

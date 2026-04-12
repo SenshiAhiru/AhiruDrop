@@ -7,19 +7,19 @@ import { successResponse, errorResponse, handleApiError } from "@/lib/api-utils"
 const registerSchema = z.object({
   name: z
     .string()
-    .min(2, "O nome deve ter no minimo 2 caracteres")
-    .max(100, "O nome deve ter no maximo 100 caracteres")
+    .min(2, "O nome deve ter no mínimo 2 caracteres")
+    .max(100, "O nome deve ter no máximo 100 caracteres")
     .trim(),
   email: z
     .string()
-    .email("Email invalido")
+    .email("Email inválido")
     .max(255, "Email muito longo")
     .toLowerCase()
     .trim(),
   password: z
     .string()
-    .min(6, "A senha deve ter no minimo 6 caracteres")
-    .max(128, "A senha deve ter no maximo 128 caracteres"),
+    .min(6, "A senha deve ter no mínimo 6 caracteres")
+    .max(128, "A senha deve ter no máximo 128 caracteres"),
 });
 
 export async function POST(request: Request) {
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     });
 
     if (existingUser) {
-      return errorResponse("Este email ja esta em uso.", 409);
+      return errorResponse("Este email já está em uso.", 409);
     }
 
     // Hash password

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { successResponse, errorResponse, handleApiError } from "@/lib/api-utils";
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email("Email invalido").toLowerCase().trim(),
+  email: z.string().email("Email inválido").toLowerCase().trim(),
 });
 
 export async function POST(request: Request) {
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
     // Always return success to prevent email enumeration
     return successResponse({
-      message: "Se o email estiver cadastrado, voce recebera um link de recuperacao.",
+      message: "Se o email estiver cadastrado, você receberá um link de recuperação.",
     });
   } catch (error) {
     return handleApiError(error);

@@ -43,12 +43,12 @@ export default function SettingsPage() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || "Erro ao salvar configuracoes do site.");
+        alert(data.error || "Erro ao salvar configurações do site.");
         return;
       }
-      alert("Configuracoes salvas!");
+      alert("Configurações salvas!");
     } catch {
-      alert("Erro ao salvar configuracoes do site.");
+      alert("Erro ao salvar configurações do site.");
     } finally {
       setSaving(null);
     }
@@ -64,12 +64,12 @@ export default function SettingsPage() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || "Erro ao salvar configuracoes de contato.");
+        alert(data.error || "Erro ao salvar configurações de contato.");
         return;
       }
-      alert("Configuracoes salvas!");
+      alert("Configurações salvas!");
     } catch {
-      alert("Erro ao salvar configuracoes de contato.");
+      alert("Erro ao salvar configurações de contato.");
     } finally {
       setSaving(null);
     }
@@ -85,12 +85,12 @@ export default function SettingsPage() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || "Erro ao salvar configuracoes de rifas.");
+        alert(data.error || "Erro ao salvar configurações de rifas.");
         return;
       }
-      alert("Configuracoes salvas!");
+      alert("Configurações salvas!");
     } catch {
-      alert("Erro ao salvar configuracoes de rifas.");
+      alert("Erro ao salvar configurações de rifas.");
     } finally {
       setSaving(null);
     }
@@ -106,12 +106,12 @@ export default function SettingsPage() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || "Erro ao salvar configuracao de manutencao.");
+        alert(data.error || "Erro ao salvar configuração de manutenção.");
         return;
       }
-      alert("Configuracoes salvas!");
+      alert("Configurações salvas!");
     } catch {
-      alert("Erro ao salvar configuracao de manutencao.");
+      alert("Erro ao salvar configuração de manutenção.");
     } finally {
       setSaving(null);
     }
@@ -120,7 +120,7 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <h1 className="text-2xl font-bold tracking-tight">
-        Configuracoes do Sistema
+        Configurações do Sistema
       </h1>
 
       {/* Site Info */}
@@ -128,7 +128,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Globe className="h-5 w-5 text-primary-600" />
-            Informacoes do Site
+            Informações do Site
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -146,10 +146,10 @@ export default function SettingsPage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]">
-              Descricao do Site
+              Descrição do Site
             </label>
             <Input
-              placeholder="Descricao do site"
+              placeholder="Descrição do site"
               value={siteSettings.site_description}
               onChange={(e) =>
                 setSiteSettings({
@@ -242,14 +242,14 @@ export default function SettingsPage() {
               }
             />
             <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-              Tempo maximo para o usuario finalizar o pagamento apos reservar
-              numeros.
+              Tempo máximo para o usuário finalizar o pagamento após reservar
+              números.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]">
-                Compra Minima
+                Compra Mínima
               </label>
               <Input
                 type="number"
@@ -265,7 +265,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]">
-                Compra Maxima
+                Compra Máxima
               </label>
               <Input
                 type="number"
@@ -294,13 +294,13 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Wrench className="h-5 w-5 text-primary-600" />
-            Manutencao
+            Manutenção
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between rounded-lg border border-[var(--border)] p-4">
             <div>
-              <p className="font-medium">Modo de Manutencao</p>
+              <p className="font-medium">Modo de Manutenção</p>
               <p className="text-sm text-[var(--muted-foreground)]">
                 Quando ativado, apenas administradores podem acessar a
                 plataforma.
@@ -323,8 +323,8 @@ export default function SettingsPage() {
           </div>
           {maintenanceMode && (
             <p className="mt-3 text-sm font-medium text-red-500">
-              A plataforma esta em modo de manutencao. Usuarios nao
-              conseguirao acessar.
+              A plataforma está em modo de manutenção. Usuários não
+              conseguirão acessar.
             </p>
           )}
           <div className="mt-4 flex justify-end">

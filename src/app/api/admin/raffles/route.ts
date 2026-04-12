@@ -48,15 +48,15 @@ export async function POST(req: NextRequest) {
     try {
       body = await req.json();
     } catch {
-      return errorResponse("JSON invalido", 400);
+      return errorResponse("JSON inválido", 400);
     }
 
     // Validate required fields
     if (!body.title || !body.description) {
-      return errorResponse("Titulo e descricao sao obrigatorios", 422);
+      return errorResponse("Título e descrição são obrigatórios", 422);
     }
     if (!body.pricePerNumber || !body.totalNumbers) {
-      return errorResponse("Preco e total de numeros sao obrigatorios", 422);
+      return errorResponse("Preço e total de números são obrigatórios", 422);
     }
 
     // Map form fields to service fields

@@ -54,7 +54,7 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Relatorios</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Relatórios</h1>
         <div className="flex items-center gap-2">
           <CalendarDays className="h-4 w-4 text-[var(--muted-foreground)]" />
           <Input
@@ -80,28 +80,28 @@ export default function ReportsPage() {
           value="R$ 0,00"
           icon={DollarSign}
           trend={{ value: 0, isPositive: true }}
-          description="vs. periodo anterior"
+          description="vs. período anterior"
         />
         <StatsCard
           title="Total Pedidos"
           value="0"
           icon={ShoppingCart}
           trend={{ value: 0, isPositive: true }}
-          description="vs. periodo anterior"
+          description="vs. período anterior"
         />
         <StatsCard
-          title="Ticket Medio"
+          title="Ticket Médio"
           value="R$ 0,00"
           icon={TrendingUp}
           trend={{ value: 0, isPositive: true }}
-          description="vs. periodo anterior"
+          description="vs. período anterior"
         />
         <StatsCard
-          title="Taxa de Conversao"
+          title="Taxa de Conversão"
           value="0%"
           icon={Target}
           trend={{ value: 0, isPositive: false }}
-          description="vs. periodo anterior"
+          description="vs. período anterior"
         />
       </div>
 
@@ -113,7 +113,7 @@ export default function ReportsPage() {
         <CardContent>
           <div className="flex h-72 flex-col items-center justify-center text-[var(--muted-foreground)]">
             <BarChart3 className="mb-2 h-10 w-10 opacity-40" />
-            <p className="text-sm">Sem dados para o periodo selecionado</p>
+            <p className="text-sm">Sem dados para o período selecionado</p>
           </div>
         </CardContent>
       </Card>
@@ -127,7 +127,7 @@ export default function ReportsPage() {
           {topRaffles.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-[var(--muted-foreground)]">
               <Ticket className="mb-2 h-10 w-10 opacity-40" />
-              <p className="text-sm">Nenhuma rifa no periodo</p>
+              <p className="text-sm">Nenhuma rifa no período</p>
             </div>
           ) : (
             <DataTable

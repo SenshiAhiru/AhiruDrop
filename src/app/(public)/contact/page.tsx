@@ -29,7 +29,7 @@ export default function ContactPage() {
           Contato & Suporte
         </h1>
         <p className="mt-3 text-[var(--muted-foreground)]">
-          Tem alguma duvida ou precisa de ajuda? Estamos aqui para voce.
+          Tem alguma dúvida ou precisa de ajuda? Estamos aqui para você.
         </p>
       </div>
 
@@ -58,12 +58,12 @@ export default function ContactPage() {
               </label>
               <Select id="subject" name="subject" required>
                 <option value="">Selecione um assunto</option>
-                <option value="duvida">Duvida geral</option>
+                <option value="duvida">Dúvida geral</option>
                 <option value="pagamento">Problema com pagamento</option>
-                <option value="premio">Entrega de premio</option>
+                <option value="premio">Entrega de prêmio</option>
                 <option value="conta">Minha conta</option>
                 <option value="bug">Reportar um problema</option>
-                <option value="sugestao">Sugestao</option>
+                <option value="sugestao">Sugestão</option>
                 <option value="outro">Outro</option>
               </Select>
             </div>
@@ -75,7 +75,7 @@ export default function ContactPage() {
               <Textarea
                 id="message"
                 name="message"
-                placeholder="Descreva sua duvida ou problema em detalhes..."
+                placeholder="Descreva sua dúvida ou problema em detalhes..."
                 className="min-h-[140px]"
                 required
               />
@@ -90,7 +90,7 @@ export default function ContactPage() {
         {/* Contact info sidebar */}
         <div className="space-y-6 lg:col-span-2">
           <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6">
-            <h3 className="text-lg font-bold text-[var(--foreground)]">Informacoes de Contato</h3>
+            <h3 className="text-lg font-bold text-[var(--foreground)]">Informações de Contato</h3>
 
             <div className="mt-5 space-y-5">
               {/* Email */}
@@ -119,10 +119,10 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[var(--foreground)]">Horario de Atendimento</p>
+                  <p className="text-sm font-medium text-[var(--foreground)]">Horário de Atendimento</p>
                   <p className="text-sm text-[var(--muted-foreground)]">
                     Segunda a Sexta<br />
-                    09:00 - 18:00 (Horario de Brasilia)
+                    09:00 - 18:00 (Horário de Brasília)
                   </p>
                 </div>
               </div>
@@ -156,13 +156,13 @@ export default function ContactPage() {
           {/* FAQ link */}
           <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 text-center">
             <p className="text-sm text-[var(--muted-foreground)]">
-              Muitas perguntas ja foram respondidas na nossa
+              Muitas perguntas já foram respondidas na nossa
             </p>
             <a
               href="/faq"
               className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-500 hover:text-primary-400 transition-colors"
             >
-              Pagina de FAQ
+              Página de FAQ
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>

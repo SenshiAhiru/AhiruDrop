@@ -62,10 +62,10 @@ export default function NewRafflePage() {
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (!form.title.trim()) errs.title = "Titulo e obrigatorio";
-    if (!form.description.trim()) errs.description = "Descricao e obrigatoria";
+    if (!form.title.trim()) errs.title = "Título é obrigatório";
+    if (!form.description.trim()) errs.description = "Descrição é obrigatória";
     if (!form.pricePerNumber || Number(form.pricePerNumber) <= 0)
-      errs.pricePerNumber = "Preco deve ser maior que 0";
+      errs.pricePerNumber = "Preço deve ser maior que 0";
     if (!form.totalNumbers || Number(form.totalNumbers) <= 0)
       errs.totalNumbers = "Quantidade deve ser maior que 0";
     if (!skin) errs.skin = "Selecione uma skin";
@@ -215,11 +215,11 @@ export default function NewRafflePage() {
         <div className="space-y-6 lg:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Informacoes da Rifa</CardTitle>
+              <CardTitle>Informações da Rifa</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Titulo</label>
+                <label className="mb-1.5 block text-sm font-medium">Título</label>
                 <Input
                   value={form.title}
                   onChange={(e) => updateField("title", e.target.value)}
@@ -230,11 +230,11 @@ export default function NewRafflePage() {
                 )}
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Descricao</label>
+                <label className="mb-1.5 block text-sm font-medium">Descrição</label>
                 <Textarea
                   value={form.description}
                   onChange={(e) => updateField("description", e.target.value)}
-                  placeholder="Descricao da rifa e do premio..."
+                  placeholder="Descrição da rifa e do prêmio..."
                   rows={3}
                 />
                 {errors.description && (
@@ -245,7 +245,7 @@ export default function NewRafflePage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">
-                    Preco por Numero (R$)
+                    Preço por Número (R$)
                   </label>
                   <Input
                     type="number"
@@ -261,7 +261,7 @@ export default function NewRafflePage() {
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">
-                    Total de Numeros
+                    Total de Números
                   </label>
                   <Input
                     type="number"
@@ -276,7 +276,7 @@ export default function NewRafflePage() {
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">
-                    Minimo por Compra
+                    Mínimo por Compra
                   </label>
                   <Input
                     type="number"
@@ -287,7 +287,7 @@ export default function NewRafflePage() {
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">
-                    Maximo por Compra
+                    Máximo por Compra
                   </label>
                   <Input
                     type="number"
@@ -404,7 +404,7 @@ export default function NewRafflePage() {
                     )}
                     {form.totalNumbers && (
                       <p className="text-xs text-[var(--muted-foreground)]">
-                        {form.totalNumbers} numeros
+                        {form.totalNumbers} números
                       </p>
                     )}
                   </div>

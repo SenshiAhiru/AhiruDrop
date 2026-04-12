@@ -43,9 +43,7 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
     >
       {/* Logo */}
       <div className="flex items-center h-16 px-5 border-b border-[var(--border)] shrink-0">
-        <Link href="/dashboard">
           <Logo size="md" />
-        </Link>
       </div>
 
       {/* Navigation */}

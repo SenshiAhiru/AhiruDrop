@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface LogoProps {
   className?: string;
@@ -13,9 +14,8 @@ export function Logo({ className, size = "md" }: LogoProps) {
   };
 
   return (
-    <span className={cn("font-bold tracking-tight", sizes[size], className)}>
-      <span className="text-primary-500">Ahiru</span>
-      <span className="text-accent-500">Drop</span>
-    </span>
+    <Link href="/" className={cn("font-bold tracking-tight", sizes[size], className)}>
+      <span className="text-gradient">AhiruDrop</span>
+    </Link>
   );
 }

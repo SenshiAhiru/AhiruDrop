@@ -55,9 +55,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
     >
       {/* Logo */}
       <div className="flex items-center h-16 px-5 border-b border-[var(--border)] shrink-0">
-        <Link href="/">
-          <Logo size="md" />
-        </Link>
+        <Logo size="md" />
       </div>
 
       {/* Navigation */}

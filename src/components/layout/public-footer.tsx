@@ -30,9 +30,7 @@ export function PublicFooter() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/">
               <Logo size="md" />
-            </Link>
             <p className="mt-4 text-sm text-surface-500 leading-relaxed max-w-xs">
               Plataforma de rifas online com experiência premium, confiável e transparente.
             </p>

@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { cn, formatCurrency, calculatePercentage } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -60,7 +58,7 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
   const isDrawn = status === "DRAWN";
 
   return (
-    <Link
+    <a
       href={`/raffles/${slug}`}
       className={cn(
         "group block w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] shadow-sm",
@@ -79,12 +77,10 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
       {/* Image */}
       <div className="relative aspect-video overflow-hidden">
         {featuredImage ? (
-          <Image
+          <img
             src={featuredImage}
             alt={title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div
@@ -189,6 +185,6 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
           {isDrawn ? "Ver Resultado" : "Participar"}
         </Button>
       </div>
-    </Link>
+    </a>
   );
 }

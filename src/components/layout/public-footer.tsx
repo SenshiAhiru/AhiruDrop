@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Globe } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 
@@ -30,9 +29,9 @@ export function PublicFooter() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/">
+            <a href="/">
               <Logo size="md" />
-            </Link>
+            </a>
             <p className="mt-4 text-sm text-surface-500 leading-relaxed max-w-xs">
               Plataforma de rifas online com experiencia premium, confiavel e transparente.
             </p>
@@ -46,12 +45,12 @@ export function PublicFooter() {
             <ul className="space-y-2.5">
               {quickLinks.map((link) => (
                 <li key={link.href}>
-                  <Link
+                  <a
                     href={link.href}
                     className="text-sm text-surface-500 hover:text-primary-400 transition-colors"
                   >
                     {link.label}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -91,9 +90,9 @@ export function PublicFooter() {
             </h3>
             <p className="text-sm text-surface-500">
               Precisa de ajuda? Entre em contato pelo nosso{" "}
-              <Link href="/contact" className="text-primary-400 hover:underline">
+              <a href="/contact" className="text-primary-400 hover:underline">
                 formulario
-              </Link>{" "}
+              </a>{" "}
               ou Discord.
             </p>
           </div>
@@ -105,12 +104,12 @@ export function PublicFooter() {
             &copy; 2024 AhiruDrop. Todos os direitos reservados.
           </p>
           <div className="flex items-center gap-4">
-            <Link href="/terms" className="text-xs text-surface-600 hover:text-surface-400 transition-colors">
+            <a href="/terms" className="text-xs text-surface-600 hover:text-surface-400 transition-colors">
               Termos de Uso
-            </Link>
-            <Link href="/privacy" className="text-xs text-surface-600 hover:text-surface-400 transition-colors">
+            </a>
+            <a href="/privacy" className="text-xs text-surface-600 hover:text-surface-400 transition-colors">
               Politica de Privacidade
-            </Link>
+            </a>
           </div>
         </div>
       </div>

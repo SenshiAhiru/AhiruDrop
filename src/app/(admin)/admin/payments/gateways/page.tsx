@@ -81,7 +81,7 @@ const initialGateways: GatewayConfig[] = [
   },
 ];
 
-const appUrl = "https://ahirudrop.com";
+const appUrl = typeof window !== "undefined" ? window.location.origin : "https://ahirudrop.vercel.app";
 
 export default function GatewaysPage() {
   const [gateways, setGateways] = useState(initialGateways);

@@ -15,39 +15,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { User, Lock, Eye, EyeOff, Save, Link2, CheckCircle, ExternalLink } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
-function isValidCPF(cpf: string): boolean {
-  const digits = cpf.replace(/\D/g, "");
-  if (digits.length !== 11) return false;
-  if (/^(\d)\1{10}$/.test(digits)) return false;
-
-  let sum = 0;
-  for (let i = 0; i < 9; i++) sum += parseInt(digits[i]) * (10 - i);
-  let check = 11 - (sum % 11);
-  if (check >= 10) check = 0;
-  if (parseInt(digits[9]) !== check) return false;
-
-  sum = 0;
-  for (let i = 0; i < 10; i++) sum += parseInt(digits[i]) * (11 - i);
-  check = 11 - (sum % 11);
-  if (check >= 10) check = 0;
-  if (parseInt(digits[10]) !== check) return false;
-
-  return true;
-}
-
-function maskSavedCpf(cpf: string): string {
-  const digits = cpf.replace(/\D/g, "");
-  if (digits.length !== 11) return cpf;
-  return `${digits.slice(0, 2)}*.***.***-${digits.slice(9)}`;
-}
-
 export default function ProfilePage() {
   const { data: session, status } = useSession();
 
   const [name, setName] = useState(session?.user?.name || "");
   const [phone, setPhone] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [cpfSaved, setCpfSaved] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -79,10 +51,6 @@ export default function ProfilePage() {
         if (data.name) setName(data.name);
         if (data.avatarUrl) setAvatarUrl(data.avatarUrl);
         if (data.phone) setPhone(maskPhone(data.phone));
-        if (data.cpf && !data.cpf.startsWith("steam:")) {
-          setCpf(maskCpf(data.cpf));
-          setCpfSaved(true);
-        }
       })
       .catch(() => {});
 
@@ -122,13 +90,6 @@ export default function ProfilePage() {
     }
   });
 
-  function maskCpf(value: string) {
-    const digits = value.replace(/\D/g, "").slice(0, 11);
-    return digits
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  }
 
   function maskPhone(value: string) {
     const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -147,14 +108,6 @@ export default function ProfilePage() {
     setProfileMessage(null);
     setIsSavingProfile(true);
 
-    if (cpf) {
-      const cpfDigits = cpf.replace(/\D/g, "");
-      if (cpfDigits.length > 0 && !isValidCPF(cpfDigits)) {
-        setProfileMessage({ type: "error", text: "CPF inválido." });
-        setIsSavingProfile(false);
-        return;
-      }
-    }
 
     try {
       const res = await fetch("/api/user/profile", {
@@ -163,7 +116,6 @@ export default function ProfilePage() {
         body: JSON.stringify({
           name,
           phone: phone.replace(/\D/g, ""),
-          ...(cpfSaved ? {} : { cpf: cpf.replace(/\D/g, "") }),
         }),
       });
 
@@ -257,7 +209,7 @@ export default function ProfilePage() {
             <div>
               <h3 className="text-sm font-semibold text-white">Bem-vindo ao AhiruDrop!</h3>
               <p className="mt-1 text-xs text-surface-400 leading-relaxed">
-                Para participar das rifas e garantir a legitimidade da sua conta, vincule sua <strong className="text-white">conta Steam</strong> e cadastre seu <strong className="text-white">CPF</strong> abaixo.
+                Para participar das rifas e garantir a legitimidade da sua conta, vincule sua <strong className="text-white">conta Steam</strong> abaixo.
               </p>
             </div>
           </div>
@@ -333,27 +285,6 @@ export default function ProfilePage() {
                   onChange={(e) => setPhone(maskPhone(e.target.value))}
                   placeholder="(00) 00000-0000"
                 />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="cpf" className="text-sm font-medium text-[var(--foreground)]">
-                  CPF
-                </label>
-                {cpfSaved ? (
-                  <div className="rounded-lg border border-success/20 bg-success/5 p-3 flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-mono">{maskSavedCpf(cpf)}</p>
-                      <p className="text-xs text-success">CPF verificado</p>
-                    </div>
-                    <CheckCircle className="h-4 w-4 text-success" />
-                  </div>
-                ) : (
-                  <Input
-                    id="cpf"
-                    value={cpf}
-                    onChange={(e) => setCpf(maskCpf(e.target.value))}
-                    placeholder="000.000.000-00"
-                  />
-                )}
               </div>
             </div>
 

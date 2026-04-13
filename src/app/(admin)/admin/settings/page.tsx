@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  Globe,
   Phone,
   Ticket,
   Wrench,
@@ -14,11 +13,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
-  const [siteSettings, setSiteSettings] = useState({
-    site_name: "",
-    site_description: "",
-  });
-
   const [contactSettings, setContactSettings] = useState({
     support_email: "",
     support_phone: "",
@@ -32,27 +26,6 @@ export default function SettingsPage() {
 
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
-
-  async function handleSaveSite() {
-    setSaving("site");
-    try {
-      const res = await fetch("/api/admin/settings", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(siteSettings),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        alert(data.error || "Erro ao salvar configurações do site.");
-        return;
-      }
-      alert("Configurações salvas!");
-    } catch {
-      alert("Erro ao salvar configurações do site.");
-    } finally {
-      setSaving(null);
-    }
-  }
 
   async function handleSaveContact() {
     setSaving("contact");
@@ -122,51 +95,6 @@ export default function SettingsPage() {
       <h1 className="text-2xl font-bold tracking-tight">
         Configurações do Sistema
       </h1>
-
-      {/* Site Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Globe className="h-5 w-5 text-primary-600" />
-            Informações do Site
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]">
-              Nome do Site
-            </label>
-            <Input
-              placeholder="Nome do site"
-              value={siteSettings.site_name}
-              onChange={(e) =>
-                setSiteSettings({ ...siteSettings, site_name: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--muted-foreground)]">
-              Descrição do Site
-            </label>
-            <Input
-              placeholder="Descrição do site"
-              value={siteSettings.site_description}
-              onChange={(e) =>
-                setSiteSettings({
-                  ...siteSettings,
-                  site_description: e.target.value,
-                })
-              }
-            />
-          </div>
-          <div className="flex justify-end">
-            <Button onClick={handleSaveSite} disabled={saving === "site"}>
-              <Save className="h-4 w-4" />
-              {saving === "site" ? "Salvando..." : "Salvar"}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Contact */}
       <Card>

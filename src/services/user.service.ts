@@ -74,8 +74,10 @@ export const userService = {
       }
     }
 
-    // Check CPF uniqueness if changing
-    if (data.cpf && data.cpf !== user.cpf) {
+    // Don't overwrite cpf if it stores Steam ID
+    if (user.cpf && user.cpf.startsWith("steam:")) {
+      delete data.cpf;
+    } else if (data.cpf && data.cpf !== user.cpf) {
       const cpfExists = await prisma.user.findUnique({
         where: { cpf: data.cpf },
       });

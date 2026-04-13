@@ -110,7 +110,7 @@ export default function ProfilePage() {
 
     try {
       const res = await fetch("/api/user/profile", {
-        method: "PUT",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
@@ -151,7 +151,7 @@ export default function ProfilePage() {
 
     try {
       const res = await fetch("/api/user/profile", {
-        method: "PUT",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           currentPassword,

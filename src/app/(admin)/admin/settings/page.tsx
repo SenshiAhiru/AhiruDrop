@@ -33,7 +33,12 @@ export default function SettingsPage() {
       const res = await fetch("/api/admin/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(contactSettings),
+        body: JSON.stringify({
+          settings: [
+            { key: "support_email", value: contactSettings.support_email, type: "string" },
+            { key: "support_phone", value: contactSettings.support_phone, type: "string" },
+          ],
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -54,7 +59,13 @@ export default function SettingsPage() {
       const res = await fetch("/api/admin/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(raffleSettings),
+        body: JSON.stringify({
+          settings: [
+            { key: "reservation_timeout_minutes", value: String(raffleSettings.reservation_timeout), type: "number" },
+            { key: "min_purchase", value: String(raffleSettings.min_purchase), type: "number" },
+            { key: "max_purchase", value: String(raffleSettings.max_purchase), type: "number" },
+          ],
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -75,7 +86,11 @@ export default function SettingsPage() {
       const res = await fetch("/api/admin/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ maintenance_mode: maintenanceMode }),
+        body: JSON.stringify({
+          settings: [
+            { key: "maintenance_mode", value: String(maintenanceMode), type: "boolean" },
+          ],
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));

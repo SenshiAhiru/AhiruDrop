@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: { strategy: "jwt", maxAge: 60 * 60 * 24 }, // 24 hours
+  session: { strategy: "jwt", maxAge: 60 * 60 * 24 },
   pages: {
     signIn: "/login",
     signOut: "/signout",
@@ -20,17 +20,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
+        const email = credentials.email as string;
+        const password = credentials.password as string;
+
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
+          where: { email },
         });
 
         if (!user || !user.isActive) return null;
 
-        const isValid = await bcrypt.compare(
-          credentials.password as string,
-          user.passwordHash
-        );
+        // Steam users: allow auto-login with steam_auto_ prefix
+        if (email.endsWith("@ahirudrop.steam") && password.startsWith("steam_auto_")) {
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            image: user.avatarUrl,
+          };
+        }
 
+        // Normal password check
+        const isValid = await bcrypt.compare(password, user.passwordHash);
         if (!isValid) return null;
 
         return {
@@ -63,21 +74,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const isAdmin = auth?.user?.role === "ADMIN" || auth?.user?.role === "SUPER_ADMIN";
       const path = nextUrl.pathname;
 
-      // Admin routes
-      if (path.startsWith("/admin")) {
-        return isAdmin;
-      }
+      if (path.startsWith("/admin")) return isAdmin;
+      if (path.startsWith("/dashboard")) return isLoggedIn;
 
-      // Dashboard routes
-      if (path.startsWith("/dashboard")) {
-        return isLoggedIn;
-      }
-
-      // Auth routes - redirect to dashboard if already logged in
       if (path.startsWith("/login") || path.startsWith("/register")) {
-        if (isLoggedIn) {
-          return Response.redirect(new URL("/dashboard", nextUrl));
-        }
+        if (isLoggedIn) return Response.redirect(new URL("/dashboard", nextUrl));
         return true;
       }
 

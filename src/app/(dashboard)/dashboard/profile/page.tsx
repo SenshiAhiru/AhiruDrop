@@ -59,6 +59,7 @@ export default function ProfilePage() {
   const [isSavingPassword, setIsSavingPassword] = useState(false);
   const [passwordMessage, setPasswordMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [steamLinked, setSteamLinked] = useState(false);
   const [steamName, setSteamName] = useState("");
   const [steamMessage, setSteamMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -75,6 +76,7 @@ export default function ProfilePage() {
           setSteamName(data.steamId);
         }
         if (data.name) setName(data.name);
+        if (data.avatarUrl) setAvatarUrl(data.avatarUrl);
         if (data.phone) setPhone(maskPhone(data.phone));
         if (data.cpf && !data.cpf.startsWith("steam:")) {
           setCpf(maskCpf(data.cpf));
@@ -247,9 +249,14 @@ export default function ProfilePage() {
           <form onSubmit={handleSaveProfile} className="space-y-4">
             {/* Avatar */}
             <div className="flex items-center gap-4 pb-2">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/20 ring-2 ring-primary-500/30 text-primary-400 text-xl font-bold">
-                {(session?.user?.name || "U")[0].toUpperCase()}
-              </div>
+              {avatarUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={avatarUrl} alt="Avatar" className="h-16 w-16 rounded-full ring-2 ring-primary-500/30 object-cover" />
+              ) : (
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/20 ring-2 ring-primary-500/30 text-primary-400 text-xl font-bold">
+                  {(session?.user?.name || "U")[0].toUpperCase()}
+                </div>
+              )}
               <div>
                 <p className="text-sm font-medium text-[var(--foreground)]">
                   {session?.user?.name || "Usuário"}

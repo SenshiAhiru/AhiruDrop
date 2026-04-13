@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Phone,
   Ticket,
@@ -26,6 +26,25 @@ export default function SettingsPage() {
 
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((r) => r.json())
+      .then((json) => {
+        const data = json.data || {};
+        setContactSettings({
+          support_email: data.support_email || "",
+          support_phone: data.support_phone || "",
+        });
+        setRaffleSettings({
+          reservation_timeout: Number(data.reservation_timeout_minutes) || 15,
+          min_purchase: Number(data.min_purchase) || 1,
+          max_purchase: Number(data.max_purchase) || 100,
+        });
+        setMaintenanceMode(data.maintenance_mode === "true");
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleSaveContact() {
     setSaving("contact");

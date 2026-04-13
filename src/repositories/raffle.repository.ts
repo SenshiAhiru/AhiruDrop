@@ -58,6 +58,10 @@ export const raffleRepository = {
   },
 
   async delete(id: string) {
+    // Delete related records first to avoid FK constraints
+    await prisma.raffleNumber.deleteMany({ where: { raffleId: id } });
+    await prisma.raffleImage.deleteMany({ where: { raffleId: id } });
+    await prisma.orderItem.deleteMany({ where: { raffleId: id } });
     return prisma.raffle.delete({ where: { id } });
   },
 

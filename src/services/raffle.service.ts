@@ -132,10 +132,6 @@ export const raffleService = {
     const raffle = await raffleRepository.findById(id);
     if (!raffle) throw new Error("Rifa não encontrada");
 
-    if (raffle.status !== "DRAFT" && raffle.status !== "CANCELLED") {
-      throw new Error("Apenas rifas em rascunho ou canceladas podem ser excluídas");
-    }
-
     return raffleRepository.delete(id);
   },
 

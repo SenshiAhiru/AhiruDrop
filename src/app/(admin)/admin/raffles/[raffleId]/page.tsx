@@ -185,9 +185,9 @@ export default function EditRafflePage() {
             router.push("/admin/raffles");
             return;
           }
-          console.error("Erro ao excluir rifa:", json);
-        } catch (err) {
-          console.error("Erro ao excluir rifa:", err);
+          alert(json.error || "Erro ao excluir rifa");
+        } catch {
+          alert("Erro ao excluir rifa. Tente novamente.");
         } finally {
           setIsDeleting(false);
         }

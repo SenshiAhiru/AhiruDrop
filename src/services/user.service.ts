@@ -10,6 +10,7 @@ const userSelect = {
   phone: true,
   cpf: true,
   role: true,
+  steamId: true,
   avatarUrl: true,
   isActive: true,
   emailVerified: true,
@@ -74,10 +75,7 @@ export const userService = {
       }
     }
 
-    // Don't overwrite cpf if it stores Steam ID
-    if (user.cpf && user.cpf.startsWith("steam:")) {
-      delete data.cpf;
-    } else if (data.cpf && data.cpf !== user.cpf) {
+    if (data.cpf && data.cpf !== user.cpf) {
       const cpfExists = await prisma.user.findUnique({
         where: { cpf: data.cpf },
       });

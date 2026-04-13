@@ -71,6 +71,7 @@ model User {
   emailVerified  DateTime?
   phone          String?        @unique
   cpf            String?        @unique
+  steamId        String?        @unique
   passwordHash   String
   role           Role           @default(USER)
   avatarUrl      String?

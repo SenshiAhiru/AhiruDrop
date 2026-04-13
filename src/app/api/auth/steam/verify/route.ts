@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       id: user.id,
       email: user.email,
       name: user.name,
-      steamId: user.cpf?.replace("steam:", ""),
+      steamId: user.steamId,
     });
   } catch (error) {
     console.error("Steam verify error:", error);

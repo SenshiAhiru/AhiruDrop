@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
     // Check if this Steam ID is already linked to another account
     const existingUser = await prisma.user.findFirst({
-      where: { cpf: `steam:${steamId}` },
+      where: { steamId: steamId },
     });
 
     if (existingUser && existingUser.id !== session.user.id) {
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        cpf: `steam:${steamId}`,
+        steamId: steamId,
         avatarUrl: profile?.avatarfull || undefined,
       },
     });

@@ -15,12 +15,39 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { User, Lock, Eye, EyeOff, Save, Link2, CheckCircle, ExternalLink } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
+function isValidCPF(cpf: string): boolean {
+  const digits = cpf.replace(/\D/g, "");
+  if (digits.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(digits)) return false;
+
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(digits[i]) * (10 - i);
+  let check = 11 - (sum % 11);
+  if (check >= 10) check = 0;
+  if (parseInt(digits[9]) !== check) return false;
+
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += parseInt(digits[i]) * (11 - i);
+  check = 11 - (sum % 11);
+  if (check >= 10) check = 0;
+  if (parseInt(digits[10]) !== check) return false;
+
+  return true;
+}
+
+function maskSavedCpf(cpf: string): string {
+  const digits = cpf.replace(/\D/g, "");
+  if (digits.length !== 11) return cpf;
+  return `${digits.slice(0, 2)}*.***.***-${digits.slice(9)}`;
+}
+
 export default function ProfilePage() {
   const { data: session, status } = useSession();
 
   const [name, setName] = useState(session?.user?.name || "");
   const [phone, setPhone] = useState("");
   const [cpf, setCpf] = useState("");
+  const [cpfSaved, setCpfSaved] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -43,11 +70,16 @@ export default function ProfilePage() {
       .then((r) => r.json())
       .then((json) => {
         const data = json.data || json;
-        if (data.cpf && typeof data.cpf === "string" && data.cpf.startsWith("steam:")) {
+        if (data.steamId) {
           setSteamLinked(true);
-          setSteamName(data.cpf.replace("steam:", ""));
+          setSteamName(data.steamId);
         }
+        if (data.name) setName(data.name);
         if (data.phone) setPhone(maskPhone(data.phone));
+        if (data.cpf && !data.cpf.startsWith("steam:")) {
+          setCpf(maskCpf(data.cpf));
+          setCpfSaved(true);
+        }
       })
       .catch(() => {});
 
@@ -108,6 +140,15 @@ export default function ProfilePage() {
     setProfileMessage(null);
     setIsSavingProfile(true);
 
+    if (cpf) {
+      const cpfDigits = cpf.replace(/\D/g, "");
+      if (cpfDigits.length > 0 && !isValidCPF(cpfDigits)) {
+        setProfileMessage({ type: "error", text: "CPF inválido." });
+        setIsSavingProfile(false);
+        return;
+      }
+    }
+
     try {
       const res = await fetch("/api/user/profile", {
         method: "PATCH",
@@ -115,7 +156,7 @@ export default function ProfilePage() {
         body: JSON.stringify({
           name,
           phone: phone.replace(/\D/g, ""),
-          cpf: cpf.replace(/\D/g, ""),
+          ...(cpfSaved ? {} : { cpf: cpf.replace(/\D/g, "") }),
         }),
       });
 
@@ -258,12 +299,22 @@ export default function ProfilePage() {
                 <label htmlFor="cpf" className="text-sm font-medium text-[var(--foreground)]">
                   CPF
                 </label>
-                <Input
-                  id="cpf"
-                  value={cpf}
-                  onChange={(e) => setCpf(maskCpf(e.target.value))}
-                  placeholder="000.000.000-00"
-                />
+                {cpfSaved ? (
+                  <div className="rounded-lg border border-success/20 bg-success/5 p-3 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-mono">{maskSavedCpf(cpf)}</p>
+                      <p className="text-xs text-success">CPF verificado</p>
+                    </div>
+                    <CheckCircle className="h-4 w-4 text-success" />
+                  </div>
+                ) : (
+                  <Input
+                    id="cpf"
+                    value={cpf}
+                    onChange={(e) => setCpf(maskCpf(e.target.value))}
+                    placeholder="000.000.000-00"
+                  />
+                )}
               </div>
             </div>
 

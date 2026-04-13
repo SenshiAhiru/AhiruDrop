@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     let user = await prisma.user.findFirst({
       where: {
         OR: [
-          { cpf: `steam:${steamId}` }, // We use cpf field to store steam ID
+          { steamId: steamId },
         ],
       },
     });
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
             passwordHash,
             role: "USER",
             avatarUrl: profile.avatarfull,
-            cpf: `steam:${steamId}`, // Store Steam ID
+            steamId: steamId,
             isActive: true,
           },
         });

@@ -120,13 +120,14 @@ export function UserMenu() {
             )}
 
             <hr className="border-surface-700 my-1" />
-            <a
-              href="/api/auth/signout"
+            <Link
+              href="/signout"
+              onClick={() => setOpen(false)}
               className="flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-surface-800 transition-colors"
             >
               <LogOut className="h-4 w-4" />
               Sair
-            </a>
+            </Link>
           </div>
         </>
       )}

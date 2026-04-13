@@ -287,6 +287,54 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
+      {/* Steam Link */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-800">
+              <svg className="h-5 w-5 text-white" viewBox="0 0 256 259" fill="currentColor">
+                <path d="M128.006 0C60.563 0 5.17 50.474.49 114.506l69.463 28.694c5.878-4.054 12.964-6.425 20.602-6.425.684 0 1.36.02 2.03.058l30.836-44.703v-.627c0-27.96 22.753-50.713 50.716-50.713 27.96 0 50.717 22.753 50.717 50.716 0 27.96-22.757 50.713-50.717 50.713h-1.18l-43.97 31.373c0 .523.032 1.047.032 1.584 0 20.99-17.065 38.052-38.055 38.052-18.655 0-34.2-13.46-37.513-31.186L2.625 158.01C18.266 214.398 68.627 256.03 128.006 256.03c70.394 0 127.487-57.093 127.487-127.516C255.493 58.091 198.4 0 128.006 0"/>
+              </svg>
+            </div>
+            <div>
+              <CardTitle className="text-base">Conta Steam</CardTitle>
+              <CardDescription>Vincule sua conta Steam para receber skins</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {steamMessage && (
+            <div className={`mb-4 flex items-center gap-2 rounded-lg px-4 py-3 text-sm ${steamMessage.type === "success" ? "border border-success/30 bg-success/10 text-success" : "border border-danger/30 bg-danger/10 text-danger"}`}>
+              {steamMessage.text}
+            </div>
+          )}
+          {steamLinked ? (
+            <div className="flex items-center justify-between rounded-lg border border-success/20 bg-success/5 p-4">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-success" />
+                <div>
+                  <p className="text-sm font-medium text-[var(--foreground)]">Steam vinculada</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">Steam ID: {steamName}</p>
+                </div>
+              </div>
+              <a href={`https://steamcommunity.com/profiles/${steamName}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300 transition-colors">
+                Ver perfil <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm text-[var(--muted-foreground)]">
+                Vincule sua conta Steam para que possamos enviar as skins diretamente para seu inventário quando você ganhar uma rifa.
+              </p>
+              <a href="/api/auth/steam/link" className="inline-flex items-center gap-2 rounded-lg bg-surface-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-surface-700 border border-surface-700 transition-colors">
+                <Link2 className="h-4 w-4" />
+                Vincular conta Steam
+              </a>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Change Password */}
       <Card>
         <CardHeader>
@@ -389,70 +437,6 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Steam Link */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-800">
-              <svg className="h-5 w-5 text-white" viewBox="0 0 256 259" fill="currentColor">
-                <path d="M128.006 0C60.563 0 5.17 50.474.49 114.506l69.463 28.694c5.878-4.054 12.964-6.425 20.602-6.425.684 0 1.36.02 2.03.058l30.836-44.703v-.627c0-27.96 22.753-50.713 50.716-50.713 27.96 0 50.717 22.753 50.717 50.716 0 27.96-22.757 50.713-50.717 50.713h-1.18l-43.97 31.373c0 .523.032 1.047.032 1.584 0 20.99-17.065 38.052-38.055 38.052-18.655 0-34.2-13.46-37.513-31.186L2.625 158.01C18.266 214.398 68.627 256.03 128.006 256.03c70.394 0 127.487-57.093 127.487-127.516C255.493 58.091 198.4 0 128.006 0"/>
-              </svg>
-            </div>
-            <div>
-              <CardTitle className="text-base">Conta Steam</CardTitle>
-              <CardDescription>Vincule sua conta Steam para receber skins</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {steamMessage && (
-            <div
-              className={`mb-4 flex items-center gap-2 rounded-lg px-4 py-3 text-sm ${
-                steamMessage.type === "success"
-                  ? "border border-success/30 bg-success/10 text-success"
-                  : "border border-danger/30 bg-danger/10 text-danger"
-              }`}
-            >
-              {steamMessage.text}
-            </div>
-          )}
-
-          {steamLinked ? (
-            <div className="flex items-center justify-between rounded-lg border border-success/20 bg-success/5 p-4">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-success" />
-                <div>
-                  <p className="text-sm font-medium text-[var(--foreground)]">Steam vinculada</p>
-                  <p className="text-xs text-[var(--muted-foreground)]">
-                    Steam ID: {steamName}
-                  </p>
-                </div>
-              </div>
-              <a
-                href={`https://steamcommunity.com/profiles/${steamName}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300 transition-colors"
-              >
-                Ver perfil <ExternalLink className="h-3 w-3" />
-              </a>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <p className="text-sm text-[var(--muted-foreground)]">
-                Vincule sua conta Steam para que possamos enviar as skins diretamente para seu inventário quando você ganhar uma rifa.
-              </p>
-              <a
-                href="/api/auth/steam/link"
-                className="inline-flex items-center gap-2 rounded-lg bg-surface-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-surface-700 border border-surface-700 transition-colors"
-              >
-                <Link2 className="h-4 w-4" />
-                Vincular conta Steam
-              </a>
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }

@@ -55,10 +55,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id!;
         token.role = (user as any).role;
+        token.picture = user.image || null;
+      }
+      // Refresh avatar from DB periodically (every request)
+      if (token.id && !user) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { avatarUrl: true, role: true },
+          });
+          if (dbUser) {
+            token.picture = dbUser.avatarUrl || null;
+            token.role = dbUser.role;
+          }
+        } catch {}
       }
       return token;
     },
@@ -66,6 +80,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as any;
+        session.user.image = (token.picture as string) || undefined;
       }
       return session;
     },

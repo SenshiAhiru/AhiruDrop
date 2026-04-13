@@ -60,6 +60,7 @@ export default function ProfilePage() {
   const [passwordMessage, setPasswordMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
   const [steamLinked, setSteamLinked] = useState(false);
   const [steamName, setSteamName] = useState("");
   const [steamMessage, setSteamMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -88,6 +89,10 @@ export default function ProfilePage() {
     // Check URL params for Steam link result
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
+      if (params.get("welcome") === "true") {
+        setShowWelcome(true);
+        window.history.replaceState({}, "", "/dashboard/profile");
+      }
       const steamResult = params.get("steam");
       if (steamResult === "success") {
         setSteamLinked(true);
@@ -231,6 +236,33 @@ export default function ProfilePage() {
           Gerencie suas informações pessoais e segurança
         </p>
       </div>
+
+      {/* Welcome Banner */}
+      {showWelcome && (
+        <div className="relative rounded-xl border border-primary-500/20 bg-primary-500/5 p-5">
+          <button
+            onClick={() => setShowWelcome(false)}
+            className="absolute top-3 right-3 text-surface-500 hover:text-white transition-colors"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="flex items-start gap-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500/20 shrink-0">
+              <svg className="h-5 w-5 text-primary-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.745 3.745 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-white">Bem-vindo ao AhiruDrop!</h3>
+              <p className="mt-1 text-xs text-surface-400 leading-relaxed">
+                Para participar das rifas e garantir a legitimidade da sua conta, vincule sua <strong className="text-white">conta Steam</strong> e cadastre seu <strong className="text-white">CPF</strong> abaixo.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Personal Info */}
       <Card>

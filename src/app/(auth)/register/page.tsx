@@ -96,7 +96,7 @@ export default function RegisterPage() {
       if (result?.error) {
         router.push("/login");
       } else {
-        router.push("/dashboard");
+        router.push("/dashboard/profile?welcome=true");
         router.refresh();
       }
     } catch {

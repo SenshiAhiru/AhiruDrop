@@ -132,28 +132,6 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[var(--border)]" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-surface-900 px-2 text-[var(--muted-foreground)]">
-              ou continue com
-            </span>
-          </div>
-        </div>
-
-        <div className="grid gap-3">
-          <a
-            href="/api/auth/steam"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-surface-700 bg-surface-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-surface-700 transition-colors"
-          >
-            <svg className="h-5 w-5" viewBox="0 0 256 259" fill="currentColor">
-              <path d="M128.006 0C60.563 0 5.17 50.474.49 114.506l69.463 28.694c5.878-4.054 12.964-6.425 20.602-6.425.684 0 1.36.02 2.03.058l30.836-44.703v-.627c0-27.96 22.753-50.713 50.716-50.713 27.96 0 50.717 22.753 50.717 50.716 0 27.96-22.757 50.713-50.717 50.713h-1.18l-43.97 31.373c0 .523.032 1.047.032 1.584 0 20.99-17.065 38.052-38.055 38.052-18.655 0-34.2-13.46-37.513-31.186L2.625 158.01C18.266 214.398 68.627 256.03 128.006 256.03c70.394 0 127.487-57.093 127.487-127.516C255.493 58.091 198.4 0 128.006 0"/>
-            </svg>
-            Entrar com Steam
-          </a>
-        </div>
       </CardContent>
 
       <CardFooter className="justify-center">

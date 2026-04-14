@@ -94,9 +94,14 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       {/* User section */}
       <div className="shrink-0 border-t border-[var(--border)] p-4">
         <div className="flex items-center gap-3">
-          <span className="flex items-center justify-center h-9 w-9 rounded-full bg-primary-600 text-white text-sm font-bold shrink-0">
-            {session?.user?.name?.charAt(0).toUpperCase() ?? "A"}
-          </span>
+          {session?.user?.image ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={session.user.image} alt="" className="h-9 w-9 rounded-full object-cover shrink-0" />
+          ) : (
+            <span className="flex items-center justify-center h-9 w-9 rounded-full bg-primary-600 text-white text-sm font-bold shrink-0">
+              {session?.user?.name?.charAt(0).toUpperCase() ?? "A"}
+            </span>
+          )}
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-[var(--foreground)] truncate">
               {session?.user?.name ?? "Admin"}

@@ -27,7 +27,7 @@ export function PublicHeader() {
   return (
     <>
       <header className="fixed top-0 w-full z-50 bg-surface-950/80 backdrop-blur-lg border-b border-surface-800/50">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16">
             <span onClick={() => setMenuOpen(false)}>
               <Logo size="md" />

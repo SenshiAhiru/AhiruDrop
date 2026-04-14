@@ -5,7 +5,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RefreshCw } from "lucide-react";
 
 const CURRENCIES = [
   { code: "BRL", symbol: "R$", flag: "🇧🇷", name: "Real" },
@@ -102,15 +101,9 @@ export default function DepositPage() {
           </div>
 
           {/* Exchange rate info */}
-          {rates && (
-            <div className="mt-3 flex items-center gap-2 text-xs text-surface-500">
-              <RefreshCw className="h-3 w-3" />
-              <span>
-                1 {currencyInfo.code} = {rate.toFixed(2)} AHC
-                {currency !== "BRL" && ` (cotação atualizada)`}
-              </span>
-            </div>
-          )}
+          <div className="mt-3 flex items-center gap-2 text-xs text-surface-500">
+            <span>1 {currencyInfo.code} = 1 AHC (taxa fixa)</span>
+          </div>
         </CardContent>
       </Card>
 
@@ -179,12 +172,6 @@ export default function DepositPage() {
                   {currencyInfo.flag} {formatFiat(fiatPrice)}
                 </span>
               </div>
-              {currency !== "BRL" && (
-                <div className="flex justify-between text-xs">
-                  <span className="text-surface-500">Cotação</span>
-                  <span className="text-surface-400">1 {currency} = {rate.toFixed(2)} AHC</span>
-                </div>
-              )}
               <hr className="border-surface-700" />
               <div className="flex justify-between text-sm">
                 <span className="text-[var(--muted-foreground)]">Saldo após depósito</span>

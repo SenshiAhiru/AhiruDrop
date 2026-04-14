@@ -19,7 +19,7 @@ const CURRENCIES = [
 const PRESETS_AHC = [10, 25, 50, 100, 250, 500];
 
 // ─── Payment Form (inside Elements) ───
-function PaymentForm({ amount, onSuccess }: { amount: number; onSuccess: () => void }) {
+function PaymentForm({ amount, currency, onSuccess }: { amount: number; currency: string; onSuccess: () => void }) {
   const stripe = useStripe();
   const elements = useElements();
   const [paying, setPaying] = useState(false);
@@ -41,6 +41,18 @@ function PaymentForm({ amount, onSuccess }: { amount: number; onSuccess: () => v
       setError(result.error.message || "Erro no pagamento");
       setPaying(false);
     } else if (result.paymentIntent?.status === "succeeded") {
+      // Credit AHC immediately via API
+      try {
+        await fetch("/api/deposit/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            paymentIntentId: result.paymentIntent.id,
+            amount,
+            currency,
+          }),
+        });
+      } catch {}
       onSuccess();
     }
   };
@@ -341,7 +353,7 @@ export default function DepositPage() {
                   },
                 }}
               >
-                <PaymentForm amount={numAhc} onSuccess={handleSuccess} />
+                <PaymentForm amount={numAhc} currency={currency} onSuccess={handleSuccess} />
               </Elements>
             ) : (
               <div className="flex items-center justify-center py-10">

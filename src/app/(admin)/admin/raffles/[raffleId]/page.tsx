@@ -357,7 +357,7 @@ export default function EditRafflePage() {
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-sm font-medium">Preço por Número (R$)</label>
+              <label className="mb-1.5 block text-sm font-medium">Preço por Número (AHC)</label>
               <Input
                 type="number"
                 step="0.01"

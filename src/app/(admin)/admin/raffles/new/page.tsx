@@ -246,7 +246,7 @@ export default function NewRafflePage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">
-                    Preço por Número (R$)
+                    Preço por Número (AHC)
                   </label>
                   <Input
                     type="number"
@@ -398,7 +398,7 @@ export default function NewRafflePage() {
                       <p className="text-sm text-[var(--muted-foreground)]">
                         Cota:{" "}
                         <span className="font-bold text-accent-500">
-                          R$ {Number(form.pricePerNumber).toFixed(2)}
+                          {Number(form.pricePerNumber).toFixed(2)} AHC
                         </span>
                       </p>
                     )}

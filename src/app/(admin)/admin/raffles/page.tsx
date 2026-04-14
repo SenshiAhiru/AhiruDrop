@@ -136,7 +136,7 @@ export default function AdminRafflesPage() {
     {
       key: "pricePerNumber",
       label: "Preço",
-      render: (item) => formatCurrency(Number(item.pricePerNumber)),
+      render: (item) => `${Number(item.pricePerNumber)} AHC`,
     },
     {
       key: "numbers",

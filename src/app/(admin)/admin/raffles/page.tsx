@@ -10,6 +10,7 @@ import {
   Ticket,
   RefreshCw,
   Trash2,
+  Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -163,12 +164,19 @@ export default function AdminRafflesPage() {
       label: "",
       render: (item) => (
         <div className="flex items-center gap-1">
-          <Link href={`/admin/raffles/${item.id}`}>
+          {item.status === "CLOSED" && (
+            <Link href={`/admin/raffles/${item.id}/draw`} title="Realizar sorteio">
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-amber-400 hover:text-amber-300 hover:bg-amber-500/10">
+                <Trophy className="h-4 w-4" />
+              </Button>
+            </Link>
+          )}
+          <Link href={`/admin/raffles/${item.id}`} title="Editar">
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Pencil className="h-4 w-4" />
             </Button>
           </Link>
-          <Link href={`/admin/raffles/${item.id}/numbers`}>
+          <Link href={`/admin/raffles/${item.id}/numbers`} title="Ver números">
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Eye className="h-4 w-4" />
             </Button>
@@ -178,6 +186,7 @@ export default function AdminRafflesPage() {
             size="icon"
             className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/10"
             onClick={() => setDeleteModal({ open: true, id: item.id as string, title: item.title as string, deleting: false })}
+            title="Excluir"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

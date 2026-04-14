@@ -34,9 +34,8 @@ export function AhcBalance({ className }: { className?: string }) {
       title="Adicionar AhiruCoins"
     >
       {/* AHC icon */}
-      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent-500 text-surface-950 text-[10px] font-black">
-        A
-      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/ahc-coin.png" alt="AHC" className="h-6 w-6 rounded-full" />
       <span className="text-sm font-bold text-accent-400">
         {balance != null ? balance.toFixed(2) : "—"}
       </span>

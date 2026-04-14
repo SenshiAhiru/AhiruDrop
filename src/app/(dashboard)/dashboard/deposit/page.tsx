@@ -46,11 +46,8 @@ export default function DepositPage() {
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-500/10">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-500 text-surface-950 text-sm font-black">
-                  A
-                </div>
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/ahc-coin.png" alt="AHC" className="h-12 w-12 rounded-full" />
               <div>
                 <p className="text-sm text-[var(--muted-foreground)]">Seu saldo</p>
                 {loading ? (

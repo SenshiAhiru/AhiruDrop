@@ -22,6 +22,7 @@ export default function DepositPage() {
   const [currency, setCurrency] = useState("BRL");
   const [ahcAmount, setAhcAmount] = useState("");
   const [loading, setLoading] = useState(true);
+  const [paying, setPaying] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -186,31 +187,36 @@ export default function DepositPage() {
           <Button
             className="w-full"
             size="lg"
-            disabled={numAhc <= 0}
-            onClick={() => alert("Sistema de pagamento em implementação. Em breve!")}
+            disabled={numAhc <= 0 || paying}
+            onClick={async () => {
+              setPaying(true);
+              try {
+                const res = await fetch("/api/deposit", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ amount: numAhc, currency }),
+                });
+                const json = await res.json();
+                if (json.success && json.data?.url) {
+                  window.location.href = json.data.url;
+                } else {
+                  alert(json.error || "Erro ao iniciar pagamento");
+                  setPaying(false);
+                }
+              } catch {
+                alert("Erro ao conectar com gateway de pagamento");
+                setPaying(false);
+              }
+            }}
           >
-            {currency === "BRL" ? (
-              <>
-                <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5Z" />
-                </svg>
-                Pagar {numAhc > 0 ? formatFiat(fiatPrice) : ""} via PIX
-              </>
-            ) : (
-              <>
-                <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
-                </svg>
-                Pagar {numAhc > 0 ? formatFiat(fiatPrice) : ""} via Stripe
-              </>
-            )}
+            <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+            </svg>
+            {paying ? "Redirecionando..." : `Pagar ${numAhc > 0 ? formatFiat(fiatPrice) : ""}`}
           </Button>
 
           <p className="text-center text-xs text-[var(--muted-foreground)]">
-            {currency === "BRL"
-              ? "Pagamento instantâneo via PIX"
-              : `Pagamento internacional via cartão de crédito (${currency})`}
+            Pagamento seguro via Stripe
           </p>
         </CardContent>
       </Card>

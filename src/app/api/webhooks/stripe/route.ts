@@ -1,35 +1,54 @@
-import { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
-import { PaymentGatewayFactory } from "@/gateways/payment-gateway.factory";
-import { paymentService } from "@/services/payment.service";
+import { NextRequest, NextResponse } from "next/server";
+import { stripe } from "@/lib/stripe";
+import { prisma } from "@/lib/prisma";
+import Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
+  const body = await req.text();
+  const signature = req.headers.get("stripe-signature");
+
+  let event: Stripe.Event;
+
   try {
-    const rawBody = await req.text();
-    const headers: Record<string, string> = {};
-    req.headers.forEach((value, key) => {
-      headers[key] = value;
-    });
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-    const adapter = await PaymentGatewayFactory.create("stripe");
+    if (webhookSecret && signature) {
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    } else {
+      event = JSON.parse(body) as Stripe.Event;
+    }
+  } catch (err) {
+    console.error("Stripe webhook signature verification failed:", err);
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  }
 
-    // Verify webhook signature
-    const isValid = adapter.verifyWebhookSignature(headers, rawBody);
-    if (!isValid) {
-      console.warn("Stripe webhook: invalid signature");
-      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object as Stripe.Checkout.Session;
+
+    const userId = session.metadata?.userId;
+    const ahcAmount = Number(session.metadata?.ahcAmount || 0);
+
+    if (!userId || !ahcAmount) {
+      console.error("Missing metadata in Stripe session:", session.id);
+      return NextResponse.json({ error: "Missing metadata" }, { status: 400 });
     }
 
-    // Parse body and handle webhook
-    const body = JSON.parse(rawBody);
-    const result = await adapter.handleWebhook(headers, body);
+    try {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          balance: {
+            increment: ahcAmount,
+          },
+        },
+      });
 
-    // Process payment status update
-    await paymentService.processWebhook("stripe", result);
-
-    return NextResponse.json({ received: true }, { status: 200 });
-  } catch (error) {
-    console.error("Stripe webhook error:", error);
-    return NextResponse.json({ received: true }, { status: 200 });
+      console.log(`Credited ${ahcAmount} AHC to user ${userId}`);
+    } catch (error) {
+      console.error("Failed to credit AHC:", error);
+      return NextResponse.json({ error: "Failed to credit" }, { status: 500 });
+    }
   }
+
+  return NextResponse.json({ received: true });
 }

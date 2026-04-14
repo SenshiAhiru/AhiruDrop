@@ -13,6 +13,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DateTimePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -414,10 +415,9 @@ export default function EditRafflePage() {
         <CardContent className="space-y-4">
           <div>
             <label className="mb-1.5 block text-sm font-medium">Data do Sorteio</label>
-            <Input
-              type="datetime-local"
+            <DateTimePicker
               value={form.scheduledDrawAt}
-              onChange={(e) => updateField("scheduledDrawAt", e.target.value)}
+              onChange={(val) => updateField("scheduledDrawAt", val)}
             />
           </div>
           <label className="flex items-center gap-2 text-sm">

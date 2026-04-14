@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Save, Zap } from "lucide-react";
+import { DateTimePicker } from "@/components/ui/date-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -322,10 +323,9 @@ export default function NewRafflePage() {
                   <label className="mb-1.5 block text-sm font-medium">
                     Data do Sorteio
                   </label>
-                  <Input
-                    type="datetime-local"
+                  <DateTimePicker
                     value={form.scheduledDrawAt}
-                    onChange={(e) => updateField("scheduledDrawAt", e.target.value)}
+                    onChange={(val) => updateField("scheduledDrawAt", val)}
                   />
                 </div>
                 <div className="flex items-end pb-2">

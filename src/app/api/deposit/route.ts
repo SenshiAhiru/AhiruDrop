@@ -1,6 +1,36 @@
 import { NextRequest } from "next/server";
 import { successResponse, errorResponse, handleApiError, requireAuth } from "@/lib/api-utils";
-import { stripe } from "@/lib/stripe";
+import { prisma } from "@/lib/prisma";
+import { decrypt } from "@/lib/crypto";
+import Stripe from "stripe";
+
+async function getStripeClient(): Promise<Stripe> {
+  // Load Stripe keys from database (gateway config)
+  const gateway = await prisma.paymentGateway.findUnique({
+    where: { name: "stripe" },
+    include: { configs: true },
+  });
+
+  if (!gateway) throw new Error("Gateway Stripe não configurado");
+
+  const prefix = gateway.sandbox ? "test_" : "live_";
+
+  // Try prefixed key first, then unprefixed fallback
+  function getConfig(key: string): string {
+    const prefixed = gateway!.configs.find((c) => c.key === `${prefix}${key}`);
+    const unprefixed = gateway!.configs.find((c) => c.key === key);
+    const config = prefixed || unprefixed;
+    if (!config) throw new Error(`Credencial "${key}" não encontrada no gateway Stripe`);
+    try {
+      return decrypt(config.value);
+    } catch {
+      return config.value;
+    }
+  }
+
+  const secretKey = getConfig("secret_key");
+  return new Stripe(secretKey);
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,23 +54,16 @@ export async function POST(req: NextRequest) {
       return errorResponse("Quantidade máxima: 10.000 AHC", 400);
     }
 
-    // Currency mapping for Stripe (smallest unit)
-    // 1:1 rate, so amount in AHC = amount in currency
     const currencyCode = (currency || "BRL").toLowerCase();
-    const currencyMultiplier: Record<string, number> = {
-      brl: 100, // cents
-      usd: 100,
-      eur: 100,
-      gbp: 100,
-      rub: 100,
-    };
-
-    const multiplier = currencyMultiplier[currencyCode] || 100;
+    const multiplier = 100; // All currencies use cents
     const stripeAmount = Math.round(ahcAmount * multiplier);
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ahirudrop.vercel.app";
 
-    const checkoutSession = await stripe.checkout.sessions.create({
+    // Get Stripe client with keys from database
+    const stripeClient = await getStripeClient();
+
+    const checkoutSession = await stripeClient.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
       line_items: [
@@ -72,6 +95,9 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("Stripe checkout error:", error);
+    if (error instanceof Error && error.message.includes("não encontrada")) {
+      return errorResponse(error.message, 400);
+    }
     return handleApiError(error);
   }
 }

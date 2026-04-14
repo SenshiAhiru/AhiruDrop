@@ -79,12 +79,6 @@ export async function POST(req: NextRequest) {
     const userId = obj.metadata?.userId;
     const ahcAmount = Number(obj.metadata?.ahcAmount || 0);
 
-    // Skip if already credited via /api/deposit/confirm
-    if (obj.metadata?.credited === "true") {
-      console.log(`Webhook: already credited, skipping (PI: ${obj.id})`);
-      return NextResponse.json({ received: true, skipped: true });
-    }
-
     if (!userId || !ahcAmount) {
       console.error("Missing metadata in Stripe event:", obj.id);
       return NextResponse.json({ error: "Missing metadata" }, { status: 400 });

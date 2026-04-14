@@ -41,18 +41,6 @@ function PaymentForm({ amount, currency, onSuccess }: { amount: number; currency
       setError(result.error.message || "Erro no pagamento");
       setPaying(false);
     } else if (result.paymentIntent?.status === "succeeded") {
-      // Credit AHC immediately via API
-      try {
-        await fetch("/api/deposit/confirm", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            paymentIntentId: result.paymentIntent.id,
-            amount,
-            currency,
-          }),
-        });
-      } catch {}
       onSuccess();
     }
   };

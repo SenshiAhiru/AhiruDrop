@@ -9,6 +9,7 @@ import {
   Pencil,
   Ticket,
   RefreshCw,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -151,6 +152,27 @@ export default function AdminRafflesPage() {
               <Eye className="h-4 w-4" />
             </Button>
           </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+            onClick={async () => {
+              if (!confirm(`Excluir "${item.title}"? Esta ação não pode ser desfeita.`)) return;
+              try {
+                const res = await fetch(`/api/admin/raffles/${item.id}`, { method: "DELETE" });
+                const json = await res.json();
+                if (json.success) {
+                  fetchRaffles();
+                } else {
+                  alert(json.error || "Erro ao excluir");
+                }
+              } catch {
+                alert("Erro ao excluir rifa");
+              }
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
       ),
     },

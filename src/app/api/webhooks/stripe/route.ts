@@ -71,11 +71,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
-  if (event!.type === "checkout.session.completed") {
-    const session = event!.data.object as Stripe.Checkout.Session;
+  const eventType = event!.type;
 
-    const userId = session.metadata?.userId;
-    const ahcAmount = Number(session.metadata?.ahcAmount || 0);
+  if (eventType === "checkout.session.completed" || eventType === "payment_intent.succeeded") {
+    const obj = event!.data.object as any;
+
+    const userId = obj.metadata?.userId;
+    const ahcAmount = Number(obj.metadata?.ahcAmount || 0);
 
     if (!userId || !ahcAmount) {
       console.error("Missing metadata in Stripe session:", session.id);

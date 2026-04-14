@@ -17,13 +17,27 @@ export async function POST(req: NextRequest) {
 
     if (!gateway) return errorResponse("Gateway não encontrado", 404);
 
-    const config = gateway.configs.find((c) => c.key === key);
-    if (!config) return errorResponse("Credencial não encontrada", 404);
+    // Try exact key, then with prefixes
+    const keysToTry = [key, `test_${key}`, `live_${key}`];
+    // Also try without prefix if key already has one
+    if (key.startsWith("test_") || key.startsWith("live_")) {
+      keysToTry.push(key.replace(/^(test_|live_)/, ""));
+    }
 
-    let value = config.value;
-    try {
-      value = decrypt(config.value);
-    } catch {}
+    let value = "";
+    for (const k of keysToTry) {
+      const config = gateway.configs.find((c) => c.key === k);
+      if (config) {
+        try {
+          value = decrypt(config.value);
+        } catch {
+          value = config.value;
+        }
+        break;
+      }
+    }
+
+    if (!value) return errorResponse("Credencial não encontrada", 404);
 
     return successResponse({ value });
   } catch (error) {

@@ -319,12 +319,11 @@ export default function RaffleDetailPage() {
               {/* Price */}
               <div className="rounded-xl border border-accent-500/20 bg-accent-500/5 p-5">
                 <p className="text-sm text-[var(--muted-foreground)]">Preço por cota</p>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2.5 mt-1">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/ahc-coin.png" alt="AHC" className="h-8 w-8 rounded-full" />
-                  <p className="text-3xl font-bold text-accent-400">
-                    {raffle.pricePerNumber} <span className="text-lg">AHC</span>
-                  </p>
+                  <span className="text-3xl font-bold text-accent-400 leading-none">{raffle.pricePerNumber}</span>
+                  <span className="text-base font-semibold text-accent-400/70 leading-none">AHC</span>
                 </div>
               </div>
 

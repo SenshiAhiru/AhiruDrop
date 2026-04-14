@@ -158,10 +158,9 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
         <div className="flex items-center gap-1.5">
           <span className="text-xs text-[var(--muted-foreground)]">por cota</span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/ahc-coin.png" alt="AHC" className="h-4 w-4 rounded-full" />
-          <span className="text-lg font-bold text-accent-500">
-            {pricePerNumber} <span className="text-xs">AHC</span>
-          </span>
+          <img src="/ahc-coin.png" alt="AHC" className="h-5 w-5 rounded-full" />
+          <span className="text-lg font-bold text-accent-500 leading-none">{pricePerNumber}</span>
+          <span className="text-xs font-semibold text-accent-500/70 leading-none">AHC</span>
         </div>
 
         {/* Progress */}

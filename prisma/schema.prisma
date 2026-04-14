@@ -121,6 +121,10 @@ model Raffle {
   scheduledDrawAt  DateTime?
   closedAt         DateTime?
   isFeatured       Boolean      @default(false)
+  // Provably fair — committed at raffle creation
+  serverSeedHash      String?   // SHA-256(serverSeed), public immediately
+  serverSeedEncrypted String?   // AES-256-GCM(serverSeed), revealed at draw
+  drawBlockHeight     Int?      // Bitcoin block height used as public beacon
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 
@@ -296,6 +300,10 @@ model RaffleDraw {
   resultHash    String
   seed          String
   drawMethod    String   @default("crypto")
+  // Provably fair — revealed at draw time
+  serverSeedRevealed String?  // Plain serverSeed, revealed after draw
+  blockHash          String?  // Bitcoin block hash used as beacon
+  blockHeight        Int?     // Bitcoin block height
   drawnAt       DateTime @default(now())
 
   raffle Raffle  @relation(fields: [raffleId], references: [id])

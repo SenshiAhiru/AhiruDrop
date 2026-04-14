@@ -2,6 +2,13 @@ import { raffleRepository } from "@/repositories/raffle.repository";
 import { raffleNumberRepository } from "@/repositories/raffle-number.repository";
 import { generateSlug } from "@/lib/utils";
 import { RaffleStatus } from "@prisma/client";
+import { encrypt } from "@/lib/crypto";
+import {
+  generateServerSeed,
+  hashSeed,
+  getCurrentBtcHeight,
+  DRAW_BLOCK_LEAD,
+} from "@/lib/provably-fair";
 
 export const raffleService = {
   async list(params: {
@@ -72,13 +79,31 @@ export const raffleService = {
     const slug = generateSlug(data.title);
     const status = (data.status === "ACTIVE" ? "ACTIVE" : "DRAFT") as "ACTIVE" | "DRAFT";
 
+    // Provably fair commit — before raffle exists, so impossible to tamper later
+    const serverSeed = generateServerSeed();
+    const serverSeedHash = hashSeed(serverSeed);
+    const serverSeedEncrypted = encrypt(serverSeed);
+
+    // Try to lock the beacon block height at creation.
+    // If mempool.space is unreachable, leave it null — admin can backfill later.
+    let drawBlockHeight: number | null = null;
+    try {
+      const currentHeight = await getCurrentBtcHeight();
+      drawBlockHeight = currentHeight + DRAW_BLOCK_LEAD;
+    } catch (err) {
+      console.warn("Could not lock Bitcoin block height at creation:", err);
+    }
+
     const raffle = await raffleRepository.create({
       ...data,
       slug,
       pricePerNumber: data.pricePerNumber,
       featuredImage: data.skinImage || data.featuredImage,
       status,
-    });
+      serverSeedHash,
+      serverSeedEncrypted,
+      drawBlockHeight,
+    } as any);
 
     // Generate all numbers for this raffle
     await raffleNumberRepository.generateNumbers(raffle.id, data.totalNumbers);
@@ -143,7 +168,18 @@ export const raffleService = {
     const raffle = await raffleRepository.findById(id);
     if (!raffle) throw new Error("Rifa não encontrada");
 
-    const { id: _, slug: __, createdAt: ___, updatedAt: ____, ...data } = raffle;
+    const {
+      id: _,
+      slug: __,
+      createdAt: ___,
+      updatedAt: ____,
+      // Strip provably-fair fields — new ones will be generated for the duplicate
+      serverSeedHash: _s1,
+      serverSeedEncrypted: _s2,
+      drawBlockHeight: _s3,
+      images: _s4,
+      ...data
+    } = raffle as any;
 
     return this.create({
       ...data,

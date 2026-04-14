@@ -3,6 +3,13 @@ import { prisma } from "@/lib/prisma";
 import { raffleRepository } from "@/repositories/raffle.repository";
 import { raffleNumberRepository } from "@/repositories/raffle-number.repository";
 import { notificationService } from "./notification.service";
+import { decrypt } from "@/lib/crypto";
+import {
+  computeWinningIndex,
+  getBtcBlockHashAtHeight,
+  getCurrentBtcHeight,
+  hashSeed,
+} from "@/lib/provably-fair";
 
 export const drawService = {
   async executeDraw(raffleId: string, adminId: string) {
@@ -12,36 +19,85 @@ export const drawService = {
       throw new Error("A rifa precisa estar fechada para realizar o sorteio");
     }
 
-    // Get only PAID numbers
-    const paidNumbers = await raffleNumberRepository.findByRaffle(raffleId);
-    const eligibleNumbers = paidNumbers.filter((n) => n.status === "PAID");
-
-    if (eligibleNumbers.length === 0) {
+    // Only PAID numbers are eligible
+    const all = await raffleNumberRepository.findByRaffle(raffleId);
+    const eligible = all.filter((n) => n.status === "PAID");
+    if (eligible.length === 0) {
       throw new Error("Nenhum número foi vendido para esta rifa");
     }
 
-    // Cryptographically secure random selection
-    const seed = crypto.randomBytes(32).toString("hex");
-    const randomIndex = crypto.randomInt(0, eligibleNumbers.length);
-    const winningNumberRecord = eligibleNumbers[randomIndex];
+    // Provably fair path — requires commit made at creation
+    const raffleAny = raffle as any;
+    const hasCommit = Boolean(
+      raffleAny.serverSeedHash && raffleAny.serverSeedEncrypted
+    );
 
-    // Create audit hash
+    let winningIndex: number;
+    let serverSeedRevealed: string | null = null;
+    let blockHash: string | null = null;
+    let blockHeight: number | null = null;
+    let drawMethod = "crypto";
+
+    if (hasCommit) {
+      // Reveal the committed seed
+      serverSeedRevealed = decrypt(raffleAny.serverSeedEncrypted);
+
+      // Sanity check — hash must match what was committed
+      if (hashSeed(serverSeedRevealed) !== raffleAny.serverSeedHash) {
+        throw new Error(
+          "Falha de integridade: o seed decifrado não corresponde ao hash commitado"
+        );
+      }
+
+      // Determine beacon block height
+      blockHeight = raffleAny.drawBlockHeight ?? null;
+      if (!blockHeight) {
+        // Backfill: pick the current tip now as the beacon
+        blockHeight = await getCurrentBtcHeight();
+      } else {
+        // Ensure block is mined — if target height > current tip, refuse
+        const tip = await getCurrentBtcHeight();
+        if (blockHeight > tip) {
+          throw new Error(
+            `Bloco alvo ainda não foi minerado. Altura atual: ${tip}, alvo: ${blockHeight}. Aguarde alguns minutos.`
+          );
+        }
+      }
+
+      blockHash = await getBtcBlockHashAtHeight(blockHeight);
+
+      winningIndex = computeWinningIndex(
+        serverSeedRevealed,
+        blockHash,
+        raffleId,
+        eligible.length
+      );
+      drawMethod = "provably-fair-btc";
+    } else {
+      // Legacy path — raffles created before provably-fair was introduced
+      winningIndex = crypto.randomInt(0, eligible.length);
+    }
+
+    const winningNumberRecord = eligible[winningIndex];
+
+    // Build audit hash (same shape as before for backwards compat in UIs)
     const timestamp = new Date().toISOString();
-    const hashInput = `${seed}:${winningNumberRecord.number}:${timestamp}:${raffleId}`;
-    const resultHash = crypto
-      .createHash("sha256")
-      .update(hashInput)
-      .digest("hex");
+    const seedForAudit = serverSeedRevealed || crypto.randomBytes(32).toString("hex");
+    const hashInput = `${seedForAudit}:${winningNumberRecord.number}:${timestamp}:${raffleId}`;
+    const resultHash = crypto.createHash("sha256").update(hashInput).digest("hex");
 
-    // Save draw
     const draw = await prisma.raffleDraw.create({
       data: {
         raffleId,
         adminId,
         winningNumber: winningNumberRecord.number,
         resultHash,
-        seed,
-      },
+        seed: seedForAudit,
+        drawMethod,
+        ...(serverSeedRevealed && { serverSeedRevealed }),
+        ...(blockHash && { blockHash }),
+        ...(blockHeight && { blockHeight }),
+      } as any,
     });
 
     // Find winner (user who owns this number)
@@ -66,7 +122,6 @@ export const drawService = {
             },
           });
 
-          // Notify winner
           await notificationService.notifyWinner(
             order.userId,
             raffle.title,
@@ -76,15 +131,24 @@ export const drawService = {
       }
     }
 
-    // Update raffle status to DRAWN
     await raffleRepository.update(raffleId, { status: "DRAWN" });
 
     return {
       draw,
       winningNumber: winningNumberRecord.number,
       resultHash,
-      seed,
+      seed: seedForAudit,
       timestamp,
+      provablyFair: hasCommit
+        ? {
+            serverSeedHash: raffleAny.serverSeedHash,
+            serverSeedRevealed,
+            blockHash,
+            blockHeight,
+            winningIndex,
+            totalEligible: eligible.length,
+          }
+        : null,
     };
   },
 

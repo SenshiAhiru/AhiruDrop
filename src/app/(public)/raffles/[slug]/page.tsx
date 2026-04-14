@@ -358,6 +358,23 @@ export default function RaffleDetailPage() {
                 </div>
               </div>
 
+              {/* Provably Fair badge */}
+              <a
+                href={`/raffles/${slug}/verify`}
+                className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 hover:bg-emerald-500/10 transition-colors group"
+              >
+                <svg className="h-5 w-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                </svg>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-emerald-300">Provably Fair</p>
+                  <p className="text-xs text-emerald-400/70">Sorteio verificável via Bitcoin · clique para conferir</p>
+                </div>
+                <svg className="h-4 w-4 text-emerald-400 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+              </a>
+
               {/* Countdown */}
               {raffle.scheduledDrawAt && countdown && (
                 <div className="flex items-center gap-3 rounded-xl border border-accent-500/30 bg-accent-500/5 p-4">

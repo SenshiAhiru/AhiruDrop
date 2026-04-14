@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ShoppingCart, X, CheckCircle } from "lucide-react";
 
 interface NumberInfo {
   number: number;
@@ -35,6 +36,7 @@ export function NumberSelector({
   className,
 }: NumberSelectorProps) {
   const [search, setSearch] = useState("");
+  const [buyModal, setBuyModal] = useState(false);
 
   const totalDigits = useMemo(() => {
     const max = Math.max(...numbers.map((n) => n.number), 0);
@@ -201,13 +203,86 @@ export function NumberSelector({
           <Button
             size="lg"
             className="w-full shadow-lg shadow-primary-600/25"
-            onClick={() => {
-              alert(`Funcionalidade em implementação!\n\nResumo:\n${selectedNumbers.length} cotas × ${pricePerNumber} AHC = ${total.toFixed(2)} AHC\nNúmeros: ${selectedNumbers.join(", ")}`);
-            }}
+            onClick={() => setBuyModal(true)}
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/ahc-coin.png" alt="" className="h-5 w-5 rounded-full mr-2" />
             Comprar com {total.toFixed(2)} AHC
           </Button>
+        </div>
+      )}
+
+      {/* Buy Modal */}
+      {buyModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setBuyModal(false)} />
+          <div className="relative w-full max-w-md rounded-2xl border border-surface-700 bg-surface-900 p-6 shadow-2xl">
+            <button
+              onClick={() => setBuyModal(false)}
+              className="absolute top-4 right-4 text-surface-500 hover:text-white transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="flex flex-col items-center text-center">
+              {/* Icon */}
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/10">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/ahc-coin.png" alt="AHC" className="h-10 w-10 rounded-full" />
+              </div>
+
+              <h3 className="text-lg font-bold text-white mb-1">Confirmar compra</h3>
+              <p className="text-sm text-surface-400 mb-5">Revise os detalhes antes de confirmar</p>
+
+              {/* Details */}
+              <div className="w-full rounded-xl border border-surface-700 bg-surface-800/50 p-4 mb-5 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-surface-400">Cotas</span>
+                  <span className="font-semibold text-white">{selectedNumbers.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-400">Preço por cota</span>
+                  <span className="font-semibold text-white">{pricePerNumber} AHC</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-400">Números</span>
+                  <span className="font-mono text-xs text-surface-300 max-w-[200px] truncate text-right">
+                    {selectedNumbers.sort((a, b) => a - b).join(", ")}
+                  </span>
+                </div>
+                <hr className="border-surface-700" />
+                <div className="flex justify-between items-center">
+                  <span className="text-surface-400">Total</span>
+                  <div className="flex items-center gap-1.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/ahc-coin.png" alt="" className="h-5 w-5 rounded-full" />
+                    <span className="text-lg font-bold text-accent-400">{total.toFixed(2)} AHC</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 w-full">
+                <button
+                  onClick={() => setBuyModal(false)}
+                  className="flex-1 rounded-lg border border-surface-700 px-4 py-2.5 text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => {
+                    setBuyModal(false);
+                    // TODO: integrate with real purchase API
+                    alert("Compra realizada! (Sistema de pagamento em implementação)");
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

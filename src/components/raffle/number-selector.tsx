@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ShoppingCart, X, CheckCircle } from "lucide-react";
+import { ShoppingCart, X, CheckCircle, Loader2, AlertCircle } from "lucide-react";
 
 interface NumberInfo {
   number: number;
@@ -25,6 +25,7 @@ interface NumberSelectorProps {
 }
 
 export function NumberSelector({
+  raffleId,
   numbers,
   maxPerPurchase,
   pricePerNumber,
@@ -37,6 +38,52 @@ export function NumberSelector({
 }: NumberSelectorProps) {
   const [search, setSearch] = useState("");
   const [buyModal, setBuyModal] = useState(false);
+  const [buying, setBuying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successData, setSuccessData] = useState<{
+    numbers: number[];
+    spent: number;
+    balance: number;
+  } | null>(null);
+
+  async function handleConfirmPurchase() {
+    if (buying) return;
+    setBuying(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`/api/raffles/${raffleId}/purchase`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ numbers: selectedNumbers }),
+      });
+      const json = await res.json();
+
+      if (!json.success) {
+        setError(json.error || "Erro ao processar compra");
+        setBuying(false);
+        return;
+      }
+
+      setSuccessData({
+        numbers: json.data.numbers,
+        spent: Number(json.data.spent),
+        balance: Number(json.data.balance),
+      });
+      setBuyModal(false);
+      setBuying(false);
+    } catch {
+      setError("Erro de conexão. Tente novamente.");
+      setBuying(false);
+    }
+  }
+
+  function closeSuccess() {
+    setSuccessData(null);
+    onClear();
+    // Reload to refresh number grid + balance in header
+    if (typeof window !== "undefined") window.location.reload();
+  }
 
   const totalDigits = useMemo(() => {
     const max = Math.max(...numbers.map((n) => n.number), 0);
@@ -261,26 +308,97 @@ export function NumberSelector({
                 </div>
               </div>
 
+              {/* Error */}
+              {error && (
+                <div className="w-full mb-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-left text-sm text-red-400 flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
               {/* Buttons */}
               <div className="flex gap-3 w-full">
                 <button
-                  onClick={() => setBuyModal(false)}
-                  className="flex-1 rounded-lg border border-surface-700 px-4 py-2.5 text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
+                  onClick={() => { setBuyModal(false); setError(null); }}
+                  disabled={buying}
+                  className="flex-1 rounded-lg border border-surface-700 px-4 py-2.5 text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800 transition-colors disabled:opacity-50"
                 >
                   Cancelar
                 </button>
                 <button
-                  onClick={() => {
-                    setBuyModal(false);
-                    // TODO: integrate with real purchase API
-                    alert("Compra realizada! (Sistema de pagamento em implementação)");
-                  }}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
+                  onClick={handleConfirmPurchase}
+                  disabled={buying}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors disabled:opacity-50"
                 >
-                  <ShoppingCart className="h-4 w-4" />
-                  Confirmar
+                  {buying ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Processando...
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="h-4 w-4" />
+                      Confirmar
+                    </>
+                  )}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {successData && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeSuccess} />
+          <div className="relative w-full max-w-md rounded-2xl border border-emerald-500/30 bg-surface-900 p-6 shadow-2xl">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10">
+                <CheckCircle className="h-9 w-9 text-emerald-400" />
+              </div>
+
+              <h3 className="text-xl font-bold text-white mb-1">Compra confirmada!</h3>
+              <p className="text-sm text-surface-400 mb-5">
+                Seus números foram reservados pra você. Boa sorte! 🍀
+              </p>
+
+              <div className="w-full rounded-xl border border-surface-700 bg-surface-800/50 p-4 mb-5 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-surface-400">Cotas compradas</span>
+                  <span className="font-semibold text-white">{successData.numbers.length}</span>
+                </div>
+                <div className="flex justify-between items-start gap-3">
+                  <span className="text-surface-400 flex-shrink-0">Números</span>
+                  <span className="font-mono text-xs text-surface-300 text-right break-all">
+                    {successData.numbers.sort((a, b) => a - b).join(", ")}
+                  </span>
+                </div>
+                <hr className="border-surface-700" />
+                <div className="flex justify-between items-center">
+                  <span className="text-surface-400">Total debitado</span>
+                  <div className="flex items-center gap-1.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/ahc-coin.png" alt="" className="h-4 w-4 rounded-full" />
+                    <span className="font-bold text-red-400">-{successData.spent.toFixed(2)} AHC</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-surface-400">Saldo atual</span>
+                  <div className="flex items-center gap-1.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/ahc-coin.png" alt="" className="h-4 w-4 rounded-full" />
+                    <span className="font-bold text-accent-400">{successData.balance.toFixed(2)} AHC</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={closeSuccess}
+                className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
+              >
+                Fechar
+              </button>
             </div>
           </div>
         </div>

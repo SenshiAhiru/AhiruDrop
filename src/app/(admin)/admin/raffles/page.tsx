@@ -59,6 +59,27 @@ export default function AdminRafflesPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [page, setPage] = useState(1);
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string; title: string; deleting: boolean }>({
+    open: false, id: "", title: "", deleting: false,
+  });
+
+  const handleDelete = async () => {
+    setDeleteModal((prev) => ({ ...prev, deleting: true }));
+    try {
+      const res = await fetch(`/api/admin/raffles/${deleteModal.id}`, { method: "DELETE" });
+      const json = await res.json();
+      if (json.success) {
+        setDeleteModal({ open: false, id: "", title: "", deleting: false });
+        fetchRaffles();
+      } else {
+        alert(json.error || "Erro ao excluir");
+      }
+    } catch {
+      alert("Erro ao excluir rifa");
+    } finally {
+      setDeleteModal((prev) => ({ ...prev, deleting: false }));
+    }
+  };
 
   const fetchRaffles = useCallback(async () => {
     setLoading(true);
@@ -156,20 +177,7 @@ export default function AdminRafflesPage() {
             variant="ghost"
             size="icon"
             className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/10"
-            onClick={async () => {
-              if (!confirm(`Excluir "${item.title}"? Esta ação não pode ser desfeita.`)) return;
-              try {
-                const res = await fetch(`/api/admin/raffles/${item.id}`, { method: "DELETE" });
-                const json = await res.json();
-                if (json.success) {
-                  fetchRaffles();
-                } else {
-                  alert(json.error || "Erro ao excluir");
-                }
-              } catch {
-                alert("Erro ao excluir rifa");
-              }
-            }}
+            onClick={() => setDeleteModal({ open: true, id: item.id as string, title: item.title as string, deleting: false })}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -249,6 +257,39 @@ export default function AdminRafflesPage() {
             onPageChange: setPage,
           }}
         />
+      )}
+      {/* Delete Modal */}
+      {deleteModal.open && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => !deleteModal.deleting && setDeleteModal({ open: false, id: "", title: "", deleting: false })} />
+          <div className="relative w-full max-w-md rounded-2xl border border-surface-700 bg-surface-900 p-6 shadow-2xl">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-500/10">
+                <Trash2 className="h-7 w-7 text-red-400" />
+              </div>
+              <h3 className="text-lg font-bold text-white mb-2">Excluir rifa</h3>
+              <p className="text-sm text-surface-400 mb-1">Tem certeza que deseja excluir?</p>
+              <p className="text-sm font-semibold text-white mb-6">&quot;{deleteModal.title}&quot;</p>
+              <p className="text-xs text-surface-500 mb-6">Esta ação não pode ser desfeita. Todos os números e dados serão removidos.</p>
+              <div className="flex gap-3 w-full">
+                <button
+                  onClick={() => setDeleteModal({ open: false, id: "", title: "", deleting: false })}
+                  disabled={deleteModal.deleting}
+                  className="flex-1 rounded-lg border border-surface-700 px-4 py-2.5 text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800 transition-colors disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleteModal.deleting}
+                  className="flex-1 rounded-lg bg-red-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-600 transition-colors disabled:opacity-50"
+                >
+                  {deleteModal.deleting ? "Excluindo..." : "Sim, excluir"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

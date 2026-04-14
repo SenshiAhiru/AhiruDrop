@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -72,9 +72,73 @@ export default function GatewaysPage() {
   const [gateways, setGateways] = useState(initialGateways);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [copiedWebhook, setCopiedWebhook] = useState<string | null>(null);
-  const [visibleFields, setVisibleFields] = useState<Record<string, boolean>>(
-    {}
-  );
+  const [visibleFields, setVisibleFields] = useState<Record<string, boolean>>({});
+  const [saving, setSaving] = useState<string | null>(null);
+  const [saveMessage, setSaveMessage] = useState<{ id: string; type: "success" | "error"; text: string } | null>(null);
+
+  // Load saved gateway configs from API
+  useEffect(() => {
+    fetch("/api/admin/gateways")
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success && json.data) {
+          const saved = json.data;
+          if (Array.isArray(saved) && saved.length > 0) {
+            setGateways((prev) =>
+              prev.map((gw) => {
+                const match = saved.find((s: any) => s.name === gw.id);
+                if (!match) return gw;
+                return {
+                  ...gw,
+                  isActive: match.isActive ?? gw.isActive,
+                  isDefault: match.isDefault ?? gw.isDefault,
+                  sandbox: match.sandbox ?? gw.sandbox,
+                  credentials: gw.credentials.map((c) => {
+                    const cfg = (match.configs || []).find((cf: any) => cf.key === c.key);
+                    return cfg ? { ...c, value: cfg.value } : c;
+                  }),
+                };
+              })
+            );
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Save gateway config to API
+  const handleSave = async (gatewayId: string) => {
+    setSaving(gatewayId);
+    setSaveMessage(null);
+    const gw = gateways.find((g) => g.id === gatewayId);
+    if (!gw) return;
+
+    try {
+      const res = await fetch("/api/admin/gateways", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: gw.id,
+          displayName: gw.displayName,
+          isActive: gw.isActive,
+          isDefault: gw.isDefault,
+          sandbox: gw.sandbox,
+          credentials: Object.fromEntries(gw.credentials.map((c) => [c.key, c.value])),
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setSaveMessage({ id: gatewayId, type: "success", text: "Configurações salvas!" });
+        setTimeout(() => setSaveMessage(null), 3000);
+      } else {
+        setSaveMessage({ id: gatewayId, type: "error", text: json.error || "Erro ao salvar" });
+      }
+    } catch {
+      setSaveMessage({ id: gatewayId, type: "error", text: "Erro ao salvar configurações" });
+    } finally {
+      setSaving(null);
+    }
+  };
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
@@ -320,10 +384,23 @@ export default function GatewaysPage() {
                       Definir como Padrao
                     </Button>
                   )}
-                  <Button size="sm">
+                  <Button
+                    size="sm"
+                    disabled={saving === gateway.id}
+                    onClick={() => handleSave(gateway.id)}
+                  >
                     <Save className="h-4 w-4" />
-                    Salvar
+                    {saving === gateway.id ? "Salvando..." : "Salvar"}
                   </Button>
+
+                  {saveMessage?.id === gateway.id && (
+                    <span className={cn(
+                      "text-xs font-medium",
+                      saveMessage.type === "success" ? "text-emerald-400" : "text-red-400"
+                    )}>
+                      {saveMessage.text}
+                    </span>
+                  )}
                 </div>
               </CardContent>
             )}

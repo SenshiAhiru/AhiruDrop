@@ -9,6 +9,7 @@ import {
   Bell,
   ArrowLeft,
   LogOut,
+  Coins,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Visão Geral", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Depositar AHC", href: "/dashboard/deposit", icon: Coins },
   { label: "Meus Pedidos", href: "/dashboard/orders", icon: ShoppingCart },
   { label: "Perfil", href: "/dashboard/profile", icon: User },
   { label: "Notificações", href: "/dashboard/notifications", icon: Bell },

@@ -397,7 +397,8 @@ export default function GatewaysPage() {
                         <div className="relative">
                           <Input
                             type={isVisible ? "text" : "password"}
-                            value={cred.value}
+                            value={cred.value.includes("•") ? "" : cred.value}
+                            placeholder={cred.value.includes("•") ? cred.value : ""}
                             onChange={(e) =>
                               updateCredential(
                                 gateway.id,

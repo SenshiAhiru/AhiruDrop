@@ -276,6 +276,11 @@ export default function DepositPage() {
                     <span className="text-surface-400">Você paga</span>
                     <span className="font-semibold text-white">{currencyInfo.flag} {currencyInfo.symbol} {numAhc.toFixed(2)}</span>
                   </div>
+                  <hr className="border-surface-700" />
+                  <div className="flex justify-between">
+                    <span className="text-surface-400">Saldo após depósito</span>
+                    <span className="font-bold text-accent-400">{((balance || 0) + numAhc).toFixed(2)} AHC</span>
+                  </div>
                 </div>
               )}
 

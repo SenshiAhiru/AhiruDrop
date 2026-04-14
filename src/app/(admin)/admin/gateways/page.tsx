@@ -94,8 +94,12 @@ export default function GatewaysPage() {
                   isDefault: match.isDefault ?? gw.isDefault,
                   sandbox: match.sandbox ?? gw.sandbox,
                   credentials: gw.credentials.map((c) => {
-                    const cfg = (match.configs || []).find((cf: any) => cf.key === c.key);
-                    return cfg ? { ...c, value: cfg.value } : c;
+                    const envPrefix = (match.sandbox ? "test_" : "live_");
+                    const cfg = (match.configs || []).find((cf: any) => cf.key === `${envPrefix}${c.key}`);
+                    // Fallback to unprefixed for backwards compatibility
+                    const cfgFallback = (match.configs || []).find((cf: any) => cf.key === c.key);
+                    const found = cfg || cfgFallback;
+                    return found ? { ...c, value: found.value } : c;
                   }),
                 };
               })
@@ -106,12 +110,14 @@ export default function GatewaysPage() {
       .catch(() => {});
   }, []);
 
-  // Save gateway config to API
+  // Save gateway config to API - credentials prefixed by environment
   const handleSave = async (gatewayId: string) => {
     setSaving(gatewayId);
     setSaveMessage(null);
     const gw = gateways.find((g) => g.id === gatewayId);
     if (!gw) return;
+
+    const envPrefix = gw.sandbox ? "test_" : "live_";
 
     try {
       const res = await fetch("/api/admin/gateways", {
@@ -123,7 +129,9 @@ export default function GatewaysPage() {
           isActive: gw.isActive,
           isDefault: gw.isDefault,
           sandbox: gw.sandbox,
-          credentials: Object.fromEntries(gw.credentials.map((c) => [c.key, c.value])),
+          credentials: Object.fromEntries(
+            gw.credentials.map((c) => [`${envPrefix}${c.key}`, c.value])
+          ),
         }),
       });
       const json = await res.json();
@@ -168,10 +176,53 @@ export default function GatewaysPage() {
     } catch {}
   };
 
-  const toggleSandbox = (id: string) => {
+  const toggleSandbox = async (id: string) => {
+    const gw = gateways.find((g) => g.id === id);
+    if (!gw) return;
+    const newSandbox = !gw.sandbox;
+
+    // Clear current credentials and load from the other environment
     setGateways((prev) =>
-      prev.map((g) => (g.id === id ? { ...g, sandbox: !g.sandbox } : g))
+      prev.map((g) => g.id === id ? {
+        ...g,
+        sandbox: newSandbox,
+        credentials: g.credentials.map((c) => ({ ...c, value: "" })),
+      } : g)
     );
+
+    // Auto-save the sandbox toggle
+    try {
+      await fetch("/api/admin/gateways", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: id, displayName: gw.displayName,
+          isActive: gw.isActive, isDefault: gw.isDefault,
+          sandbox: newSandbox, credentials: {},
+        }),
+      });
+    } catch {}
+
+    // Reload credentials for the new environment
+    try {
+      const res = await fetch("/api/admin/gateways");
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        const match = json.data.find((s: any) => s.name === id);
+        if (match) {
+          const envPrefix = newSandbox ? "test_" : "live_";
+          setGateways((prev) =>
+            prev.map((g) => g.id === id ? {
+              ...g,
+              credentials: g.credentials.map((c) => {
+                const cfg = (match.configs || []).find((cf: any) => cf.key === `${envPrefix}${c.key}`);
+                return cfg ? { ...c, value: cfg.value } : { ...c, value: "" };
+              }),
+            } : g)
+          );
+        }
+      }
+    } catch {}
   };
 
   const setDefault = (id: string) => {
@@ -215,10 +266,12 @@ export default function GatewaysPage() {
 
     // Fetch real value from API
     try {
+      const gw = gateways.find((g) => g.id === gatewayId);
+      const envPrefix = gw?.sandbox ? "test_" : "live_";
       const res = await fetch("/api/admin/gateways/reveal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gatewayName: gatewayId, key: credKey }),
+        body: JSON.stringify({ gatewayName: gatewayId, key: `${envPrefix}${credKey}` }),
       });
       const json = await res.json();
       if (json.success && json.data?.value) {

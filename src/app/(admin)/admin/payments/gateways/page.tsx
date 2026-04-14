@@ -261,17 +261,40 @@ export default function GatewaysPage() {
                   })}
                 </div>
 
-                {/* Sandbox Toggle */}
-                <div className="flex items-center gap-3">
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={gateway.sandbox}
-                      onChange={() => toggleSandbox(gateway.id)}
-                      className="h-4 w-4 rounded accent-primary-600"
-                    />
-                    Modo Sandbox
-                  </label>
+                {/* Mode Toggle */}
+                <div className="rounded-xl border border-[var(--border)] p-4">
+                  <p className="text-sm font-semibold mb-3">Ambiente</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { if (!gateway.sandbox) toggleSandbox(gateway.id); }}
+                      className={cn(
+                        "flex-1 flex items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-medium transition-all",
+                        gateway.sandbox
+                          ? "border-amber-500 bg-amber-500/10 text-amber-400"
+                          : "border-surface-700 text-surface-500 hover:border-surface-500"
+                      )}
+                    >
+                      <div className={cn("h-2 w-2 rounded-full", gateway.sandbox ? "bg-amber-500" : "bg-surface-600")} />
+                      Teste
+                    </button>
+                    <button
+                      onClick={() => { if (gateway.sandbox) toggleSandbox(gateway.id); }}
+                      className={cn(
+                        "flex-1 flex items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-medium transition-all",
+                        !gateway.sandbox
+                          ? "border-emerald-500 bg-emerald-500/10 text-emerald-400"
+                          : "border-surface-700 text-surface-500 hover:border-surface-500"
+                      )}
+                    >
+                      <div className={cn("h-2 w-2 rounded-full", !gateway.sandbox ? "bg-emerald-500" : "bg-surface-600")} />
+                      Produção
+                    </button>
+                  </div>
+                  <p className="mt-2 text-xs text-surface-500">
+                    {gateway.sandbox
+                      ? "Usando chaves de teste. Pagamentos não são reais."
+                      : "Usando chaves de produção. Pagamentos reais ativados."}
+                  </p>
                 </div>
 
                 {/* Webhook URL */}

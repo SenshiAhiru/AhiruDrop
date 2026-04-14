@@ -67,7 +67,7 @@ export function DateTimePicker({ value, onChange, placeholder = "Selecione data 
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-2 rounded-xl border border-surface-700 bg-surface-900 p-4 shadow-2xl">
+        <div className="absolute z-50 bottom-full mb-2 rounded-xl border border-surface-700 bg-surface-900 p-4 shadow-2xl">
           <DayPicker
             mode="single"
             selected={selectedDate}

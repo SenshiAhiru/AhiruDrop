@@ -144,10 +144,28 @@ export default function GatewaysPage() {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  const toggleActive = (id: string) => {
+  const toggleActive = async (id: string) => {
+    const gw = gateways.find((g) => g.id === id);
+    if (!gw) return;
+    const newActive = !gw.isActive;
     setGateways((prev) =>
-      prev.map((g) => (g.id === id ? { ...g, isActive: !g.isActive } : g))
+      prev.map((g) => (g.id === id ? { ...g, isActive: newActive } : g))
     );
+    // Auto-save active state
+    try {
+      await fetch("/api/admin/gateways", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: id,
+          displayName: gw.displayName,
+          isActive: newActive,
+          isDefault: gw.isDefault,
+          sandbox: gw.sandbox,
+          credentials: {},
+        }),
+      });
+    } catch {}
   };
 
   const toggleSandbox = (id: string) => {
@@ -177,8 +195,39 @@ export default function GatewaysPage() {
     );
   };
 
-  const toggleFieldVisibility = (fieldKey: string) => {
-    setVisibleFields((prev) => ({ ...prev, [fieldKey]: !prev[fieldKey] }));
+  const [revealedValues, setRevealedValues] = useState<Record<string, string>>({});
+
+  const toggleFieldVisibility = async (gatewayId: string, credKey: string) => {
+    const fieldKey = `${gatewayId}-${credKey}`;
+    const isVisible = visibleFields[fieldKey];
+
+    if (isVisible) {
+      // Hide it
+      setVisibleFields((prev) => ({ ...prev, [fieldKey]: false }));
+      return;
+    }
+
+    // If already revealed, just toggle visibility
+    if (revealedValues[fieldKey]) {
+      setVisibleFields((prev) => ({ ...prev, [fieldKey]: true }));
+      return;
+    }
+
+    // Fetch real value from API
+    try {
+      const res = await fetch("/api/admin/gateways/reveal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gatewayName: gatewayId, key: credKey }),
+      });
+      const json = await res.json();
+      if (json.success && json.data?.value) {
+        setRevealedValues((prev) => ({ ...prev, [fieldKey]: json.data.value }));
+        // Update the credential value in the gateway state so it shows the real value
+        updateCredential(gatewayId, credKey, json.data.value);
+        setVisibleFields((prev) => ({ ...prev, [fieldKey]: true }));
+      }
+    } catch {}
   };
 
   const copyWebhook = (gatewayName: string) => {
@@ -296,7 +345,7 @@ export default function GatewaysPage() {
                           <button
                             type="button"
                             className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                            onClick={() => toggleFieldVisibility(fieldId)}
+                            onClick={() => toggleFieldVisibility(gateway.id, cred.key)}
                           >
                             {isVisible ? (
                               <EyeOff className="h-4 w-4" />

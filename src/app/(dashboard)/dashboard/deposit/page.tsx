@@ -145,13 +145,16 @@ export default function DepositPage() {
           <span className="text-3xl font-bold text-accent-400">+{numAhc} AHC</span>
         </div>
         <div className="flex gap-3">
-          <button
-            onClick={() => { setSuccess(false); setAhcAmount(""); setClientSecret(null); }}
+          <a
+            href="/dashboard/deposit"
             className="rounded-lg border border-surface-700 px-6 py-2.5 text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
           >
             Depositar mais
-          </button>
-          <a href="/raffles" className="rounded-lg bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors">
+          </a>
+          <a
+            href="/raffles"
+            className="rounded-lg bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
+          >
             Ver rifas
           </a>
         </div>

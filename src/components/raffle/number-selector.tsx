@@ -110,13 +110,13 @@ export function NumberSelector({
     switch (status) {
       case "AVAILABLE":
         return cn(
-          "bg-surface-800/60 text-surface-300",
+          "bg-surface-800/60 text-surface-200",
           canSelectMore && "hover:bg-surface-700/80 hover:text-white hover:ring-1 hover:ring-surface-600 cursor-pointer"
         );
       case "RESERVED":
-        return "bg-surface-800/30 text-surface-600 cursor-not-allowed";
+        return "bg-amber-500/10 text-amber-400/70 ring-1 ring-amber-500/20 cursor-not-allowed line-through opacity-70";
       case "PAID":
-        return "bg-surface-800/20 text-surface-700 cursor-not-allowed";
+        return "bg-emerald-500/10 text-emerald-400/80 ring-1 ring-emerald-500/30 cursor-not-allowed line-through";
     }
   }
 
@@ -217,16 +217,16 @@ export function NumberSelector({
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--muted-foreground)]">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-sm bg-surface-100 dark:bg-surface-800 border border-[var(--border)]" />
+          <span className="inline-block h-3 w-3 rounded-sm bg-surface-800/60" />
           Disponível
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-sm bg-surface-300 dark:bg-surface-700 opacity-60" />
+          <span className="inline-block h-3 w-3 rounded-sm bg-amber-500/20 ring-1 ring-amber-500/30" />
           Reservado
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-sm bg-surface-400 dark:bg-surface-600 opacity-40" />
-          Pago
+          <span className="inline-block h-3 w-3 rounded-sm bg-emerald-500/20 ring-1 ring-emerald-500/40" />
+          Vendido
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-sm bg-primary-500/30 ring-1 ring-primary-500/50" />

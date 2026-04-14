@@ -93,6 +93,7 @@ export default function RaffleDetailPage() {
   const slug = params.slug as string;
 
   const [raffle, setRaffle] = useState<Raffle | null>(null);
+  const [numbersData, setNumbersData] = useState<{ number: number; status: "AVAILABLE" | "RESERVED" | "PAID" }[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
@@ -113,6 +114,15 @@ export default function RaffleDetailPage() {
           return;
         }
         setRaffle(json.data);
+
+        // Fetch real per-number status (not just stats counts)
+        const numRes = await fetch(`/api/raffles/${json.data.id}/numbers`, { cache: "no-store" });
+        if (numRes.ok) {
+          const numJson = await numRes.json();
+          if (numJson.success && Array.isArray(numJson.data)) {
+            setNumbersData(numJson.data);
+          }
+        }
       } catch {
         setError(true);
       } finally {
@@ -125,6 +135,11 @@ export default function RaffleDetailPage() {
 
   const numbers = useMemo(() => {
     if (!raffle) return [];
+    // Prefer real per-number data from API
+    if (numbersData && numbersData.length > 0) {
+      return numbersData;
+    }
+    // Fallback: derive from stats counts (not ideal but keeps grid usable if fetch fails)
     const { stats } = raffle;
     const result: { number: number; status: "AVAILABLE" | "RESERVED" | "PAID" }[] = [];
     for (let i = 1; i <= raffle.totalNumbers; i++) {
@@ -137,7 +152,7 @@ export default function RaffleDetailPage() {
       result.push({ number: i, status });
     }
     return result;
-  }, [raffle]);
+  }, [raffle, numbersData]);
 
   const maxPerPurchase = raffle?.maxPerPurchase ?? 100;
   const canSelectMore = selectedNumbers.length < maxPerPurchase;

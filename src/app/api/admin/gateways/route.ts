@@ -4,41 +4,44 @@ import {
   errorResponse,
   handleApiError,
   requireAdmin,
-  validateBody,
 } from "@/lib/api-utils";
 import { prisma } from "@/lib/prisma";
-import { encrypt } from "@/lib/crypto";
-import { gatewayConfigSchema } from "@/validators/payment.validator";
+import { encrypt, decrypt } from "@/lib/crypto";
 
 export async function GET(req: NextRequest) {
   try {
     await requireAdmin();
 
     const gateways = await prisma.paymentGateway.findMany({
-      include: {
-        configs: {
-          select: {
-            id: true,
-            key: true,
-            // Do not return decrypted values -- only existence
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-      },
+      include: { configs: true },
       orderBy: { name: "asc" },
     });
 
-    // Mask credential values for security
-    const masked = gateways.map((gw) => ({
+    // Return configs with masked values (show last 4 chars)
+    const result = gateways.map((gw) => ({
       ...gw,
-      configs: gw.configs.map((c) => ({
-        ...c,
-        hasValue: true,
-      })),
+      configs: gw.configs.map((c) => {
+        let maskedValue = "";
+        try {
+          const decrypted = decrypt(c.value);
+          maskedValue = decrypted.length > 4
+            ? "•".repeat(decrypted.length - 4) + decrypted.slice(-4)
+            : "•".repeat(decrypted.length);
+        } catch {
+          // If not encrypted, use raw value masked
+          maskedValue = c.value.length > 4
+            ? "•".repeat(c.value.length - 4) + c.value.slice(-4)
+            : "•".repeat(c.value.length);
+        }
+        return {
+          key: c.key,
+          value: maskedValue,
+          hasValue: c.value.length > 0,
+        };
+      }),
     }));
 
-    return successResponse(masked);
+    return successResponse(result);
   } catch (error) {
     return handleApiError(error);
   }
@@ -47,15 +50,19 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin();
-    const { data, error } = await validateBody(req, gatewayConfigSchema);
 
-    if (error) {
-      return errorResponse(error, 422);
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return errorResponse("JSON inválido", 400);
     }
 
-    const { name, displayName, isActive, isDefault, sandbox, credentials } = data!;
+    const { name, displayName, isActive, isDefault, sandbox, credentials } = body;
 
-    // If isDefault, clear other defaults first
+    if (!name) return errorResponse("Nome do gateway é obrigatório", 400);
+
+    // If setting as default, clear others first
     if (isDefault) {
       await prisma.paymentGateway.updateMany({
         where: { isDefault: true },
@@ -67,49 +74,45 @@ export async function POST(req: NextRequest) {
     const gateway = await prisma.paymentGateway.upsert({
       where: { name },
       update: {
-        displayName,
-        isActive,
-        isDefault,
-        sandbox,
+        displayName: displayName || name,
+        isActive: Boolean(isActive),
+        isDefault: Boolean(isDefault),
+        sandbox: Boolean(sandbox),
       },
       create: {
         name,
-        displayName,
-        isActive,
-        isDefault,
-        sandbox,
+        displayName: displayName || name,
+        isActive: Boolean(isActive),
+        isDefault: Boolean(isDefault),
+        sandbox: Boolean(sandbox),
       },
     });
 
-    // Upsert each credential with encrypted value
-    for (const [key, value] of Object.entries(credentials)) {
-      const encryptedValue = encrypt(value);
+    // Upsert each credential (only if value is provided and not masked)
+    if (credentials && typeof credentials === "object") {
+      for (const [key, value] of Object.entries(credentials)) {
+        const strValue = String(value);
+        // Skip masked values (contain dots) - only save real values
+        if (!strValue || strValue.includes("•")) continue;
 
-      await prisma.paymentGatewayConfig.upsert({
-        where: {
-          gatewayId_key: {
-            gatewayId: gateway.id,
-            key,
-          },
-        },
-        update: { value: encryptedValue },
-        create: {
-          gatewayId: gateway.id,
-          key,
-          value: encryptedValue,
-        },
-      });
+        const encryptedValue = encrypt(strValue);
+        await prisma.paymentGatewayConfig.upsert({
+          where: { gatewayId_key: { gatewayId: gateway.id, key } },
+          update: { value: encryptedValue },
+          create: { gatewayId: gateway.id, key, value: encryptedValue },
+        });
+      }
     }
 
     return successResponse({
       id: gateway.id,
       name: gateway.name,
-      displayName: gateway.displayName,
       isActive: gateway.isActive,
       isDefault: gateway.isDefault,
       sandbox: gateway.sandbox,
     }, 201);
   } catch (error) {
+    console.error("Gateway save error:", error);
     return handleApiError(error);
   }
 }

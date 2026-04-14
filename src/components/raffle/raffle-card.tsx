@@ -155,10 +155,12 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
           <p className="-mt-2 text-xs text-[var(--muted-foreground)]">{skinWeapon}</p>
         )}
 
-        <div className="flex items-baseline gap-1.5">
+        <div className="flex items-center gap-1.5">
           <span className="text-xs text-[var(--muted-foreground)]">por cota</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/ahc-coin.png" alt="AHC" className="h-4 w-4 rounded-full" />
           <span className="text-lg font-bold text-accent-500">
-            {formatCurrency(pricePerNumber)}
+            {pricePerNumber} <span className="text-xs">AHC</span>
           </span>
         </div>
 

@@ -364,18 +364,23 @@ export default function RaffleDetailPage() {
               )}
 
               {/* CTA */}
-              <Link href="/login">
-                <Button size="lg" className="w-full shadow-lg shadow-primary-600/25 text-lg h-14">
-                  Participar
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                className="w-full shadow-lg shadow-primary-600/25 text-lg h-14"
+                onClick={() => {
+                  const el = document.getElementById("number-selector");
+                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+              >
+                Participar
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Number Selector Section */}
-      <div className="mx-auto max-w-7xl px-6 py-10">
+      <div id="number-selector" className="mx-auto max-w-7xl px-6 py-10 scroll-mt-20">
         <NumberSelector
           raffleId={raffle.id}
           numbers={numbers}

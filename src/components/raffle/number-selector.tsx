@@ -187,17 +187,26 @@ export function NumberSelector({
 
       {/* Bottom summary */}
       {selectedNumbers.length > 0 && (
-        <div className="flex items-center justify-between rounded-xl border border-surface-700 bg-surface-800/50 p-4">
-          <div>
+        <div className="rounded-xl border border-surface-700 bg-surface-800/50 p-4 space-y-3">
+          <div className="flex items-center justify-between">
             <p className="text-sm text-[var(--muted-foreground)]">
               {selectedNumbers.length} {selectedNumbers.length === 1 ? "cota selecionada" : "cotas selecionadas"}
             </p>
-            <p className="text-2xl font-bold text-primary-500">
-              {formatCurrency(total)}
-            </p>
+            <div className="flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/ahc-coin.png" alt="AHC" className="h-5 w-5 rounded-full" />
+              <span className="text-2xl font-bold text-accent-400">{total.toFixed(2)} AHC</span>
+            </div>
           </div>
-          <Button size="lg" className="shadow-lg shadow-primary-600/25">
-            Comprar
+          <Button
+            size="lg"
+            className="w-full shadow-lg shadow-primary-600/25"
+            onClick={() => {
+              alert(`Funcionalidade em implementação!\n\nResumo:\n${selectedNumbers.length} cotas × ${pricePerNumber} AHC = ${total.toFixed(2)} AHC\nNúmeros: ${selectedNumbers.join(", ")}`);
+            }}
+          >
+            <img src="/ahc-coin.png" alt="" className="h-5 w-5 rounded-full mr-2" />
+            Comprar com {total.toFixed(2)} AHC
           </Button>
         </div>
       )}

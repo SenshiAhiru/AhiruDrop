@@ -39,8 +39,16 @@ export const drawService = {
     let drawMethod = "crypto";
 
     if (hasCommit) {
+      console.log("[drawService] Provably fair path; raffleId=", raffleId);
       // Reveal the committed seed
-      serverSeedRevealed = decrypt(raffleAny.serverSeedEncrypted);
+      try {
+        serverSeedRevealed = decrypt(raffleAny.serverSeedEncrypted);
+      } catch (err) {
+        console.error("[drawService] decrypt failed:", err);
+        throw new Error(
+          "Falha ao decifrar o seed. Verifique a variável GATEWAY_ENCRYPTION_KEY."
+        );
+      }
 
       // Sanity check — hash must match what was committed
       if (hashSeed(serverSeedRevealed) !== raffleAny.serverSeedHash) {
@@ -51,20 +59,27 @@ export const drawService = {
 
       // Determine beacon block height
       blockHeight = raffleAny.drawBlockHeight ?? null;
+      console.log("[drawService] drawBlockHeight from raffle:", blockHeight);
+
       if (!blockHeight) {
         // Backfill: pick the current tip now as the beacon
         blockHeight = await getCurrentBtcHeight();
+        console.log("[drawService] backfilled blockHeight with tip:", blockHeight);
       } else {
         // Ensure block is mined — if target height > current tip, refuse
         const tip = await getCurrentBtcHeight();
+        console.log("[drawService] current BTC tip:", tip);
         if (blockHeight > tip) {
+          const blocksAway = blockHeight - tip;
+          const minutesAway = blocksAway * 10;
           throw new Error(
-            `Bloco alvo ainda não foi minerado. Altura atual: ${tip}, alvo: ${blockHeight}. Aguarde alguns minutos.`
+            `Bloco alvo ainda não foi minerado. Faltam ${blocksAway} bloco(s) (~${minutesAway}min). Tip atual: ${tip}, alvo: ${blockHeight}.`
           );
         }
       }
 
       blockHash = await getBtcBlockHashAtHeight(blockHeight);
+      console.log("[drawService] blockHash:", blockHash);
 
       winningIndex = computeWinningIndex(
         serverSeedRevealed,

@@ -31,16 +31,25 @@ export async function POST(
 
     return successResponse(result);
   } catch (error) {
+    console.error("[Draw API] Error:", error);
     if (error instanceof Error) {
       const knownErrors = [
         "Rifa não encontrada",
         "precisa estar fechada",
         "Nenhum número foi vendido",
+        "Bloco alvo ainda não foi minerado",
+        "Falha de integridade",
+        "Failed to fetch Bitcoin",
+        "Block",
+        "Invalid",
       ];
 
       if (knownErrors.some((msg) => error.message.includes(msg))) {
         return errorResponse(error.message, 400);
       }
+
+      // Surface the raw error message so the admin can debug
+      return errorResponse(`Erro no sorteio: ${error.message}`, 500);
     }
     return handleApiError(error);
   }

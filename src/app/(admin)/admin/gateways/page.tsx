@@ -94,12 +94,13 @@ export default function GatewaysPage() {
                   isDefault: match.isDefault ?? gw.isDefault,
                   sandbox: match.sandbox ?? gw.sandbox,
                   credentials: gw.credentials.map((c) => {
-                    const envPrefix = (match.sandbox ? "test_" : "live_");
-                    const cfg = (match.configs || []).find((cf: any) => cf.key === `${envPrefix}${c.key}`);
-                    // Fallback to unprefixed for backwards compatibility
-                    const cfgFallback = (match.configs || []).find((cf: any) => cf.key === c.key);
-                    const found = cfg || cfgFallback;
-                    return found ? { ...c, value: found.value } : c;
+                    const sandbox = match.sandbox ?? gw.sandbox;
+                    const prefix = sandbox ? "test_" : "live_";
+                    // Try prefixed first, then unprefixed fallback
+                    const cfg = (match.configs || []).find((cf: any) =>
+                      cf.key === `${prefix}${c.key}` || cf.key === c.key
+                    );
+                    return cfg ? { ...c, value: cfg.value } : c;
                   }),
                 };
               })
@@ -215,7 +216,9 @@ export default function GatewaysPage() {
             prev.map((g) => g.id === id ? {
               ...g,
               credentials: g.credentials.map((c) => {
-                const cfg = (match.configs || []).find((cf: any) => cf.key === `${envPrefix}${c.key}`);
+                const cfg = (match.configs || []).find((cf: any) =>
+                  cf.key === `${envPrefix}${c.key}` || cf.key === c.key
+                );
                 return cfg ? { ...c, value: cfg.value } : { ...c, value: "" };
               }),
             } : g)
@@ -268,15 +271,24 @@ export default function GatewaysPage() {
     try {
       const gw = gateways.find((g) => g.id === gatewayId);
       const envPrefix = gw?.sandbox ? "test_" : "live_";
-      const res = await fetch("/api/admin/gateways/reveal", {
+      // Try prefixed key first
+      let res = await fetch("/api/admin/gateways/reveal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ gatewayName: gatewayId, key: `${envPrefix}${credKey}` }),
       });
-      const json = await res.json();
+      let json = await res.json();
+      // Fallback to unprefixed
+      if (!json.success || !json.data?.value) {
+        res = await fetch("/api/admin/gateways/reveal", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ gatewayName: gatewayId, key: credKey }),
+        });
+        json = await res.json();
+      }
       if (json.success && json.data?.value) {
         setRevealedValues((prev) => ({ ...prev, [fieldKey]: json.data.value }));
-        // Update the credential value in the gateway state so it shows the real value
         updateCredential(gatewayId, credKey, json.data.value);
         setVisibleFields((prev) => ({ ...prev, [fieldKey]: true }));
       }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
 import {
   Save,
   Play,
@@ -11,6 +12,7 @@ import {
   Trash2,
   CalendarDays,
   BarChart3,
+  Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DateTimePicker } from "@/components/ui/date-picker";
@@ -243,7 +245,15 @@ export default function EditRafflePage() {
             {raffle.createdAt && <span>Criada em {formatDate(raffle.createdAt)}</span>}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          {raffle.status === "CLOSED" && (
+            <Link href={`/admin/raffles/${raffle.id}/draw`}>
+              <Button variant="accent" size="sm">
+                <Trophy className="h-4 w-4" />
+                Realizar sorteio
+              </Button>
+            </Link>
+          )}
           {actions.map((action) => (
             <Button
               key={action.label}

@@ -25,7 +25,7 @@ export async function POST(
       raffleId,
       {
         winningNumber: result.winningNumber,
-        drawId: result.id,
+        drawId: result.draw.id,
       }
     );
 

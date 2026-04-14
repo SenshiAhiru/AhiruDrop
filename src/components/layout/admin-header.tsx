@@ -2,6 +2,7 @@
 
 import { Menu } from "lucide-react";
 import { UserMenu } from "@/components/shared/user-menu";
+import { AhcBalance } from "@/components/shared/ahc-balance";
 
 interface AdminHeaderProps {
   title?: string;
@@ -23,7 +24,10 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
           <h1 className="text-lg font-semibold text-[var(--foreground)]">{title}</h1>
         )}
       </div>
-      <UserMenu />
+      <div className="flex items-center gap-2">
+        <AhcBalance />
+        <UserMenu />
+      </div>
     </header>
   );
 }

@@ -8,6 +8,7 @@ import { Menu, Sun, Moon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
 import { UserMenu } from "@/components/shared/user-menu";
+import { AhcBalance } from "@/components/shared/ahc-balance";
 import { useTheme } from "@/components/providers/theme-provider";
 
 const navLinks = [
@@ -58,7 +59,8 @@ export function PublicHeader() {
               </button>
 
               {session?.user ? (
-                <div className="hidden md:block">
+                <div className="hidden md:flex items-center gap-2">
+                  <AhcBalance />
                   <UserMenu />
                 </div>
               ) : (

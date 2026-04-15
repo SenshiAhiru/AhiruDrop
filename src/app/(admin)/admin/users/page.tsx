@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import {
   Search,
   Users,
@@ -10,6 +11,7 @@ import {
   UserCheck,
   UserX,
   Trophy,
+  Eye,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -128,7 +130,10 @@ export default function UsersPage() {
       key: "name",
       label: "Usuário",
       render: (item) => (
-        <div className="flex items-center gap-3">
+        <Link
+          href={`/admin/users/${item.id}`}
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+        >
           {item.avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -142,12 +147,14 @@ export default function UsersPage() {
             </div>
           )}
           <div className="min-w-0">
-            <p className="font-medium text-sm truncate">{item.name as string}</p>
+            <p className="font-medium text-sm truncate hover:text-primary-400">
+              {item.name as string}
+            </p>
             <p className="text-xs text-[var(--muted-foreground)] truncate">
               {item.email as string}
             </p>
           </div>
-        </div>
+        </Link>
       ),
     },
     {
@@ -228,6 +235,11 @@ export default function UsersPage() {
         const isUpdating = updatingId === user.id;
         return (
           <div className="flex items-center gap-1 justify-end">
+            <Link href={`/admin/users/${user.id}`} title="Ver detalhes">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Eye className="h-4 w-4" />
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               size="icon"

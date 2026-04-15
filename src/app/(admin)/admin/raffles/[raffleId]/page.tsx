@@ -149,10 +149,17 @@ export default function EditRafflePage() {
   };
 
   const handleStatusChange = (label: string, newStatus: string) => {
+    const hasPaidTickets = stats.paid > 0;
+    const isCancelling = newStatus === "CANCELLED";
+    const refundWarning =
+      isCancelling && hasPaidTickets
+        ? `\n\n⚠️ ${stats.paid} número(s) vendido(s) serão reembolsados automaticamente e os usuários receberão uma notificação.`
+        : "";
+
     setConfirmDialog({
       open: true,
       title: `${label} Rifa`,
-      description: `Tem certeza que deseja ${label.toLowerCase()} esta rifa? Esta ação pode afetar pedidos em andamento.`,
+      description: `Tem certeza que deseja ${label.toLowerCase()} esta rifa?${refundWarning}`,
       action: async () => {
         try {
           const res = await fetch(`/api/admin/raffles/${raffleId}`, {
@@ -174,11 +181,15 @@ export default function EditRafflePage() {
   };
 
   const handleDelete = () => {
+    const hasPaidTickets = stats.paid > 0;
+    const refundWarning = hasPaidTickets
+      ? `\n\n⚠️ ${stats.paid} número(s) vendido(s) serão reembolsados automaticamente antes da exclusão e os usuários notificados.`
+      : "";
+
     setConfirmDialog({
       open: true,
       title: "Excluir Rifa",
-      description:
-        "Tem certeza que deseja excluir esta rifa permanentemente? Esta ação não pode ser desfeita.",
+      description: `Tem certeza que deseja excluir esta rifa permanentemente? Esta ação não pode ser desfeita.${refundWarning}`,
       action: async () => {
         setIsDeleting(true);
         try {

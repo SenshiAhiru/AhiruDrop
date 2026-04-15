@@ -1,6 +1,7 @@
 import { raffleRepository } from "@/repositories/raffle.repository";
 import { raffleNumberRepository } from "@/repositories/raffle-number.repository";
 import { notificationService } from "./notification.service";
+import { prisma } from "@/lib/prisma";
 import { generateSlug } from "@/lib/utils";
 import { RaffleStatus } from "@prisma/client";
 import { encrypt } from "@/lib/crypto";
@@ -149,6 +150,14 @@ export const raffleService = {
       throw new Error(`Transição de ${raffle.status} para ${status} não permitida`);
     }
 
+    // Refund all participants when cancelling
+    if (status === "CANCELLED") {
+      const result = await this.refundParticipants(id, raffle.title);
+      console.log(
+        `[raffle] Cancelled raffle ${id}: refunded ${result.refundedUsers} users, ${result.totalRefunded.toFixed(2)} AHC`
+      );
+    }
+
     const updateData: any = { status };
     if (status === "CLOSED") updateData.closedAt = new Date();
 
@@ -170,9 +179,115 @@ export const raffleService = {
     return updated;
   },
 
+  /**
+   * Refunds all participants of a raffle.
+   * For each user who bought tickets: increments balance by what they paid,
+   * marks their orders as REFUNDED, and sends a notification.
+   * Returns the number of users refunded.
+   */
+  async refundParticipants(raffleId: string, raffleTitle: string) {
+    // Find all PAID numbers for this raffle with their orders
+    const paidNumbers = await prisma.raffleNumber.findMany({
+      where: { raffleId, status: "PAID" },
+      select: { id: true, number: true, orderId: true },
+    });
+
+    if (paidNumbers.length === 0) return { refundedUsers: 0, totalRefunded: 0 };
+
+    const orderIds = Array.from(
+      new Set(paidNumbers.map((n) => n.orderId).filter((v): v is string => Boolean(v)))
+    );
+
+    if (orderIds.length === 0) return { refundedUsers: 0, totalRefunded: 0 };
+
+    // Get orders with their users and amounts
+    const orders = await prisma.order.findMany({
+      where: { id: { in: orderIds }, status: "CONFIRMED" },
+      select: {
+        id: true,
+        userId: true,
+        finalAmount: true,
+        user: { select: { id: true, name: true } },
+      },
+    });
+
+    // Group refund amounts by user
+    const refundByUser = new Map<string, { name: string; amount: number; orderIds: string[] }>();
+    for (const order of orders) {
+      const entry = refundByUser.get(order.userId);
+      const amount = Number(order.finalAmount);
+      if (entry) {
+        entry.amount += amount;
+        entry.orderIds.push(order.id);
+      } else {
+        refundByUser.set(order.userId, {
+          name: order.user.name ?? "Usuário",
+          amount,
+          orderIds: [order.id],
+        });
+      }
+    }
+
+    // Execute refunds in a transaction
+    let totalRefunded = 0;
+    await prisma.$transaction(async (tx) => {
+      for (const [userId, info] of refundByUser) {
+        // Refund balance
+        await tx.user.update({
+          where: { id: userId },
+          data: { balance: { increment: info.amount } },
+        });
+
+        // Mark orders as REFUNDED
+        await tx.order.updateMany({
+          where: { id: { in: info.orderIds } },
+          data: { status: "REFUNDED" },
+        });
+
+        totalRefunded += info.amount;
+      }
+
+      // Release all numbers back to AVAILABLE (they'll be deleted shortly if deleting the raffle)
+      await tx.raffleNumber.updateMany({
+        where: { raffleId, status: "PAID" },
+        data: { status: "AVAILABLE", orderId: null },
+      });
+
+      // Also release RESERVED numbers
+      await tx.raffleNumber.updateMany({
+        where: { raffleId, status: "RESERVED" },
+        data: { status: "AVAILABLE", orderId: null, reservedUntil: null },
+      });
+    });
+
+    // Send notifications to each refunded user (fire-and-forget)
+    for (const [userId, info] of refundByUser) {
+      try {
+        await notificationService.create(
+          userId,
+          "SYSTEM",
+          "Reembolso de rifa cancelada",
+          `A rifa "${raffleTitle}" foi cancelada. Seus ${info.amount.toFixed(2)} AHC foram devolvidos ao seu saldo.`,
+          { raffleTitle, amount: info.amount, link: "/dashboard" }
+        );
+      } catch (err) {
+        console.error(`[raffle] failed to notify user ${userId} of refund:`, err);
+      }
+    }
+
+    console.log(
+      `[raffle] Refunded ${refundByUser.size} users totaling ${totalRefunded.toFixed(2)} AHC for raffle ${raffleId}`
+    );
+
+    return { refundedUsers: refundByUser.size, totalRefunded };
+  },
+
   async delete(id: string) {
     const raffle = await raffleRepository.findById(id);
     if (!raffle) throw new Error("Rifa não encontrada");
+
+    // Refund all participants before deleting
+    await this.refundParticipants(id, raffle.title);
 
     return raffleRepository.delete(id);
   },

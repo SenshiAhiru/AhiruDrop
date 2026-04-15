@@ -118,7 +118,7 @@ export function NumberSelector({
         return "bg-amber-500/10 text-amber-400/70 ring-1 ring-amber-500/20 cursor-not-allowed line-through opacity-70";
       case "PAID":
         return mine
-          ? "bg-primary-500/15 text-primary-400 ring-2 ring-primary-500/50 cursor-not-allowed font-bold"
+          ? "bg-amber-500/15 text-amber-400 ring-2 ring-amber-500/50 cursor-not-allowed font-bold"
           : "bg-emerald-500/10 text-emerald-400/80 ring-1 ring-emerald-500/30 cursor-not-allowed line-through";
     }
   }
@@ -225,15 +225,11 @@ export function NumberSelector({
           Disponível
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-sm bg-amber-500/20 ring-1 ring-amber-500/30" />
-          Reservado
-        </span>
-        <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-sm bg-emerald-500/20 ring-1 ring-emerald-500/40" />
           Vendido
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-sm bg-primary-500/15 ring-2 ring-primary-500/50" />
+          <span className="inline-block h-3 w-3 rounded-sm bg-amber-500/15 ring-2 ring-amber-500/50" />
           Meu número
         </span>
         <span className="flex items-center gap-1.5">

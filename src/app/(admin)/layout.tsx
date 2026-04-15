@@ -16,6 +16,7 @@ import {
   BarChart3,
   MessageSquare,
   Activity,
+  Bell,
 } from "lucide-react";
 
 const mobileNavItems = [
@@ -30,6 +31,7 @@ const mobileNavItems = [
   { label: "Relatórios", href: "/admin/reports", icon: BarChart3 },
   { label: "Auditoria", href: "/admin/audit", icon: Activity },
   { label: "Suporte", href: "/admin/support", icon: MessageSquare },
+  { label: "Notificações", href: "/admin/notifications", icon: Bell },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

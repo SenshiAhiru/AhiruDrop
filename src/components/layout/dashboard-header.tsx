@@ -3,6 +3,7 @@
 import { Menu } from "lucide-react";
 import { UserMenu } from "@/components/shared/user-menu";
 import { AhcBalance } from "@/components/shared/ahc-balance";
+import { NotificationBell } from "@/components/shared/notification-bell";
 
 interface DashboardHeaderProps {
   onMenuToggle?: () => void;
@@ -23,6 +24,7 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
       </div>
       <div className="flex items-center gap-2">
         <AhcBalance />
+        <NotificationBell href="/dashboard/notifications" />
         <UserMenu />
       </div>
     </header>

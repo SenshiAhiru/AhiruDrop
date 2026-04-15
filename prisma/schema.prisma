@@ -53,6 +53,12 @@ enum NotificationType {
   WINNER_NOTIFICATION
   TICKET_EXPIRED
   SYSTEM
+  // Support
+  SUPPORT_NEW_TICKET
+  SUPPORT_NEW_MESSAGE
+  // Admin-only operational
+  RAFFLE_READY_TO_DRAW
+  BIG_DEPOSIT
 }
 
 enum TicketStatus {

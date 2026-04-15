@@ -15,6 +15,7 @@ import {
   BarChart3,
   MessageSquare,
   Activity,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -38,6 +39,7 @@ const navItems: NavItem[] = [
   { label: "Relatórios", href: "/admin/reports", icon: BarChart3 },
   { label: "Auditoria", href: "/admin/audit", icon: Activity },
   { label: "Suporte", href: "/admin/support", icon: MessageSquare },
+  { label: "Notificações", href: "/admin/notifications", icon: Bell },
 ];
 
 interface AdminSidebarProps {

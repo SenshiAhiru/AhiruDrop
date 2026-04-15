@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
+import { notificationService } from "@/services/notification.service";
 import Stripe from "stripe";
+
+const BIG_DEPOSIT_THRESHOLD_AHC = 500;
 
 async function getWebhookSecrets(): Promise<string[]> {
   try {
@@ -85,14 +88,28 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-      await prisma.user.update({
+      const updated = await prisma.user.update({
         where: { id: userId },
         data: {
           balance: { increment: ahcAmount },
         },
+        select: { name: true },
       });
 
       console.log(`Webhook: Credited ${ahcAmount} AHC to user ${userId}`);
+
+      // Notify admins if deposit crosses the threshold
+      if (ahcAmount >= BIG_DEPOSIT_THRESHOLD_AHC) {
+        try {
+          await notificationService.notifyAdminsBigDeposit(
+            userId,
+            updated.name ?? "Usuário",
+            ahcAmount
+          );
+        } catch (err) {
+          console.error("Failed to notify admins of big deposit:", err);
+        }
+      }
     } catch (error) {
       console.error("Failed to credit AHC:", error);
       return NextResponse.json({ error: "Failed to credit" }, { status: 500 });

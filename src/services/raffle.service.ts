@@ -1,5 +1,6 @@
 import { raffleRepository } from "@/repositories/raffle.repository";
 import { raffleNumberRepository } from "@/repositories/raffle-number.repository";
+import { notificationService } from "./notification.service";
 import { generateSlug } from "@/lib/utils";
 import { RaffleStatus } from "@prisma/client";
 import { encrypt } from "@/lib/crypto";
@@ -151,7 +152,22 @@ export const raffleService = {
     const updateData: any = { status };
     if (status === "CLOSED") updateData.closedAt = new Date();
 
-    return raffleRepository.update(id, updateData);
+    const updated = await raffleRepository.update(id, updateData);
+
+    // Notify admins when raffle becomes CLOSED (ready to draw)
+    if (status === "CLOSED" && raffle.status !== "CLOSED") {
+      try {
+        await notificationService.notifyAdminsRaffleReadyToDraw(
+          raffle.id,
+          raffle.title,
+          raffle.slug
+        );
+      } catch (err) {
+        console.error("[raffle] failed to notify admins of closed raffle:", err);
+      }
+    }
+
+    return updated;
   },
 
   async delete(id: string) {

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -11,79 +12,140 @@ import {
   ShoppingCart,
   Info,
   BellOff,
+  MessageSquare,
+  MessageCircle,
+  Loader2,
+  AlertTriangle,
+  Clock,
+  Coins,
+  ExternalLink,
 } from "lucide-react";
+import { usePoll } from "@/hooks/use-poll";
+import { cn } from "@/lib/utils";
 
-type NotificationType = "raffle" | "payment" | "order" | "system";
-
-interface Notification {
+type NotificationItem = {
   id: string;
-  type: NotificationType;
+  type: string;
   title: string;
   message: string;
-  timeAgo: string;
-  read: boolean;
-}
-
-// Empty until API is connected
-const initialNotifications: Notification[] = [];
-
-const typeConfig: Record<
-  NotificationType,
-  { icon: typeof Bell; color: string; bg: string }
-> = {
-  raffle: { icon: Trophy, color: "text-primary-400", bg: "bg-primary-500/10" },
-  payment: { icon: CreditCard, color: "text-success", bg: "bg-success/10" },
-  order: { icon: ShoppingCart, color: "text-accent-400", bg: "bg-accent-500/10" },
-  system: { icon: Info, color: "text-[var(--muted-foreground)]", bg: "bg-[var(--muted)]" },
+  data: Record<string, any> | null;
+  readAt: string | null;
+  createdAt: string;
 };
 
+const typeConfig: Record<
+  string,
+  { icon: typeof Bell; color: string; bg: string }
+> = {
+  WINNER_NOTIFICATION: { icon: Trophy, color: "text-accent-400", bg: "bg-accent-500/10" },
+  RAFFLE_DRAWN: { icon: Trophy, color: "text-accent-400", bg: "bg-accent-500/10" },
+  PAYMENT_RECEIVED: { icon: CreditCard, color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  ORDER_CONFIRMED: { icon: ShoppingCart, color: "text-primary-400", bg: "bg-primary-500/10" },
+  TICKET_EXPIRED: { icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10" },
+  SUPPORT_NEW_TICKET: { icon: MessageSquare, color: "text-blue-400", bg: "bg-blue-500/10" },
+  SUPPORT_NEW_MESSAGE: { icon: MessageCircle, color: "text-blue-400", bg: "bg-blue-500/10" },
+  RAFFLE_READY_TO_DRAW: { icon: AlertTriangle, color: "text-amber-400", bg: "bg-amber-500/10" },
+  BIG_DEPOSIT: { icon: Coins, color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  SYSTEM: { icon: Info, color: "text-surface-400", bg: "bg-surface-800" },
+};
+
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "agora";
+  if (mins < 60) return `${mins} min atrás`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h atrás`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d atrás`;
+  return new Date(iso).toLocaleDateString("pt-BR");
+}
+
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [markingAll, setMarkingAll] = useState(false);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const load = useCallback(async (opts?: { silent?: boolean }) => {
+    try {
+      const res = await fetch("/api/user/notifications?limit=50", { cache: "no-store" });
+      const json = await res.json();
+      if (json.success) {
+        setNotifications(json.data.data);
+      }
+    } finally {
+      if (!opts?.silent) setLoading(false);
+    }
+  }, []);
 
-  function markAllRead() {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  // Poll every 10s while tab is visible
+  usePoll(() => load({ silent: true }), 10000);
+
+  const unreadCount = notifications.filter((n) => !n.readAt).length;
+
+  async function markAllRead() {
+    if (markingAll || unreadCount === 0) return;
+    setMarkingAll(true);
+    try {
+      await fetch("/api/user/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ all: true }),
+      });
+      await load({ silent: true });
+    } finally {
+      setMarkingAll(false);
+    }
   }
 
-  function markAsRead(id: string) {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+  async function markOneRead(id: string) {
+    // Optimistic
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, readAt: new Date().toISOString() } : n)));
+    await fetch("/api/user/notifications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: [id] }),
+    });
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 max-w-3xl">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-[var(--foreground)]">Notificações</h1>
           <p className="text-[var(--muted-foreground)] mt-1">
             {unreadCount > 0
-              ? `Você tem ${unreadCount} notificação${unreadCount > 1 ? "ões" : ""} não lida${unreadCount > 1 ? "s" : ""}`
-              : "Todas as notificações foram lidas"}
+              ? `${unreadCount} não lida${unreadCount > 1 ? "s" : ""}`
+              : "Tudo lido!"}
           </p>
         </div>
         {unreadCount > 0 && (
-          <Button variant="outline" size="sm" onClick={markAllRead}>
-            <CheckCheck className="h-4 w-4 mr-2" />
+          <Button variant="outline" size="sm" onClick={markAllRead} disabled={markingAll}>
+            {markingAll ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCheck className="h-4 w-4" />}
             Marcar todas como lidas
           </Button>
         )}
       </div>
 
-      {/* Notifications List */}
-      {notifications.length === 0 ? (
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+        </div>
+      ) : notifications.length === 0 ? (
         <Card>
           <CardContent className="py-16">
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--muted)]">
-                <BellOff className="h-8 w-8 text-[var(--muted-foreground)]" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-800">
+                <BellOff className="h-8 w-8 text-surface-500" />
               </div>
               <h3 className="text-lg font-semibold text-[var(--foreground)]">
                 Nenhuma notificação
               </h3>
-              <p className="text-sm text-[var(--muted-foreground)] max-w-xs">
+              <p className="text-sm text-surface-400 max-w-xs">
                 Você ainda não tem notificações. Elas aparecerão aqui quando houver novidades.
               </p>
             </div>
@@ -91,49 +153,59 @@ export default function NotificationsPage() {
         </Card>
       ) : (
         <div className="space-y-2">
-          {notifications.map((notification) => {
-            const config = typeConfig[notification.type];
+          {notifications.map((n) => {
+            const config = typeConfig[n.type] ?? typeConfig.SYSTEM;
             const Icon = config.icon;
+            const link = (n.data?.link as string | undefined) ?? null;
+            const isUnread = !n.readAt;
 
-            return (
-              <button
-                key={notification.id}
-                onClick={() => markAsRead(notification.id)}
-                className="w-full text-left"
+            const body = (
+              <div className="flex items-start gap-3">
+                <div className={cn("flex h-10 w-10 items-center justify-center rounded-xl flex-shrink-0", config.bg)}>
+                  <Icon className={cn("h-5 w-5", config.color)} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-sm font-semibold text-[var(--foreground)]">{n.title}</p>
+                    {isUnread && <span className="h-2 w-2 rounded-full bg-primary-500 flex-shrink-0" />}
+                  </div>
+                  <p className="text-sm text-surface-400 break-words">{n.message}</p>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <p className="text-[10px] text-surface-500">{timeAgo(n.createdAt)}</p>
+                    {link && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-400">
+                        Abrir <ExternalLink className="h-2.5 w-2.5" />
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+
+            const className = cn(
+              "block rounded-xl border p-4 transition-all cursor-pointer hover:border-primary-500/40",
+              isUnread
+                ? "border-primary-500/30 bg-primary-500/5"
+                : "border-surface-700 bg-surface-900/40"
+            );
+
+            return link ? (
+              <Link
+                key={n.id}
+                href={link}
+                onClick={() => isUnread && markOneRead(n.id)}
+                className={className}
               >
-                <Card
-                  className={`transition-all cursor-pointer hover:border-primary-500/30 ${
-                    !notification.read
-                      ? "border-primary-500/20 bg-primary-500/5"
-                      : ""
-                  }`}
-                >
-                  <CardContent className="py-4">
-                    <div className="flex items-start gap-4">
-                      <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-xl flex-shrink-0 ${config.bg}`}
-                      >
-                        <Icon className={`h-5 w-5 ${config.color}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <p className="text-sm font-semibold text-[var(--foreground)]">
-                            {notification.title}
-                          </p>
-                          {!notification.read && (
-                            <div className="h-2 w-2 rounded-full bg-primary-500 flex-shrink-0" />
-                          )}
-                        </div>
-                        <p className="text-sm text-[var(--muted-foreground)] line-clamp-2">
-                          {notification.message}
-                        </p>
-                        <p className="text-xs text-[var(--muted-foreground)] mt-1.5 opacity-70">
-                          {notification.timeAgo}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                {body}
+              </Link>
+            ) : (
+              <button
+                key={n.id}
+                type="button"
+                onClick={() => isUnread && markOneRead(n.id)}
+                className={cn("w-full text-left", className)}
+              >
+                {body}
               </button>
             );
           })}

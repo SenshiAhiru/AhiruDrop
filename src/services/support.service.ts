@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { TicketStatus } from "@prisma/client";
+import { notificationService } from "./notification.service";
 
 export const SUPPORT_CATEGORIES = [
   { value: "duvida", label: "Dúvida geral" },
@@ -25,8 +26,8 @@ export const supportService = {
     if (body.length < 5) throw new Error("Mensagem muito curta");
     if (body.length > 5000) throw new Error("Mensagem muito longa");
 
-    return prisma.$transaction(async (tx) => {
-      const ticket = await tx.supportTicket.create({
+    const ticket = await prisma.$transaction(async (tx) => {
+      const created = await tx.supportTicket.create({
         data: {
           userId,
           subject,
@@ -38,7 +39,7 @@ export const supportService = {
 
       await tx.supportMessage.create({
         data: {
-          ticketId: ticket.id,
+          ticketId: created.id,
           senderId: userId,
           senderRole: "USER",
           body,
@@ -47,8 +48,25 @@ export const supportService = {
         },
       });
 
-      return ticket;
+      return created;
     });
+
+    // Fire-and-forget notification to admins
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { name: true },
+      });
+      await notificationService.notifyAdminsNewTicket(
+        ticket.id,
+        user?.name ?? "Usuário",
+        subject
+      );
+    } catch (err) {
+      console.error("[support] failed to notify admins of new ticket:", err);
+    }
+
+    return ticket;
   },
 
   async listByUser(userId: string) {
@@ -184,8 +202,8 @@ export const supportService = {
       throw new Error("Ticket fechado. Abra um novo ticket para continuar.");
     }
 
-    return prisma.$transaction(async (tx) => {
-      const message = await tx.supportMessage.create({
+    const message = await prisma.$transaction(async (tx) => {
+      const created = await tx.supportMessage.create({
         data: {
           ticketId,
           senderId: sender.userId,
@@ -210,8 +228,43 @@ export const supportService = {
       }
       await tx.supportTicket.update({ where: { id: ticketId }, data: updates });
 
-      return message;
+      return created;
     });
+
+    // Notify the other side (fire-and-forget)
+    try {
+      const ticketWithInfo = await prisma.supportTicket.findUnique({
+        where: { id: ticketId },
+        select: {
+          subject: true,
+          userId: true,
+          user: { select: { name: true } },
+        },
+      });
+      if (ticketWithInfo) {
+        if (sender.isAdmin) {
+          // Admin replied → notify the user
+          await notificationService.notifySupportReply(
+            ticketWithInfo.userId,
+            ticketId,
+            ticketWithInfo.subject,
+            text
+          );
+        } else {
+          // User replied → notify admins (excluding the sender if they're also admin)
+          await notificationService.notifyAdminsNewMessage(
+            ticketId,
+            ticketWithInfo.user?.name ?? "Usuário",
+            ticketWithInfo.subject,
+            text
+          );
+        }
+      }
+    } catch (err) {
+      console.error("[support] failed to notify message:", err);
+    }
+
+    return message;
   },
 
   async updateStatus(ticketId: string, newStatus: TicketStatus) {

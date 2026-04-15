@@ -1,0 +1,5 @@
+-- Add new notification types to the existing enum
+ALTER TYPE "NotificationType" ADD VALUE IF NOT EXISTS 'SUPPORT_NEW_TICKET';
+ALTER TYPE "NotificationType" ADD VALUE IF NOT EXISTS 'SUPPORT_NEW_MESSAGE';
+ALTER TYPE "NotificationType" ADD VALUE IF NOT EXISTS 'RAFFLE_READY_TO_DRAW';
+ALTER TYPE "NotificationType" ADD VALUE IF NOT EXISTS 'BIG_DEPOSIT';

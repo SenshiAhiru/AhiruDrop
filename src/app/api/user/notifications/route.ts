@@ -51,7 +51,7 @@ export async function PATCH(req: NextRequest) {
 
     if (Array.isArray(body.ids) && body.ids.length > 0) {
       for (const id of body.ids) {
-        await notificationService.markAsRead(id);
+        await notificationService.markAsRead(id, session.user.id);
       }
       return successResponse({ message: `${body.ids.length} notificacao(oes) marcada(s) como lida(s)` });
     }

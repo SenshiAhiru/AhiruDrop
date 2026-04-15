@@ -11,8 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast";
 
 export default function SettingsPage() {
+  const { addToast } = useToast();
   const [contactSettings, setContactSettings] = useState({
     support_email: "",
     support_phone: "",
@@ -61,12 +63,12 @@ export default function SettingsPage() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || "Erro ao salvar configurações de contato.");
+        addToast({ type: "error", message: data.error || "Erro ao salvar configurações de contato" });
         return;
       }
-      alert("Configurações salvas!");
+      addToast({ type: "success", message: "Configurações de contato salvas" });
     } catch {
-      alert("Erro ao salvar configurações de contato.");
+      addToast({ type: "error", message: "Erro ao salvar configurações de contato" });
     } finally {
       setSaving(null);
     }
@@ -88,12 +90,12 @@ export default function SettingsPage() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || "Erro ao salvar configurações de rifas.");
+        addToast({ type: "error", message: data.error || "Erro ao salvar configurações de rifas" });
         return;
       }
-      alert("Configurações salvas!");
+      addToast({ type: "success", message: "Configurações de rifas salvas" });
     } catch {
-      alert("Erro ao salvar configurações de rifas.");
+      addToast({ type: "error", message: "Erro ao salvar configurações de rifas" });
     } finally {
       setSaving(null);
     }
@@ -113,12 +115,12 @@ export default function SettingsPage() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || "Erro ao salvar configuração de manutenção.");
+        addToast({ type: "error", message: data.error || "Erro ao salvar modo de manutenção" });
         return;
       }
-      alert("Configurações salvas!");
+      addToast({ type: "success", message: "Modo de manutenção atualizado" });
     } catch {
-      alert("Erro ao salvar configuração de manutenção.");
+      addToast({ type: "error", message: "Erro ao salvar modo de manutenção" });
     } finally {
       setSaving(null);
     }

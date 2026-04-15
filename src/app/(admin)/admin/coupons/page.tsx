@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { useToast } from "@/components/ui/toast";
 
 interface Coupon {
   id: string;
@@ -29,6 +30,7 @@ const coupons: Coupon[] = [];
 type CouponRow = Coupon & Record<string, unknown>;
 
 export default function CouponsPage() {
+  const { addToast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
@@ -100,7 +102,7 @@ export default function CouponsPage() {
         <h1 className="text-2xl font-bold tracking-tight">
           Cupons de Desconto
         </h1>
-        <Button onClick={() => alert("Em desenvolvimento")}>
+        <Button onClick={() => addToast({ type: "info", message: "Em desenvolvimento", description: "Novos cupons poderão ser criados em breve." })}>
           <Plus className="h-4 w-4" /> Novo Cupom
         </Button>
       </div>

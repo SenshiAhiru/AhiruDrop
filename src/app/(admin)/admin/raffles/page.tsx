@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useToast } from "@/components/ui/toast";
 import {
   Plus,
   Search,
@@ -55,6 +56,7 @@ const statusLabel: Record<string, string> = {
 type RaffleRow = RaffleItem & Record<string, unknown>;
 
 export default function AdminRafflesPage() {
+  const { addToast } = useToast();
   const [raffles, setRaffles] = useState<RaffleItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -71,12 +73,13 @@ export default function AdminRafflesPage() {
       const json = await res.json();
       if (json.success) {
         setDeleteModal({ open: false, id: "", title: "", deleting: false });
+        addToast({ type: "success", message: "Rifa excluída" });
         fetchRaffles();
       } else {
-        alert(json.error || "Erro ao excluir");
+        addToast({ type: "error", message: json.error || "Erro ao excluir" });
       }
     } catch {
-      alert("Erro ao excluir rifa");
+      addToast({ type: "error", message: "Erro de conexão ao excluir rifa" });
     } finally {
       setDeleteModal((prev) => ({ ...prev, deleting: false }));
     }

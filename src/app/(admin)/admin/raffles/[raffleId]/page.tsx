@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { useToast } from "@/components/ui/toast";
 import {
   Save,
   Play,
@@ -60,6 +61,7 @@ const statusVariant: Record<string, "success" | "warning" | "danger" | "outline"
 
 export default function EditRafflePage() {
   const router = useRouter();
+  const { addToast } = useToast();
   const params = useParams();
   const raffleId = params.raffleId as string;
 
@@ -185,12 +187,13 @@ export default function EditRafflePage() {
           });
           const json = await res.json();
           if (json.success) {
+            addToast({ type: "success", message: "Rifa excluída" });
             router.push("/admin/raffles");
             return;
           }
-          alert(json.error || "Erro ao excluir rifa");
+          addToast({ type: "error", message: json.error || "Erro ao excluir rifa" });
         } catch {
-          alert("Erro ao excluir rifa. Tente novamente.");
+          addToast({ type: "error", message: "Erro de conexão ao excluir rifa" });
         } finally {
           setIsDeleting(false);
         }

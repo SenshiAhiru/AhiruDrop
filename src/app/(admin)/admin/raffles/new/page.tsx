@@ -12,9 +12,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SkinSearchInput } from "@/components/admin/skin-search-input";
 import { WearSelector } from "@/components/admin/wear-selector";
 import type { SkinSelection } from "@/types/cs2.types";
+import { useToast } from "@/components/ui/toast";
 
 export default function NewRafflePage() {
   const router = useRouter();
+  const { addToast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [skin, setSkin] = useState<SkinSelection | null>(null);
   const [form, setForm] = useState({
@@ -116,12 +118,13 @@ export default function NewRafflePage() {
       });
       const json = await res.json();
       if (!res.ok) {
-        alert(json.error || "Erro ao criar rifa");
+        addToast({ type: "error", message: json.error || "Erro ao criar rifa" });
         return;
       }
+      addToast({ type: "success", message: "Rifa criada com sucesso" });
       router.push("/admin/raffles");
     } catch {
-      // handle error
+      addToast({ type: "error", message: "Erro de conexão ao criar rifa" });
     } finally {
       setIsSubmitting(false);
     }

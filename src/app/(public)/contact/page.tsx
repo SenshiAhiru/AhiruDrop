@@ -5,8 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 
 export default function ContactPage() {
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -16,7 +18,11 @@ export default function ContactPage() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1200));
 
-    alert("Mensagem enviada! Entraremos em contato em breve.");
+    addToast({
+      type: "success",
+      message: "Mensagem enviada!",
+      description: "Entraremos em contato em breve.",
+    });
 
     setLoading(false);
     (e.target as HTMLFormElement).reset();

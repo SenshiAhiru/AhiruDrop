@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/toast";
 
 const CURRENCIES = [
   { code: "BRL", symbol: "R$", flag: "🇧🇷", name: "Real" },
@@ -74,6 +75,7 @@ function PaymentForm({ amount, currency, onSuccess }: { amount: number; currency
 
 // ─── Main Page ───
 export default function DepositPage() {
+  const { addToast } = useToast();
   const [balance, setBalance] = useState<number | null>(null);
   const [currency, setCurrency] = useState("BRL");
   const [ahcAmount, setAhcAmount] = useState("");
@@ -116,10 +118,10 @@ export default function DepositPage() {
         setClientSecret(json.data.clientSecret);
         setShowPayment(true);
       } else {
-        alert(json.error || "Erro ao iniciar pagamento");
+        addToast({ type: "error", message: json.error || "Erro ao iniciar pagamento" });
       }
     } catch {
-      alert("Erro ao conectar com gateway");
+      addToast({ type: "error", message: "Erro ao conectar com gateway" });
     } finally {
       setCreating(false);
     }

@@ -90,5 +90,5 @@ export async function getBtcBlockHashAtHeight(height: number): Promise<string> {
   return hash;
 }
 
-/** Default lead: ~6 blocks (~1h) in the future from the current tip */
-export const DRAW_BLOCK_LEAD = 6;
+/** Default lead: ~2 blocks (~20min) in the future from the current tip */
+export const DRAW_BLOCK_LEAD = 2;

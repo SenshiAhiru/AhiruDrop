@@ -9,11 +9,15 @@ import {
   ShoppingCart,
   User,
   Bell,
+  Coins,
+  Trophy,
 } from "lucide-react";
 
 const mobileNavItems = [
   { label: "Visão Geral", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Depositar AHC", href: "/dashboard/deposit", icon: Coins },
   { label: "Meus Pedidos", href: "/dashboard/orders", icon: ShoppingCart },
+  { label: "Minhas Vitórias", href: "/dashboard/winnings", icon: Trophy },
   { label: "Perfil", href: "/dashboard/profile", icon: User },
   { label: "Notificações", href: "/dashboard/notifications", icon: Bell },
 ];

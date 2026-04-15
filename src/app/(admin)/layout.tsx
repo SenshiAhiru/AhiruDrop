@@ -15,6 +15,7 @@ import {
   Settings,
   BarChart3,
   MessageSquare,
+  Activity,
 } from "lucide-react";
 
 const mobileNavItems = [
@@ -27,6 +28,7 @@ const mobileNavItems = [
   { label: "Cupons", href: "/admin/coupons", icon: Tag },
   { label: "Configurações", href: "/admin/settings", icon: Settings },
   { label: "Relatórios", href: "/admin/reports", icon: BarChart3 },
+  { label: "Auditoria", href: "/admin/audit", icon: Activity },
   { label: "Suporte", href: "/admin/support", icon: MessageSquare },
 ];
 

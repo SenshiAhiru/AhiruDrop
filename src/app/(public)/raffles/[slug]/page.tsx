@@ -93,7 +93,7 @@ export default function RaffleDetailPage() {
   const slug = params.slug as string;
 
   const [raffle, setRaffle] = useState<Raffle | null>(null);
-  const [numbersData, setNumbersData] = useState<{ number: number; status: "AVAILABLE" | "RESERVED" | "PAID" }[] | null>(null);
+  const [numbersData, setNumbersData] = useState<{ number: number; status: "AVAILABLE" | "RESERVED" | "PAID"; mine?: boolean }[] | null>(null);
   const [winnerInfo, setWinnerInfo] = useState<{
     winningNumber: number;
     drawnAt: string;

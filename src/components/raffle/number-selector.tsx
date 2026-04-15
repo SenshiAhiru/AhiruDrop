@@ -9,6 +9,7 @@ import { ShoppingCart, X, CheckCircle, Loader2, AlertCircle } from "lucide-react
 interface NumberInfo {
   number: number;
   status: "AVAILABLE" | "RESERVED" | "PAID";
+  mine?: boolean;
 }
 
 interface NumberSelectorProps {
@@ -100,7 +101,7 @@ export function NumberSelector({
 
   const total = selectedNumbers.length * pricePerNumber;
 
-  function getNumberClasses(num: number, status: NumberInfo["status"]) {
+  function getNumberClasses(num: number, status: NumberInfo["status"], mine?: boolean) {
     const selected = selectedNumbers.includes(num);
 
     if (selected) {
@@ -116,7 +117,9 @@ export function NumberSelector({
       case "RESERVED":
         return "bg-amber-500/10 text-amber-400/70 ring-1 ring-amber-500/20 cursor-not-allowed line-through opacity-70";
       case "PAID":
-        return "bg-emerald-500/10 text-emerald-400/80 ring-1 ring-emerald-500/30 cursor-not-allowed line-through";
+        return mine
+          ? "bg-primary-500/15 text-primary-400 ring-2 ring-primary-500/50 cursor-not-allowed font-bold"
+          : "bg-emerald-500/10 text-emerald-400/80 ring-1 ring-emerald-500/30 cursor-not-allowed line-through";
     }
   }
 
@@ -186,7 +189,7 @@ export function NumberSelector({
       {/* Number grid */}
       <div className="max-h-[420px] overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 scrollbar-thin">
         <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-1.5">
-          {filteredNumbers.map(({ number, status }) => (
+          {filteredNumbers.map(({ number, status, mine }) => (
             <button
               key={number}
               type="button"
@@ -196,10 +199,11 @@ export function NumberSelector({
                   onToggle(number);
                 }
               }}
+              title={mine ? "Seu número" : undefined}
               className={cn(
                 "h-10 w-full rounded-lg text-xs sm:text-sm font-mono transition-all duration-150",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
-                getNumberClasses(number, status)
+                getNumberClasses(number, status, mine)
               )}
             >
               {formatNumber(number)}
@@ -227,6 +231,10 @@ export function NumberSelector({
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-sm bg-emerald-500/20 ring-1 ring-emerald-500/40" />
           Vendido
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded-sm bg-primary-500/15 ring-2 ring-primary-500/50" />
+          Meu número
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-sm bg-primary-500/30 ring-1 ring-primary-500/50" />

@@ -94,6 +94,12 @@ export default function RaffleDetailPage() {
 
   const [raffle, setRaffle] = useState<Raffle | null>(null);
   const [numbersData, setNumbersData] = useState<{ number: number; status: "AVAILABLE" | "RESERVED" | "PAID" }[] | null>(null);
+  const [winnerInfo, setWinnerInfo] = useState<{
+    winningNumber: number;
+    drawnAt: string;
+    name: string;
+    avatarUrl: string | null;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
@@ -121,6 +127,22 @@ export default function RaffleDetailPage() {
           const numJson = await numRes.json();
           if (numJson.success && Array.isArray(numJson.data)) {
             setNumbersData(numJson.data);
+          }
+        }
+
+        // If raffle is DRAWN, fetch winner info
+        if (json.data.status === "DRAWN") {
+          const vRes = await fetch(`/api/raffles/${json.data.id}/verify`, { cache: "no-store" });
+          if (vRes.ok) {
+            const vJson = await vRes.json();
+            if (vJson.success && vJson.data.reveal?.winner) {
+              setWinnerInfo({
+                winningNumber: vJson.data.reveal.winningNumber,
+                drawnAt: vJson.data.reveal.drawnAt,
+                name: vJson.data.reveal.winner.name,
+                avatarUrl: vJson.data.reveal.winner.avatarUrl,
+              });
+            }
           }
         }
       } catch {
@@ -330,6 +352,48 @@ export default function RaffleDetailPage() {
                   {raffle.title}
                 </h1>
               </div>
+
+              {/* Winner Banner (shown only if DRAWN) */}
+              {raffle.status === "DRAWN" && winnerInfo && (
+                <div className="rounded-2xl border border-accent-500/40 bg-gradient-to-br from-accent-500/20 via-accent-500/5 to-transparent p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg className="h-5 w-5 text-accent-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <p className="text-sm font-bold text-accent-400 uppercase tracking-wider">Rifa Sorteada</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    {winnerInfo.avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={winnerInfo.avatarUrl}
+                        alt={winnerInfo.name}
+                        className="h-14 w-14 rounded-full border-2 border-accent-400/50"
+                      />
+                    ) : (
+                      <div className="h-14 w-14 rounded-full bg-accent-500/20 border-2 border-accent-400/50 flex items-center justify-center text-xl font-bold text-accent-400">
+                        {winnerInfo.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-surface-400">Ganhador</p>
+                      <p className="text-lg font-bold text-white truncate">{winnerInfo.name}</p>
+                      <p className="text-xs text-accent-400/80 mt-0.5">
+                        Número #{winnerInfo.winningNumber} · {new Date(winnerInfo.drawnAt).toLocaleDateString("pt-BR")}
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    href={`/raffles/${slug}/verify`}
+                    className="mt-4 flex items-center justify-center gap-2 w-full rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    Ver prova do sorteio (Provably Fair)
+                  </a>
+                </div>
+              )}
 
               {/* Price */}
               <div className="rounded-xl border border-accent-500/20 bg-accent-500/5 p-5">

@@ -14,6 +14,7 @@ import { useTheme } from "@/components/providers/theme-provider";
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Rifas", href: "/raffles" },
+  { label: "Ganhadores", href: "/winners" },
   { label: "Como Funciona", href: "/about" },
   { label: "FAQ", href: "/faq" },
 ];

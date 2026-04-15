@@ -28,6 +28,21 @@ export async function GET(
 
     const d = draw as any;
 
+    // Fetch winner's public name (not email) if exists
+    let winnerInfo: { name: string | null; avatarUrl: string | null } | null = null;
+    if (draw?.winner?.userId) {
+      const user = await prisma.user.findUnique({
+        where: { id: draw.winner.userId },
+        select: { name: true, avatarUrl: true },
+      });
+      if (user) {
+        winnerInfo = {
+          name: user.name ?? "Anônimo",
+          avatarUrl: user.avatarUrl ?? null,
+        };
+      }
+    }
+
     // Count eligible (paid) tickets — needed to reproduce the index calculation
     const paidCount = await prisma.raffleNumber.count({
       where: { raffleId: raffle.id, status: "PAID" },
@@ -52,6 +67,7 @@ export async function GET(
             blockHash: d.blockHash ?? null,
             blockHeight: d.blockHeight ?? null,
             hasWinner: Boolean(draw.winner),
+            winner: winnerInfo,
           }
         : null,
     });

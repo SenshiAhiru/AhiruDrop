@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Mail,
@@ -17,6 +18,8 @@ import {
   Plus,
   Minus,
   AlertCircle,
+  MessageSquare,
+  Send,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -93,6 +96,7 @@ const statusVariant: Record<string, "success" | "warning" | "danger" | "outline"
 
 export default function UserDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const userId = params.userId as string;
 
   const [detail, setDetail] = useState<Detail | null>(null);
@@ -105,6 +109,13 @@ export default function UserDetailPage() {
   const [adjustReason, setAdjustReason] = useState("");
   const [adjusting, setAdjusting] = useState(false);
   const [adjustError, setAdjustError] = useState<string | null>(null);
+
+  // Message to user
+  const [msgOpen, setMsgOpen] = useState(false);
+  const [msgSubject, setMsgSubject] = useState("");
+  const [msgBody, setMsgBody] = useState("");
+  const [msgSending, setMsgSending] = useState(false);
+  const [msgError, setMsgError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -164,6 +175,44 @@ export default function UserDetailPage() {
     }
   }
 
+  async function sendMessageToUser() {
+    setMsgError(null);
+    if (msgSubject.trim().length < 3) {
+      setMsgError("Assunto muito curto (mínimo 3 caracteres)");
+      return;
+    }
+    if (msgBody.trim().length < 3) {
+      setMsgError("Mensagem muito curta (mínimo 3 caracteres)");
+      return;
+    }
+    setMsgSending(true);
+    try {
+      const res = await fetch("/api/admin/support/create-for-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          subject: msgSubject.trim(),
+          message: msgBody.trim(),
+        }),
+      });
+      const json = await res.json();
+      if (!json.success) {
+        setMsgError(json.error || "Falha ao enviar");
+        return;
+      }
+      setMsgOpen(false);
+      setMsgSubject("");
+      setMsgBody("");
+      // Go to the created ticket chat
+      router.push(`/admin/support/${json.data.ticketId}`);
+    } catch {
+      setMsgError("Erro de conexão");
+    } finally {
+      setMsgSending(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center py-20">
@@ -219,6 +268,15 @@ export default function UserDetailPage() {
                 <Badge variant={user.isActive ? "success" : "danger"}>
                   {user.isActive ? "Ativo" : "Bloqueado"}
                 </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setMsgOpen(true)}
+                  className="ml-auto"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Enviar mensagem
+                </Button>
               </div>
               <div className="mt-2 space-y-1 text-sm text-surface-400">
                 <div className="flex items-center gap-2">
@@ -492,6 +550,59 @@ export default function UserDetailPage() {
           >
             {adjusting && <Loader2 className="h-4 w-4 animate-spin" />}
             {adjustType === "credit" ? "Creditar" : "Debitar"}
+          </Button>
+        </DialogFooter>
+      </Dialog>
+
+      {/* Message to user Dialog */}
+      <Dialog open={msgOpen} onOpenChange={setMsgOpen}>
+        <DialogClose onClick={() => setMsgOpen(false)} />
+        <DialogHeader>
+          <DialogTitle>Enviar mensagem para {detail?.user.name}</DialogTitle>
+          <DialogDescription>
+            Um ticket de suporte será criado e o usuário receberá uma notificação.
+            Você será redirecionado ao chat.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-2">
+          <div>
+            <label className="text-xs text-surface-400 mb-1 block">Assunto</label>
+            <Input
+              value={msgSubject}
+              onChange={(e) => setMsgSubject(e.target.value)}
+              placeholder="Ex: Sobre seu depósito recente"
+              maxLength={200}
+            />
+          </div>
+
+          <div>
+            <label className="text-xs text-surface-400 mb-1 block">Mensagem</label>
+            <Textarea
+              value={msgBody}
+              onChange={(e) => setMsgBody(e.target.value)}
+              placeholder="Escreva sua mensagem ao usuário..."
+              rows={5}
+              maxLength={5000}
+            />
+            <p className="mt-1 text-[10px] text-surface-500">{msgBody.length}/5000</p>
+          </div>
+
+          {msgError && (
+            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-2.5 text-sm text-red-400 flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              {msgError}
+            </div>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setMsgOpen(false)} disabled={msgSending}>
+            Cancelar
+          </Button>
+          <Button onClick={sendMessageToUser} disabled={msgSending}>
+            {msgSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            Enviar
           </Button>
         </DialogFooter>
       </Dialog>

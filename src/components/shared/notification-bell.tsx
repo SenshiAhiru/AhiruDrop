@@ -27,7 +27,7 @@ export function NotificationBell({ href = "/dashboard/notifications", className 
     }
   }, []);
 
-  usePoll(refresh, 15000);
+  usePoll(refresh, 1500);
 
   return (
     <Link

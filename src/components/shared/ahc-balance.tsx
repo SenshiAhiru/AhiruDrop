@@ -1,26 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import { usePoll } from "@/hooks/use-poll";
 
 export function AhcBalance({ className }: { className?: string }) {
   const { data: session } = useSession();
   const [balance, setBalance] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (!session?.user) return;
+  const refresh = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/balance", { cache: "no-store" });
+      const json = await res.json();
+      if (json.success && json.data?.balance != null) {
+        setBalance(Number(json.data.balance));
+      }
+    } catch {}
+  }, []);
 
-    fetch("/api/user/balance")
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.success && json.data?.balance != null) {
-          setBalance(Number(json.data.balance));
-        }
-      })
-      .catch(() => {});
-  }, [session?.user]);
+  useEffect(() => {
+    if (session?.user) refresh();
+  }, [session?.user, refresh]);
+
+  // Poll balance every 5s
+  usePoll(refresh, 5000);
 
   if (!session?.user) return null;
 

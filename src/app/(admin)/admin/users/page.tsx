@@ -12,6 +12,7 @@ import {
   UserX,
   Trophy,
   Eye,
+  Download,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -41,20 +42,28 @@ export default function UsersPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
+
+  const buildParams = useCallback(() => {
+    const params = new URLSearchParams();
+    if (search) params.set("search", search);
+    if (roleFilter !== "ALL") params.set("role", roleFilter);
+    if (statusFilter !== "ALL") params.set("isActive", statusFilter === "ACTIVE" ? "true" : "false");
+    return params;
+  }, [search, roleFilter, statusFilter]);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      if (search) params.set("search", search);
-      if (roleFilter !== "ALL") params.set("role", roleFilter);
+      const params = buildParams();
       params.set("page", String(page));
-      params.set("limit", "20");
+      params.set("limit", "50");
 
       const res = await fetch(`/api/admin/users?${params}`, { cache: "no-store" });
       const json = await res.json();
@@ -76,6 +85,31 @@ export default function UsersPage() {
     const t = setTimeout(load, 250); // debounce search
     return () => clearTimeout(t);
   }, [load]);
+
+  async function downloadCSV() {
+    setExporting(true);
+    try {
+      const params = buildParams();
+      const res = await fetch(`/api/admin/users/export?${params}`, { cache: "no-store" });
+      if (!res.ok) {
+        alert("Falha ao exportar");
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `usuarios-${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Erro de conexão");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   async function toggleActive(user: AdminUser) {
     setUpdatingId(user.id);
@@ -281,8 +315,21 @@ export default function UsersPage() {
           <h1 className="text-2xl font-bold tracking-tight">Usuários</h1>
           <p className="text-sm text-[var(--muted-foreground)] mt-1">
             {total} usuário{total !== 1 ? "s" : ""} cadastrado{total !== 1 ? "s" : ""}
+            {total > 0 && (search || roleFilter !== "ALL" || statusFilter !== "ALL") && " com os filtros aplicados"}
           </p>
         </div>
+        <Button
+          variant="outline"
+          onClick={downloadCSV}
+          disabled={exporting || total === 0}
+        >
+          {exporting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
+          Exportar CSV
+        </Button>
       </div>
 
       {/* Filters */}
@@ -290,7 +337,7 @@ export default function UsersPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]" />
           <Input
-            placeholder="Buscar por nome ou email..."
+            placeholder="Buscar por nome, email, CPF, Steam ID ou telefone..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -310,6 +357,18 @@ export default function UsersPage() {
           <option value="ALL">Todos os roles</option>
           <option value="ADMIN">Admin</option>
           <option value="USER">User</option>
+        </Select>
+        <Select
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setPage(1);
+          }}
+          className="w-full sm:w-40"
+        >
+          <option value="ALL">Todos os status</option>
+          <option value="ACTIVE">Ativos</option>
+          <option value="BLOCKED">Bloqueados</option>
         </Select>
       </div>
 

@@ -14,6 +14,7 @@ import {
   Settings,
   BarChart3,
   MessageSquare,
+  Activity,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -35,6 +36,7 @@ const navItems: NavItem[] = [
   { label: "Cupons", href: "/admin/coupons", icon: Tag },
   { label: "Configurações", href: "/admin/settings", icon: Settings },
   { label: "Relatórios", href: "/admin/reports", icon: BarChart3 },
+  { label: "Auditoria", href: "/admin/audit", icon: Activity },
   { label: "Suporte", href: "/admin/support", icon: MessageSquare },
 ];
 

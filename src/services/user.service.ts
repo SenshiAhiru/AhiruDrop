@@ -130,6 +130,8 @@ export const userService = {
         { name: { contains: search, mode: "insensitive" } },
         { email: { contains: search, mode: "insensitive" } },
         { cpf: { contains: search } },
+        { steamId: { contains: search } },
+        { phone: { contains: search } },
       ];
     }
 

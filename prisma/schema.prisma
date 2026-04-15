@@ -327,6 +327,7 @@ model Winner {
   userId    String
   numberWon Int
   claimedAt DateTime?
+  seenAt    DateTime?  // null = popup not shown yet
   createdAt DateTime  @default(now())
 
   draw RaffleDraw @relation(fields: [drawId], references: [id])

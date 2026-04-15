@@ -6,6 +6,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
 import { ConfirmProvider } from "@/components/providers/confirm-provider";
+import { WinnerCelebrationProvider } from "@/components/providers/winner-celebration-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,7 +44,9 @@ export default function RootLayout({
           <SessionProvider>
             <QueryProvider>
               <ToastProvider>
-                <ConfirmProvider>{children}</ConfirmProvider>
+                <ConfirmProvider>
+                  <WinnerCelebrationProvider>{children}</WinnerCelebrationProvider>
+                </ConfirmProvider>
               </ToastProvider>
             </QueryProvider>
           </SessionProvider>

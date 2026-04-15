@@ -185,6 +185,78 @@ main {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+/* ─── Winner Celebration ─── */
+
+/* Confetti pieces — fall from top with wobble */
+.confetti-piece {
+  position: absolute;
+  animation: confetti-fall linear forwards;
+  will-change: transform;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* Star sparkle — rotate + scale pulse */
+.celebration-star {
+  animation: star-pulse 2s ease-in-out infinite;
+}
+
+@keyframes star-pulse {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.15) rotate(5deg);
+  }
+  50% {
+    transform: scale(1) rotate(-3deg);
+  }
+  75% {
+    transform: scale(1.1) rotate(2deg);
+  }
+}
+
+/* Glow border pulse */
+.celebration-glow {
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.15), 0 0 60px rgba(251, 191, 36, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.3), 0 0 80px rgba(251, 191, 36, 0.1);
+  }
+}
+
+/* Gradient text — PARABÉNS title */
+.celebration-gradient-text {
+  background: linear-gradient(135deg, #fbbf24, #ffffff, #fbbf24);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 3s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
 /* ─── Native Select Dark Dropdown ─── */
 /* Makes the OS-rendered <select> dropdown panel render in dark mode
    (Chrome, Edge, Firefox). Without this it shows white even on dark sites. */

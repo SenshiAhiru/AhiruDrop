@@ -19,13 +19,32 @@ export async function GET(req: NextRequest) {
     const role = searchParams.get("role") as Role | null;
     const search = searchParams.get("search") || undefined;
     const page = Number(searchParams.get("page") || "1");
-    const limit = Math.min(Number(searchParams.get("limit") || "20"), 100);
+    const limit = Math.min(Number(searchParams.get("limit") || "50"), 100);
+    const isActiveParam = searchParams.get("isActive");
+    const isActive =
+      isActiveParam === "true" ? true : isActiveParam === "false" ? false : undefined;
+
+    const validSortFields = new Set([
+      "name",
+      "email",
+      "balance",
+      "createdAt",
+      "totalSpent",
+      "orderCount",
+      "winCount",
+    ]);
+    const sortByRaw = searchParams.get("sortBy") || "createdAt";
+    const sortBy = (validSortFields.has(sortByRaw) ? sortByRaw : "createdAt") as any;
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? "asc" : "desc";
 
     const result = await userService.listAll({
       role: role || undefined,
       search,
       page,
       limit,
+      isActive,
+      sortBy,
+      sortOrder,
     });
 
     return successResponse(result);

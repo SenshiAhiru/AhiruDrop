@@ -13,6 +13,9 @@ import {
   Trophy,
   Eye,
   Download,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -48,14 +51,57 @@ export default function UsersPage() {
   const [total, setTotal] = useState(0);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [sortBy, setSortBy] = useState<
+    "name" | "email" | "balance" | "createdAt" | "totalSpent" | "orderCount" | "winCount"
+  >("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const buildParams = useCallback(() => {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
     if (roleFilter !== "ALL") params.set("role", roleFilter);
     if (statusFilter !== "ALL") params.set("isActive", statusFilter === "ACTIVE" ? "true" : "false");
+    params.set("sortBy", sortBy);
+    params.set("sortOrder", sortOrder);
     return params;
-  }, [search, roleFilter, statusFilter]);
+  }, [search, roleFilter, statusFilter, sortBy, sortOrder]);
+
+  function toggleSort(field: typeof sortBy) {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("desc");
+    }
+    setPage(1);
+  }
+
+  function sortIcon(field: typeof sortBy) {
+    if (sortBy !== field) return <ArrowUpDown className="h-3 w-3 opacity-40" />;
+    return sortOrder === "asc" ? (
+      <ArrowUp className="h-3 w-3 text-primary-400" />
+    ) : (
+      <ArrowDown className="h-3 w-3 text-primary-400" />
+    );
+  }
+
+  function SortHeader({
+    field,
+    label,
+  }: {
+    field: typeof sortBy;
+    label: string;
+  }) {
+    return (
+      <button
+        onClick={() => toggleSort(field)}
+        className="flex items-center gap-1 hover:text-white transition-colors"
+      >
+        {label}
+        {sortIcon(field)}
+      </button>
+    );
+  }
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -162,7 +208,7 @@ export default function UsersPage() {
   const columns: Column<AdminUser & Record<string, unknown>>[] = [
     {
       key: "name",
-      label: "Usuário",
+      label: <SortHeader field="name" label="Usuário" />,
       render: (item) => (
         <Link
           href={`/admin/users/${item.id}`}
@@ -202,7 +248,7 @@ export default function UsersPage() {
     },
     {
       key: "balance",
-      label: "Saldo",
+      label: <SortHeader field="balance" label="Saldo" />,
       render: (item) => (
         <div className="flex items-center gap-1.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -215,14 +261,14 @@ export default function UsersPage() {
     },
     {
       key: "orderCount",
-      label: "Pedidos",
+      label: <SortHeader field="orderCount" label="Pedidos" />,
       render: (item) => (
         <span className="text-sm font-medium">{item.orderCount as number}</span>
       ),
     },
     {
       key: "totalSpent",
-      label: "Gasto total",
+      label: <SortHeader field="totalSpent" label="Gasto total" />,
       render: (item) => (
         <span className="font-mono text-xs text-surface-400">
           {(item.totalSpent as number).toFixed(2)} AHC
@@ -231,7 +277,7 @@ export default function UsersPage() {
     },
     {
       key: "winCount",
-      label: "Vitórias",
+      label: <SortHeader field="winCount" label="Vitórias" />,
       render: (item) => {
         const count = item.winCount as number;
         if (count === 0) return <span className="text-xs text-surface-600">—</span>;
@@ -254,7 +300,7 @@ export default function UsersPage() {
     },
     {
       key: "createdAt",
-      label: "Cadastro",
+      label: <SortHeader field="createdAt" label="Cadastro" />,
       render: (item) => (
         <span className="text-xs text-surface-400">
           {formatDate(item.createdAt as string)}

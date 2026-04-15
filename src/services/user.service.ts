@@ -120,11 +120,23 @@ export const userService = {
     limit?: number;
     search?: string;
     role?: Role;
+    isActive?: boolean;
+    sortBy?: "name" | "email" | "balance" | "createdAt" | "totalSpent" | "orderCount" | "winCount";
+    sortOrder?: "asc" | "desc";
   }) {
-    const { page = 1, limit = 20, search, role } = params;
+    const {
+      page = 1,
+      limit = 20,
+      search,
+      role,
+      isActive,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = params;
     const where: Prisma.UserWhereInput = {};
 
     if (role) where.role = role;
+    if (typeof isActive === "boolean") where.isActive = isActive;
     if (search) {
       where.OR = [
         { name: { contains: search, mode: "insensitive" } },
@@ -134,6 +146,10 @@ export const userService = {
         { phone: { contains: search } },
       ];
     }
+
+    // Prisma-native sort for columns that live directly on the User row
+    const nativeSortFields = new Set(["name", "email", "balance", "createdAt"]);
+    const useNativeSort = nativeSortFields.has(sortBy);
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
@@ -146,9 +162,12 @@ export const userService = {
             },
           },
         },
-        orderBy: { createdAt: "desc" },
-        skip: (page - 1) * limit,
-        take: limit,
+        orderBy: useNativeSort
+          ? { [sortBy]: sortOrder }
+          : { createdAt: "desc" }, // fallback; we'll sort in-memory for derived fields below
+        // If sorting by a derived field, we need all matching rows to sort them — cap at 1000 to avoid abuse
+        skip: useNativeSort ? (page - 1) * limit : 0,
+        take: useNativeSort ? limit : 1000,
       }),
       prisma.user.count({ where }),
     ]);
@@ -179,7 +198,7 @@ export const userService = {
         : [];
     const winsByUser = new Map(winCounts.map((w) => [w.userId, w._count]));
 
-    const data = users.map((u) => ({
+    let data = users.map((u) => ({
       id: u.id,
       name: u.name,
       email: u.email,
@@ -193,6 +212,18 @@ export const userService = {
       totalSpent: spentByUser.get(u.id) ?? 0,
       winCount: winsByUser.get(u.id) ?? 0,
     }));
+
+    // Sort in-memory by derived columns and paginate
+    if (!useNativeSort) {
+      const dir = sortOrder === "asc" ? 1 : -1;
+      data.sort((a, b) => {
+        const av = (a as any)[sortBy] ?? 0;
+        const bv = (b as any)[sortBy] ?? 0;
+        return av < bv ? -1 * dir : av > bv ? 1 * dir : 0;
+      });
+      const start = (page - 1) * limit;
+      data = data.slice(start, start + limit);
+    }
 
     return { data, total, pages: Math.ceil(total / limit) };
   },

@@ -15,6 +15,7 @@ import {
   Plus,
   LogIn,
   DollarSign,
+  Download,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -69,6 +70,35 @@ export default function AuditPage() {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [exporting, setExporting] = useState(false);
+
+  async function downloadCSV() {
+    setExporting(true);
+    try {
+      const params = new URLSearchParams();
+      if (actionFilter !== "ALL") params.set("action", actionFilter);
+      if (entityTypeFilter !== "ALL") params.set("entityType", entityTypeFilter);
+      if (search) params.set("entityId", search.trim());
+      const res = await fetch(`/api/admin/audit/export?${params}`, { cache: "no-store" });
+      if (!res.ok) {
+        alert("Falha ao exportar");
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `auditoria-${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Erro de conexão");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -125,6 +155,10 @@ export default function AuditPage() {
             {total} evento{total !== 1 ? "s" : ""} registrado{total !== 1 ? "s" : ""}
           </p>
         </div>
+        <Button variant="outline" onClick={downloadCSV} disabled={exporting || total === 0}>
+          {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+          Exportar CSV
+        </Button>
       </div>
 
       {/* Filters */}

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { requireAdmin, handleApiError } from "@/lib/api-utils";
 import { prisma } from "@/lib/prisma";
+import { buildCsv, csvResponse } from "@/lib/csv";
 import type { Prisma, Role } from "@prisma/client";
 
 /**
@@ -109,31 +110,9 @@ export async function GET(req: NextRequest) {
       new Date(u.createdAt).toISOString(),
     ]);
 
-    // Escape CSV: wrap fields containing delimiters/quotes in double quotes, double internal quotes
-    const escape = (val: string) => {
-      if (val.includes(",") || val.includes('"') || val.includes("\n")) {
-        return `"${val.replace(/"/g, '""')}"`;
-      }
-      return val;
-    };
-
-    const csv = [
-      headers.join(","),
-      ...rows.map((row) => row.map((cell) => escape(String(cell))).join(",")),
-    ].join("\n");
-
-    // UTF-8 BOM so Excel opens with correct accents
-    const body = "\uFEFF" + csv;
-
+    const body = buildCsv(headers, rows);
     const filename = `usuarios-${new Date().toISOString().split("T")[0]}.csv`;
-
-    return new Response(body, {
-      headers: {
-        "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": `attachment; filename="${filename}"`,
-        "Cache-Control": "no-store",
-      },
-    });
+    return csvResponse(filename, body);
   } catch (error) {
     return handleApiError(error);
   }

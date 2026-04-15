@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 export interface Column<T> {
   key: string;
-  label: string;
+  label: React.ReactNode;
   render?: (item: T) => React.ReactNode;
   className?: string;
 }

@@ -141,7 +141,7 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, roleFilter, page]);
+  }, [buildParams, page]);
 
   useEffect(() => {
     const t = setTimeout(load, 250); // debounce search

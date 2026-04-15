@@ -31,11 +31,13 @@ export async function POST(req: NextRequest) {
     const ticket = await supportService.createTicket(session.user.id, parsed.data);
     return successResponse(ticket, 201);
   } catch (error) {
+    console.error("[Support API] createTicket error:", error);
     if (error instanceof Error) {
       const known = ["Assunto muito", "Mensagem muito"];
       if (known.some((m) => error.message.includes(m))) {
         return errorResponse(error.message, 400);
       }
+      return errorResponse(`Erro ao criar ticket: ${error.message}`, 500);
     }
     return handleApiError(error);
   }

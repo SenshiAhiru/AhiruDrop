@@ -184,3 +184,22 @@ main {
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+/* ─── Native Select Dark Dropdown ─── */
+/* Makes the OS-rendered <select> dropdown panel render in dark mode
+   (Chrome, Edge, Firefox). Without this it shows white even on dark sites. */
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: #18181b; /* surface-900 */
+  color: #fafafa; /* surface-50 */
+  padding: 8px 12px;
+}
+
+select option:checked,
+select option:hover {
+  background: linear-gradient(0deg, rgba(124, 58, 237, 0.3), rgba(124, 58, 237, 0.3)) #18181b;
+  color: #ffffff;
+}

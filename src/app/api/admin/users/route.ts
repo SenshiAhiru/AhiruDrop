@@ -54,13 +54,14 @@ export async function PATCH(req: NextRequest) {
     // Validate the update fields
     const result = updateUserSchema.safeParse(updateData);
     if (!result.success) {
-      return errorResponse(result.error.errors[0].message, 422);
+      const firstIssue = result.error.issues?.[0]?.message ?? "Dados inválidos";
+      return errorResponse(firstIssue, 422);
     }
 
     const { prisma } = await import("@/lib/prisma");
     const updated = await prisma.user.update({
       where: { id: userId },
-      data: result.data,
+      data: result.data as any,
       select: {
         id: true,
         name: true,

@@ -12,6 +12,7 @@ const userSelect = {
   role: true,
   steamId: true,
   avatarUrl: true,
+  balance: true,
   isActive: true,
   emailVerified: true,
   createdAt: true,
@@ -132,16 +133,64 @@ export const userService = {
       ];
     }
 
-    const [data, total] = await Promise.all([
+    const [users, total] = await Promise.all([
       prisma.user.findMany({
         where,
-        select: userSelect,
+        select: {
+          ...userSelect,
+          _count: {
+            select: {
+              orders: { where: { status: "CONFIRMED" } },
+            },
+          },
+        },
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
       }),
       prisma.user.count({ where }),
     ]);
+
+    const userIds = users.map((u) => u.id);
+
+    // Aggregate total spent per user across CONFIRMED orders
+    const spending =
+      userIds.length > 0
+        ? await prisma.order.groupBy({
+            by: ["userId"],
+            where: { userId: { in: userIds }, status: "CONFIRMED" },
+            _sum: { finalAmount: true },
+          })
+        : [];
+    const spentByUser = new Map(
+      spending.map((s) => [s.userId, Number(s._sum.finalAmount || 0)])
+    );
+
+    // Count wins per user
+    const winCounts =
+      userIds.length > 0
+        ? await prisma.winner.groupBy({
+            by: ["userId"],
+            where: { userId: { in: userIds } },
+            _count: true,
+          })
+        : [];
+    const winsByUser = new Map(winCounts.map((w) => [w.userId, w._count]));
+
+    const data = users.map((u) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      phone: u.phone,
+      role: u.role,
+      avatarUrl: u.avatarUrl,
+      balance: Number(u.balance),
+      isActive: u.isActive,
+      createdAt: u.createdAt,
+      orderCount: u._count.orders,
+      totalSpent: spentByUser.get(u.id) ?? 0,
+      winCount: winsByUser.get(u.id) ?? 0,
+    }));
 
     return { data, total, pages: Math.ceil(total / limit) };
   },

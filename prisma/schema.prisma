@@ -82,9 +82,10 @@ model User {
 
   orders         Order[]
   notifications  Notification[]
-  auditLogs      AuditLog[]     @relation("AuditActor")
-  supportTickets SupportTicket[]
-  raffleDraws    RaffleDraw[]   @relation("DrawAdmin")
+  auditLogs       AuditLog[]       @relation("AuditActor")
+  supportTickets  SupportTicket[]
+  supportMessages SupportMessage[] @relation("SupportSender")
+  raffleDraws     RaffleDraw[]     @relation("DrawAdmin")
 
   @@map("users")
 }
@@ -366,18 +367,38 @@ model SupportTicket {
   id        String       @id @default(cuid())
   userId    String
   subject   String
-  message   String       @db.Text
+  message   String       @db.Text         // first message (kept for compat with older tickets)
+  category  String       @default("outro") // "duvida" | "pagamento" | "rifa" | "tecnico" | "outro"
   status    TicketStatus @default(OPEN)
   priority  Int          @default(0)
   closedAt  DateTime?
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user     User             @relation(fields: [userId], references: [id])
+  messages SupportMessage[]
 
   @@index([userId])
   @@index([status])
   @@map("support_tickets")
+}
+
+model SupportMessage {
+  id          String   @id @default(cuid())
+  ticketId    String
+  senderId    String?  // user who wrote it; null if system-generated
+  senderRole  String   // "USER" | "ADMIN" | "SYSTEM"
+  body        String   @db.Text
+  readByUser  Boolean  @default(false)
+  readByAdmin Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  sender User?         @relation("SupportSender", fields: [senderId], references: [id])
+
+  @@index([ticketId])
+  @@index([senderId])
+  @@map("support_messages")
 }
 
 model SystemSetting {

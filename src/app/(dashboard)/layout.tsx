@@ -11,6 +11,7 @@ import {
   Bell,
   Coins,
   Trophy,
+  MessageSquare,
 } from "lucide-react";
 
 const mobileNavItems = [
@@ -18,6 +19,7 @@ const mobileNavItems = [
   { label: "Depositar AHC", href: "/dashboard/deposit", icon: Coins },
   { label: "Meus Pedidos", href: "/dashboard/orders", icon: ShoppingCart },
   { label: "Minhas Vitórias", href: "/dashboard/winnings", icon: Trophy },
+  { label: "Suporte", href: "/dashboard/support", icon: MessageSquare },
   { label: "Perfil", href: "/dashboard/profile", icon: User },
   { label: "Notificações", href: "/dashboard/notifications", icon: Bell },
 ];

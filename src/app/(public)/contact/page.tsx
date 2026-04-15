@@ -1,31 +1,63 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
+import { LogIn, MessageSquare, Loader2 } from "lucide-react";
+import { SUPPORT_CATEGORIES } from "@/constants/support";
 
 export default function ContactPage() {
   const { addToast } = useToast();
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  const [category, setCategory] = useState("duvida");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (loading) return;
+
+    if (subject.trim().length < 3) {
+      addToast({ type: "error", message: "Assunto muito curto (mínimo 3 caracteres)" });
+      return;
+    }
+    if (message.trim().length < 5) {
+      addToast({ type: "error", message: "Mensagem muito curta (mínimo 5 caracteres)" });
+      return;
+    }
+
     setLoading(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-
-    addToast({
-      type: "success",
-      message: "Mensagem enviada!",
-      description: "Entraremos em contato em breve.",
-    });
-
-    setLoading(false);
-    (e.target as HTMLFormElement).reset();
+    try {
+      const res = await fetch("/api/support/tickets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject: subject.trim(), category, message: message.trim() }),
+      });
+      const json = await res.json();
+      if (!json.success) {
+        addToast({ type: "error", message: json.error || "Falha ao enviar" });
+        return;
+      }
+      addToast({
+        type: "success",
+        message: "Ticket criado!",
+        description: "Você será redirecionado para o chat.",
+      });
+      router.push(`/dashboard/support/${json.data.id}`);
+    } catch {
+      addToast({ type: "error", message: "Erro de conexão" });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -40,57 +72,100 @@ export default function ContactPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-5">
-        {/* Form */}
+        {/* Form OR login prompt */}
         <div className="lg:col-span-3">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-medium text-[var(--foreground)]">
-                  Nome
-                </label>
-                <Input id="name" name="name" placeholder="Seu nome completo" required />
+          {status === "loading" ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+            </div>
+          ) : !session?.user ? (
+            <div className="rounded-xl border border-primary-500/30 bg-primary-600/5 p-8 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary-600/15">
+                <LogIn className="h-7 w-7 text-primary-400" />
               </div>
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-[var(--foreground)]">
-                  E-mail
-                </label>
-                <Input id="email" name="email" type="email" placeholder="seu@email.com" required />
+              <h2 className="mt-4 text-xl font-bold text-[var(--foreground)]">
+                Entre para abrir um ticket
+              </h2>
+              <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+                Pra acompanharmos o histórico da sua conversa com o suporte, você precisa
+                estar logado. Depois de entrar você abre o ticket e pode acompanhar as
+                respostas direto no seu painel.
+              </p>
+              <div className="mt-5 flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
+                <Link
+                  href={`/login?callbackUrl=${encodeURIComponent("/contact")}`}
+                  className="rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
+                >
+                  Entrar
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-lg border border-primary-500/50 px-5 py-2.5 text-sm font-semibold text-primary-400 hover:bg-primary-600/10 transition-colors"
+                >
+                  Criar conta
+                </Link>
               </div>
             </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="rounded-lg border border-primary-500/20 bg-primary-600/5 p-3 text-xs text-surface-300 flex items-start gap-2">
+                <MessageSquare className="h-4 w-4 text-primary-400 mt-0.5 flex-shrink-0" />
+                <span>
+                  Logado como <strong className="text-white">{session.user.name}</strong>. Depois
+                  de enviar, você será redirecionado ao chat do ticket.
+                </span>
+              </div>
 
-            <div className="space-y-2">
-              <label htmlFor="subject" className="text-sm font-medium text-[var(--foreground)]">
-                Assunto
-              </label>
-              <Select id="subject" name="subject" required>
-                <option value="">Selecione um assunto</option>
-                <option value="duvida">Dúvida geral</option>
-                <option value="pagamento">Problema com pagamento</option>
-                <option value="premio">Entrega de prêmio</option>
-                <option value="conta">Minha conta</option>
-                <option value="bug">Reportar um problema</option>
-                <option value="sugestao">Sugestão</option>
-                <option value="outro">Outro</option>
-              </Select>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[var(--foreground)]">Categoria</label>
+                <Select value={category} onChange={(e) => setCategory(e.target.value)} required>
+                  {SUPPORT_CATEGORIES.map((c) => (
+                    <option key={c.value} value={c.value}>
+                      {c.label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[var(--foreground)]">Assunto</label>
+                <Input
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Resumo curto do problema"
+                  maxLength={200}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[var(--foreground)]">Mensagem</label>
+                <Textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Descreva sua dúvida ou problema em detalhes..."
+                  className="min-h-[140px]"
+                  maxLength={5000}
+                  required
+                />
+                <p className="text-[10px] text-surface-500">{message.length}/5000</p>
+              </div>
+
+              <Button type="submit" size="lg" isLoading={loading} className="w-full sm:w-auto">
+                Enviar Mensagem
+              </Button>
+            </form>
+          )}
+
+          {session?.user && (
+            <div className="mt-5 text-sm text-surface-400">
+              Acompanhe suas mensagens em{" "}
+              <Link href="/dashboard/support" className="text-primary-400 hover:underline">
+                Minha Conta → Suporte
+              </Link>
+              .
             </div>
-
-            <div className="space-y-2">
-              <label htmlFor="message" className="text-sm font-medium text-[var(--foreground)]">
-                Mensagem
-              </label>
-              <Textarea
-                id="message"
-                name="message"
-                placeholder="Descreva sua dúvida ou problema em detalhes..."
-                className="min-h-[140px]"
-                required
-              />
-            </div>
-
-            <Button type="submit" size="lg" isLoading={loading} className="w-full sm:w-auto">
-              Enviar Mensagem
-            </Button>
-          </form>
+          )}
         </div>
 
         {/* Contact info sidebar */}
@@ -99,7 +174,6 @@ export default function ContactPage() {
             <h3 className="text-lg font-bold text-[var(--foreground)]">Informações de Contato</h3>
 
             <div className="mt-5 space-y-5">
-              {/* Email */}
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary-600/10 text-primary-500">
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -108,16 +182,12 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[var(--foreground)]">E-mail</p>
-                  <a
-                    href="mailto:suporte@ahirudrop.com"
-                    className="text-sm text-primary-500 hover:underline"
-                  >
+                  <a href="mailto:suporte@ahirudrop.com" className="text-sm text-primary-500 hover:underline">
                     suporte@ahirudrop.com
                   </a>
                 </div>
               </div>
 
-              {/* Schedule */}
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary-600/10 text-primary-500">
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -133,7 +203,6 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Social */}
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary-600/10 text-primary-500">
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -144,14 +213,10 @@ export default function ContactPage() {
                   <p className="text-sm font-medium text-[var(--foreground)]">Redes Sociais</p>
                   <div className="mt-1 flex items-center gap-3">
                     <a href="#" className="text-[var(--muted-foreground)] hover:text-primary-500 transition-colors" aria-label="Instagram">
-                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-                      </svg>
+                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
                     </a>
                     <a href="#" className="text-[var(--muted-foreground)] hover:text-primary-500 transition-colors" aria-label="Twitter">
-                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                      </svg>
+                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
                     </a>
                   </div>
                 </div>
@@ -159,20 +224,16 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* FAQ link */}
           <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 text-center">
             <p className="text-sm text-[var(--muted-foreground)]">
               Muitas perguntas já foram respondidas na nossa
             </p>
-            <a
-              href="/faq"
-              className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-500 hover:text-primary-400 transition-colors"
-            >
+            <Link href="/faq" className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-500 hover:text-primary-400 transition-colors">
               Página de FAQ
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

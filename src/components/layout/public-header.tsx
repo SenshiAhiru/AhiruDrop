@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
   Menu, Sun, Moon, X,
-  LayoutDashboard, ShoppingCart, User, Bell, Trophy, Shield, LogOut,
+  LayoutDashboard, ShoppingCart, User, Bell, Trophy, Shield, LogOut, MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
@@ -36,6 +36,7 @@ export function PublicHeader() {
     { label: "Minha Conta", href: "/dashboard", icon: LayoutDashboard },
     { label: "Meus Pedidos", href: "/dashboard/orders", icon: ShoppingCart },
     { label: "Minhas Vitórias", href: "/dashboard/winnings", icon: Trophy },
+    { label: "Suporte", href: "/dashboard/support", icon: MessageSquare },
     { label: "Perfil", href: "/dashboard/profile", icon: User },
     { label: "Notificações", href: "/dashboard/notifications", icon: Bell },
   ];

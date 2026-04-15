@@ -24,6 +24,46 @@ import { Button } from "@/components/ui/button";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { formatDate } from "@/lib/utils";
 
+type SortField =
+  | "name"
+  | "email"
+  | "balance"
+  | "createdAt"
+  | "totalSpent"
+  | "orderCount"
+  | "winCount";
+
+type SortOrder = "asc" | "desc";
+
+function SortHeader({
+  field,
+  label,
+  sortBy,
+  sortOrder,
+  onToggle,
+}: {
+  field: SortField;
+  label: string;
+  sortBy: SortField;
+  sortOrder: SortOrder;
+  onToggle: (field: SortField) => void;
+}) {
+  const active = sortBy === field;
+  const Icon = !active ? ArrowUpDown : sortOrder === "asc" ? ArrowUp : ArrowDown;
+  return (
+    <button
+      type="button"
+      onClick={() => onToggle(field)}
+      className={`flex items-center gap-1.5 uppercase tracking-wider transition-colors ${
+        active ? "text-primary-400" : "hover:text-white"
+      }`}
+    >
+      {label}
+      <Icon className={`h-3 w-3 ${active ? "" : "opacity-40"}`} />
+    </button>
+  );
+}
+
 type AdminUser = {
   id: string;
   name: string;
@@ -51,10 +91,8 @@ export default function UsersPage() {
   const [total, setTotal] = useState(0);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
-  const [sortBy, setSortBy] = useState<
-    "name" | "email" | "balance" | "createdAt" | "totalSpent" | "orderCount" | "winCount"
-  >("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sortBy, setSortBy] = useState<SortField>("createdAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const buildParams = useCallback(() => {
     const params = new URLSearchParams();
@@ -66,42 +104,20 @@ export default function UsersPage() {
     return params;
   }, [search, roleFilter, statusFilter, sortBy, sortOrder]);
 
-  function toggleSort(field: typeof sortBy) {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(field);
-      setSortOrder("desc");
-    }
-    setPage(1);
-  }
-
-  function sortIcon(field: typeof sortBy) {
-    if (sortBy !== field) return <ArrowUpDown className="h-3 w-3 opacity-40" />;
-    return sortOrder === "asc" ? (
-      <ArrowUp className="h-3 w-3 text-primary-400" />
-    ) : (
-      <ArrowDown className="h-3 w-3 text-primary-400" />
-    );
-  }
-
-  function SortHeader({
-    field,
-    label,
-  }: {
-    field: typeof sortBy;
-    label: string;
-  }) {
-    return (
-      <button
-        onClick={() => toggleSort(field)}
-        className="flex items-center gap-1 hover:text-white transition-colors"
-      >
-        {label}
-        {sortIcon(field)}
-      </button>
-    );
-  }
+  const toggleSort = useCallback(
+    (field: SortField) => {
+      setSortBy((prevBy) => {
+        if (prevBy === field) {
+          setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+          return prevBy;
+        }
+        setSortOrder("desc");
+        return field;
+      });
+      setPage(1);
+    },
+    []
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -208,7 +224,15 @@ export default function UsersPage() {
   const columns: Column<AdminUser & Record<string, unknown>>[] = [
     {
       key: "name",
-      label: <SortHeader field="name" label="Usuário" />,
+      label: (
+        <SortHeader
+          field="name"
+          label="Usuário"
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onToggle={toggleSort}
+        />
+      ),
       render: (item) => (
         <Link
           href={`/admin/users/${item.id}`}
@@ -248,7 +272,15 @@ export default function UsersPage() {
     },
     {
       key: "balance",
-      label: <SortHeader field="balance" label="Saldo" />,
+      label: (
+        <SortHeader
+          field="balance"
+          label="Saldo"
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onToggle={toggleSort}
+        />
+      ),
       render: (item) => (
         <div className="flex items-center gap-1.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -261,14 +293,30 @@ export default function UsersPage() {
     },
     {
       key: "orderCount",
-      label: <SortHeader field="orderCount" label="Pedidos" />,
+      label: (
+        <SortHeader
+          field="orderCount"
+          label="Pedidos"
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onToggle={toggleSort}
+        />
+      ),
       render: (item) => (
         <span className="text-sm font-medium">{item.orderCount as number}</span>
       ),
     },
     {
       key: "totalSpent",
-      label: <SortHeader field="totalSpent" label="Gasto total" />,
+      label: (
+        <SortHeader
+          field="totalSpent"
+          label="Gasto total"
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onToggle={toggleSort}
+        />
+      ),
       render: (item) => (
         <span className="font-mono text-xs text-surface-400">
           {(item.totalSpent as number).toFixed(2)} AHC
@@ -277,7 +325,15 @@ export default function UsersPage() {
     },
     {
       key: "winCount",
-      label: <SortHeader field="winCount" label="Vitórias" />,
+      label: (
+        <SortHeader
+          field="winCount"
+          label="Vitórias"
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onToggle={toggleSort}
+        />
+      ),
       render: (item) => {
         const count = item.winCount as number;
         if (count === 0) return <span className="text-xs text-surface-600">—</span>;
@@ -300,7 +356,15 @@ export default function UsersPage() {
     },
     {
       key: "createdAt",
-      label: <SortHeader field="createdAt" label="Cadastro" />,
+      label: (
+        <SortHeader
+          field="createdAt"
+          label="Cadastro"
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onToggle={toggleSort}
+        />
+      ),
       render: (item) => (
         <span className="text-xs text-surface-400">
           {formatDate(item.createdAt as string)}

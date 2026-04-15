@@ -18,15 +18,20 @@ export const raffleRepository = {
 
   async findMany(params: {
     status?: RaffleStatus;
+    statuses?: RaffleStatus[];
     isFeatured?: boolean;
     search?: string;
     page?: number;
     limit?: number;
   }) {
-    const { status, isFeatured, search, page = 1, limit = 12 } = params;
+    const { status, statuses, isFeatured, search, page = 1, limit = 12 } = params;
     const where: Prisma.RaffleWhereInput = {};
 
-    if (status) where.status = status;
+    if (statuses && statuses.length > 0) {
+      where.status = { in: statuses };
+    } else if (status) {
+      where.status = status;
+    }
     if (isFeatured !== undefined) where.isFeatured = isFeatured;
     if (search) {
       where.OR = [
@@ -39,7 +44,8 @@ export const raffleRepository = {
       prisma.raffle.findMany({
         where,
         include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
-        orderBy: { createdAt: "desc" },
+        // ACTIVE first, CLOSED next, DRAWN last — then most recent within each
+        orderBy: [{ status: "asc" }, { createdAt: "desc" }],
         skip: (page - 1) * limit,
         take: limit,
       }),

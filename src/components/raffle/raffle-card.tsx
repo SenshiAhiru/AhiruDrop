@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { RaffleCountdown } from "./raffle-countdown";
 import { getWearShortName, getWearColor } from "@/constants/cs2";
 
-type RaffleStatus = "DRAFT" | "ACTIVE" | "PAUSED" | "DRAWN" | "CANCELLED";
+type RaffleStatus = "DRAFT" | "ACTIVE" | "PAUSED" | "CLOSED" | "DRAWN" | "CANCELLED";
 
 interface RaffleCardProps {
   raffle: {
@@ -33,9 +33,10 @@ interface RaffleCardProps {
 }
 
 const statusConfig: Record<RaffleStatus, { label: string; variant: "default" | "accent" | "success" | "warning" | "danger" }> = {
-  DRAFT: { label: "Rascunho", variant: "outline" as const },
+  DRAFT: { label: "Rascunho", variant: "default" },
   ACTIVE: { label: "Ativa", variant: "success" },
   PAUSED: { label: "Pausada", variant: "warning" },
+  CLOSED: { label: "Aguardando sorteio", variant: "warning" },
   DRAWN: { label: "Sorteada", variant: "accent" },
   CANCELLED: { label: "Cancelada", variant: "danger" },
 };
@@ -57,6 +58,7 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
   const percentage = calculatePercentage(stats.paid, stats.total);
   const statusInfo = statusConfig[status] ?? statusConfig.ACTIVE;
   const isDrawn = status === "DRAWN";
+  const isClosed = status === "CLOSED";
 
   return (
     <Link
@@ -179,12 +181,12 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
 
         {/* CTA */}
         <Button
-          variant={isDrawn ? "accent" : "default"}
+          variant={isDrawn ? "accent" : isClosed ? "outline" : "default"}
           size="sm"
           className="mt-1 w-full"
           tabIndex={-1}
         >
-          {isDrawn ? "Ver Resultado" : "Participar"}
+          {isDrawn ? "Ver Resultado" : isClosed ? "Aguardando sorteio" : "Participar"}
         </Button>
       </div>
     </Link>

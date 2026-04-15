@@ -13,6 +13,7 @@ import {
 export const raffleService = {
   async list(params: {
     status?: RaffleStatus;
+    statuses?: RaffleStatus[];
     isFeatured?: boolean;
     search?: string;
     page?: number;

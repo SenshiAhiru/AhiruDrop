@@ -37,7 +37,7 @@ export default function RafflesPage() {
   useEffect(() => {
     async function fetchRaffles() {
       try {
-        const res = await fetch("/api/raffles?status=ACTIVE&limit=20");
+        const res = await fetch("/api/raffles?limit=50");
         const json = await res.json();
         if (json.success && json.data?.data) {
           const mapped: Raffle[] = json.data.data.map((item: any) => ({

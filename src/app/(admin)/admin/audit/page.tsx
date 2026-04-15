@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useToast } from "@/components/ui/toast";
 import {
   Activity,
   Loader2,
@@ -71,6 +72,7 @@ export default function AuditPage() {
   const [pages, setPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [exporting, setExporting] = useState(false);
+  const { addToast } = useToast();
 
   async function downloadCSV() {
     setExporting(true);
@@ -81,7 +83,7 @@ export default function AuditPage() {
       if (search) params.set("entityId", search.trim());
       const res = await fetch(`/api/admin/audit/export?${params}`, { cache: "no-store" });
       if (!res.ok) {
-        alert("Falha ao exportar");
+        addToast({ type: "error", message: "Falha ao exportar" });
         return;
       }
       const blob = await res.blob();
@@ -93,8 +95,9 @@ export default function AuditPage() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      addToast({ type: "success", message: "CSV baixado" });
     } catch {
-      alert("Erro de conexão");
+      addToast({ type: "error", message: "Erro de conexão" });
     } finally {
       setExporting(false);
     }

@@ -4,6 +4,8 @@ import "./globals.css";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ToastProvider } from "@/components/providers/toast-provider";
+import { ConfirmProvider } from "@/components/providers/confirm-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +41,11 @@ export default function RootLayout({
       <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased">
         <ThemeProvider>
           <SessionProvider>
-            <QueryProvider>{children}</QueryProvider>
+            <QueryProvider>
+              <ToastProvider>
+                <ConfirmProvider>{children}</ConfirmProvider>
+              </ToastProvider>
+            </QueryProvider>
           </SessionProvider>
         </ThemeProvider>
       </body>

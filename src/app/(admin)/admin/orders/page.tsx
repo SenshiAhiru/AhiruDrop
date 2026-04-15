@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Search, ShoppingCart, Download, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/toast";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,7 @@ export default function OrdersPage() {
   const [pages, setPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [exporting, setExporting] = useState(false);
+  const { addToast } = useToast();
 
   const buildParams = useCallback(() => {
     const params = new URLSearchParams();
@@ -94,7 +96,7 @@ export default function OrdersPage() {
       const params = buildParams();
       const res = await fetch(`/api/admin/orders/export?${params}`, { cache: "no-store" });
       if (!res.ok) {
-        alert("Falha ao exportar");
+        addToast({ type: "error", message: "Falha ao exportar" });
         return;
       }
       const blob = await res.blob();
@@ -106,8 +108,9 @@ export default function OrdersPage() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      addToast({ type: "success", message: "CSV baixado" });
     } catch {
-      alert("Erro de conexão");
+      addToast({ type: "error", message: "Erro de conexão" });
     } finally {
       setExporting(false);
     }

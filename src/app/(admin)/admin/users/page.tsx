@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useToast } from "@/components/ui/toast";
+import { useConfirm } from "@/components/providers/confirm-provider";
 import {
   Search,
   Users,
@@ -94,6 +96,9 @@ export default function UsersPage() {
   const [sortBy, setSortBy] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
+  const { addToast } = useToast();
+  const confirm = useConfirm();
+
   const buildParams = useCallback(() => {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
@@ -154,7 +159,7 @@ export default function UsersPage() {
       const params = buildParams();
       const res = await fetch(`/api/admin/users/export?${params}`, { cache: "no-store" });
       if (!res.ok) {
-        alert("Falha ao exportar");
+        addToast({ type: "error", message: "Falha ao exportar" });
         return;
       }
       const blob = await res.blob();
@@ -166,14 +171,26 @@ export default function UsersPage() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      addToast({ type: "success", message: "CSV baixado" });
     } catch {
-      alert("Erro de conexão");
+      addToast({ type: "error", message: "Erro de conexão" });
     } finally {
       setExporting(false);
     }
   }
 
   async function toggleActive(user: AdminUser) {
+    const action = user.isActive ? "bloquear" : "desbloquear";
+    const ok = await confirm({
+      title: `${user.isActive ? "Bloquear" : "Desbloquear"} ${user.name}?`,
+      description: user.isActive
+        ? "O usuário não poderá mais acessar a plataforma até ser desbloqueado."
+        : "O usuário voltará a ter acesso normal à plataforma.",
+      confirmLabel: user.isActive ? "Bloquear" : "Desbloquear",
+      variant: user.isActive ? "destructive" : "default",
+    });
+    if (!ok) return;
+
     setUpdatingId(user.id);
     try {
       const res = await fetch(`/api/admin/users`, {
@@ -186,11 +203,12 @@ export default function UsersPage() {
         setUsers((prev) =>
           prev.map((u) => (u.id === user.id ? { ...u, isActive: !u.isActive } : u))
         );
+        addToast({ type: "success", message: `Usuário ${action === "bloquear" ? "bloqueado" : "desbloqueado"}` });
       } else {
-        alert(json.error || "Falha ao atualizar");
+        addToast({ type: "error", message: json.error || "Falha ao atualizar" });
       }
     } catch {
-      alert("Erro de conexão");
+      addToast({ type: "error", message: "Erro de conexão" });
     } finally {
       setUpdatingId(null);
     }
@@ -198,7 +216,17 @@ export default function UsersPage() {
 
   async function toggleRole(user: AdminUser) {
     const newRole = user.role === "ADMIN" ? "USER" : "ADMIN";
-    if (!confirm(`Mudar role de ${user.name} para ${newRole}?`)) return;
+    const ok = await confirm({
+      title: newRole === "ADMIN" ? "Promover a Admin?" : "Rebaixar a User?",
+      description:
+        newRole === "ADMIN"
+          ? `${user.name} terá acesso completo ao painel administrativo.`
+          : `${user.name} perderá acesso ao painel administrativo.`,
+      confirmLabel: newRole === "ADMIN" ? "Promover" : "Rebaixar",
+      variant: newRole === "USER" ? "destructive" : "default",
+    });
+    if (!ok) return;
+
     setUpdatingId(user.id);
     try {
       const res = await fetch(`/api/admin/users`, {
@@ -211,11 +239,12 @@ export default function UsersPage() {
         setUsers((prev) =>
           prev.map((u) => (u.id === user.id ? { ...u, role: newRole } : u))
         );
+        addToast({ type: "success", message: `${user.name} agora é ${newRole}` });
       } else {
-        alert(json.error || "Falha ao atualizar");
+        addToast({ type: "error", message: json.error || "Falha ao atualizar" });
       }
     } catch {
-      alert("Erro de conexão");
+      addToast({ type: "error", message: "Erro de conexão" });
     } finally {
       setUpdatingId(null);
     }

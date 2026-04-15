@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { TicketChat, type ChatMessage } from "@/components/support/ticket-chat";
 import { useToast } from "@/components/ui/toast";
 import { SUPPORT_CATEGORIES } from "@/constants/support";
+import { usePoll } from "@/hooks/use-poll";
 
 type TicketDetail = {
   id: string;
@@ -44,25 +45,29 @@ export default function UserTicketDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (opts?: { silent?: boolean }) => {
     try {
       const res = await fetch(`/api/support/tickets/${ticketId}`, { cache: "no-store" });
       const json = await res.json();
       if (!json.success) {
-        setError(json.error || "Falha ao carregar");
+        if (!opts?.silent) setError(json.error || "Falha ao carregar");
         return;
       }
       setTicket(json.data);
+      setError(null);
     } catch {
-      setError("Erro de conexão");
+      if (!opts?.silent) setError("Erro de conexão");
     } finally {
-      setLoading(false);
+      if (!opts?.silent) setLoading(false);
     }
   }, [ticketId]);
 
   useEffect(() => {
     load();
   }, [load]);
+
+  // Poll for new messages every 1.5s (silent so UI doesn't flicker)
+  usePoll(() => load({ silent: true }), 1500);
 
   async function handleSend(body: string) {
     const res = await fetch(`/api/support/tickets/${ticketId}/messages`, {

@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TicketChat, type ChatMessage } from "@/components/support/ticket-chat";
 import { useToast } from "@/components/ui/toast";
 import { SUPPORT_CATEGORIES } from "@/constants/support";
+import { usePoll } from "@/hooks/use-poll";
 
 type TicketDetail = {
   id: string;
@@ -46,25 +47,28 @@ export default function AdminTicketDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (opts?: { silent?: boolean }) => {
     try {
       const res = await fetch(`/api/support/tickets/${ticketId}`, { cache: "no-store" });
       const json = await res.json();
       if (!json.success) {
-        setError(json.error || "Falha ao carregar");
+        if (!opts?.silent) setError(json.error || "Falha ao carregar");
         return;
       }
       setTicket(json.data);
+      setError(null);
     } catch {
-      setError("Erro de conexão");
+      if (!opts?.silent) setError("Erro de conexão");
     } finally {
-      setLoading(false);
+      if (!opts?.silent) setLoading(false);
     }
   }, [ticketId]);
 
   useEffect(() => {
     load();
   }, [load]);
+
+  usePoll(() => load({ silent: true }), 1500);
 
   async function handleSend(body: string) {
     const res = await fetch(`/api/support/tickets/${ticketId}/messages`, {

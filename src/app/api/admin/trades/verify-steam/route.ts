@@ -62,24 +62,48 @@ export async function POST(req: NextRequest) {
     // If no offer ID saved, try to auto-detect from sent offers
     if (!offerId) {
       const partnerId = extractPartnerId(trade.steamTradeUrl);
+      console.log("[verify-steam] auto-detect: partnerId =", partnerId);
+
       if (partnerId) {
         try {
-          const listUrl = `https://api.steampowered.com/IEconService/GetTradeOffers/v1/?key=${apiKey}&get_sent_offers=1&active_only=0&time_historical_cutoff=${Math.floor(Date.now() / 1000) - 86400 * 7}`;
+          // Fetch ALL sent offers (no time filter to be safe)
+          const listUrl = `https://api.steampowered.com/IEconService/GetTradeOffers/v1/?key=${apiKey}&get_sent_offers=1&active_only=0&historical_cutoff=${Math.floor(Date.now() / 1000) - 86400 * 30}`;
           const listRes = await fetch(listUrl, { cache: "no-store" });
+          console.log("[verify-steam] GetTradeOffers status:", listRes.status);
+
           if (listRes.ok) {
             const listJson = await listRes.json();
             const offers = listJson?.response?.trade_offers_sent ?? [];
+            console.log("[verify-steam] found", offers.length, "sent offers");
+
+            if (offers.length > 0) {
+              console.log("[verify-steam] first offer sample:", JSON.stringify({
+                tradeofferid: offers[0].tradeofferid,
+                accountid_other: offers[0].accountid_other,
+                trade_offer_state: offers[0].trade_offer_state,
+              }));
+            }
+
             // Find offer matching this partner (accountid_other)
             const match = offers.find(
               (o: any) => String(o.accountid_other) === partnerId
             );
+
             if (match) {
               offerId = String(match.tradeofferid);
+              console.log("[verify-steam] matched offer:", offerId, "state:", match.trade_offer_state);
               // Save it for future checks
               await prisma.tradeRequest.update({
                 where: { id: tradeId },
                 data: { steamTradeOfferId: offerId },
               });
+            } else {
+              console.log("[verify-steam] no match found for partnerId", partnerId);
+              // Return debug info so admin can see what's happening
+              return errorResponse(
+                `Não encontrei trade pra partner ${partnerId}. ${offers.length} offer(s) enviadas encontradas. Tente informar o Trade Offer ID manualmente.`,
+                400
+              );
             }
           }
         } catch (err) {
@@ -89,7 +113,7 @@ export async function POST(req: NextRequest) {
 
       if (!offerId) {
         return errorResponse(
-          "Não consegui encontrar a trade offer automaticamente. Envie a trade no Steam primeiro.",
+          "Não consegui encontrar a trade offer automaticamente. Tente informar o Trade Offer ID manualmente.",
           400
         );
       }

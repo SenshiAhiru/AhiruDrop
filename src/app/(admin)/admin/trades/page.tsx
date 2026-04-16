@@ -354,6 +354,9 @@ export default function AdminTradesPage() {
                         <Button size="sm" disabled={isUpdating} onClick={() => openSendDialog(t.id)}>
                           <Send className="h-3.5 w-3.5" /> Marcar enviado
                         </Button>
+                        <Button size="sm" variant="accent" disabled={isUpdating} onClick={() => updateStatus(t.id, "COMPLETED", "Marcar como entregue")}>
+                          <CheckCircle className="h-3.5 w-3.5" /> Já entregue
+                        </Button>
                         <Button size="sm" variant="destructive" disabled={isUpdating} onClick={() => updateStatus(t.id, "CANCELLED", "Cancelar trade")}>
                           <XCircle className="h-3.5 w-3.5" /> Cancelar
                         </Button>

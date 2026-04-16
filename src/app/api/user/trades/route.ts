@@ -73,14 +73,20 @@ export async function POST(req: NextRequest) {
       data: { steamTradeUrl },
     });
 
-    const trade = await prisma.tradeRequest.create({
-      data: {
-        winnerId,
-        userId: session.user.id,
-        steamTradeUrl,
-        status: "PENDING",
-      },
-    });
+    let trade;
+    try {
+      trade = await prisma.tradeRequest.create({
+        data: {
+          winnerId,
+          userId: session.user.id,
+          steamTradeUrl,
+          status: "PENDING",
+        },
+      });
+    } catch (dbErr: any) {
+      console.error("[trades] create failed:", dbErr);
+      return errorResponse(`Erro ao criar trade: ${dbErr.message?.slice(0, 200)}`, 500);
+    }
 
     // Notify admins
     try {

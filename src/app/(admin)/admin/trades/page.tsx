@@ -151,20 +151,15 @@ export default function AdminTradesPage() {
   }
 
   async function submitSend() {
-    if (!sendTradeId || !sendOfferId.trim()) {
-      addToast({ type: "error", message: "Informe o Trade Offer ID" });
-      return;
-    }
+    if (!sendTradeId) return;
     setSendLoading(true);
     try {
+      const payload: any = { tradeId: sendTradeId, status: "SENT" };
+      if (sendOfferId.trim()) payload.steamTradeOfferId = sendOfferId.trim();
       const res = await fetch("/api/admin/trades", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tradeId: sendTradeId,
-          status: "SENT",
-          steamTradeOfferId: sendOfferId.trim(),
-        }),
+        body: JSON.stringify(payload),
       });
       const json = await res.json();
       if (json.success) {
@@ -368,7 +363,7 @@ export default function AdminTradesPage() {
                       <>
                         <Button
                           size="sm"
-                          disabled={verifyingId === t.id || !t.steamTradeOfferId}
+                          disabled={verifyingId === t.id}
                           onClick={() => verifySteam(t.id)}
                         >
                           {verifyingId === t.id ? (
@@ -405,39 +400,42 @@ export default function AdminTradesPage() {
         <DialogHeader>
           <DialogTitle>Marcar trade como enviado</DialogTitle>
           <DialogDescription>
-            Após enviar a trade offer no Steam, cole o <strong>Trade Offer ID</strong> abaixo.
-            O sistema verificará automaticamente quando o usuário aceitar.
+            Confirme que você já enviou a trade offer no Steam. O sistema detecta o aceite automaticamente.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
-          <div>
-            <label className="text-xs text-surface-400 mb-1 block">Trade Offer ID</label>
-            <Input
-              value={sendOfferId}
-              onChange={(e) => setSendOfferId(e.target.value)}
-              placeholder="Ex: 7193456789"
-              type="text"
-            />
-            <p className="mt-1.5 text-xs text-surface-500">
-              Encontre na URL da trade offer: steamcommunity.com/tradeoffer/<strong>7193456789</strong>/
-            </p>
+          <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 text-xs text-surface-300 space-y-1">
+            <p className="font-semibold text-emerald-400">O que acontece ao confirmar:</p>
+            <p>1. O trade é marcado como &ldquo;Enviado&rdquo;</p>
+            <p>2. O usuário recebe notificação para aceitar no Steam</p>
+            <p>3. O sistema busca automaticamente a offer pela Trade URL</p>
+            <p>4. Quando aceito → marca &ldquo;Entregue&rdquo; sozinho ✅</p>
           </div>
 
-          <div className="rounded-lg border border-surface-700 bg-surface-800/40 p-3 text-xs text-surface-400 space-y-1">
-            <p className="font-semibold text-surface-300">O que acontece:</p>
-            <p>1. O trade é marcado como &ldquo;Enviado&rdquo;</p>
-            <p>2. O usuário recebe notificação para aceitar</p>
-            <p>3. O sistema verifica automaticamente a cada 30s</p>
-            <p>4. Quando aceito → marca &ldquo;Entregue&rdquo; sozinho</p>
-          </div>
+          <details className="text-xs">
+            <summary className="text-surface-500 cursor-pointer hover:text-surface-300">
+              Opcional: informar Trade Offer ID manualmente
+            </summary>
+            <div className="mt-2">
+              <Input
+                value={sendOfferId}
+                onChange={(e) => setSendOfferId(e.target.value)}
+                placeholder="Ex: 7193456789 (encontre na URL da trade)"
+                type="text"
+              />
+              <p className="mt-1 text-surface-500">
+                Se não informar, o sistema tenta achar automaticamente pelo partner ID.
+              </p>
+            </div>
+          </details>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => setSendOpen(false)} disabled={sendLoading}>
             Cancelar
           </Button>
-          <Button onClick={submitSend} disabled={sendLoading || !sendOfferId.trim()}>
+          <Button onClick={submitSend} disabled={sendLoading}>
             {sendLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             Confirmar envio
           </Button>

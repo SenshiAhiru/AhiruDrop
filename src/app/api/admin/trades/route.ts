@@ -60,7 +60,7 @@ export async function PATCH(req: NextRequest) {
     const session = await requireAdmin();
     const body = await req.json().catch(() => null);
 
-    const { tradeId, status, adminNotes } = body ?? {};
+    const { tradeId, status, adminNotes, steamTradeOfferId } = body ?? {};
     if (!tradeId || !status) return errorResponse("tradeId e status obrigatórios", 422);
 
     const validStatuses: TradeStatus[] = ["PENDING", "SENT", "COMPLETED", "FAILED", "CANCELLED"];
@@ -78,6 +78,7 @@ export async function PATCH(req: NextRequest) {
 
     const data: any = { status };
     if (adminNotes !== undefined) data.adminNotes = adminNotes;
+    if (steamTradeOfferId) data.steamTradeOfferId = String(steamTradeOfferId).trim();
     if (status === "SENT" && !trade.sentAt) data.sentAt = new Date();
     if (status === "COMPLETED" && !trade.completedAt) {
       data.completedAt = new Date();

@@ -340,16 +340,17 @@ model Winner {
 }
 
 model TradeRequest {
-  id            String       @id @default(cuid())
-  winnerId      String       @unique
-  userId        String
-  steamTradeUrl String
-  status        TradeStatus  @default(PENDING)
-  adminNotes    String?      @db.Text
-  sentAt        DateTime?
-  completedAt   DateTime?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id                String       @id @default(cuid())
+  winnerId          String       @unique
+  userId            String
+  steamTradeUrl     String
+  steamTradeOfferId String?      // Steam trade offer ID for verification
+  status            TradeStatus  @default(PENDING)
+  adminNotes        String?      @db.Text
+  sentAt            DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 
   winner Winner @relation(fields: [winnerId], references: [id])
   user   User   @relation(fields: [userId], references: [id])

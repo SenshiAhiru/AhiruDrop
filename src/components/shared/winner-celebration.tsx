@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import { Trophy, X, Sparkles, ExternalLink } from "lucide-react";
+import { Trophy, X, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export type UnseenWin = {
@@ -135,7 +135,7 @@ export function WinnerCelebrationPopup({ win, onClose }: Props) {
                   background: `radial-gradient(circle, ${rarityColor}30, transparent)`,
                 }}
               >
-                <Sparkles className="h-10 w-10 text-amber-400" />
+                <Trophy className="h-10 w-10 text-amber-400" />
               </div>
             </div>
 

@@ -18,6 +18,7 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "Rifas", href: "/raffles" },
   { label: "Ganhadores", href: "/winners" },
+  { label: "Minhas Vitórias", href: "/dashboard/winnings", auth: true },
   { label: "Como Funciona", href: "/about" },
   { label: "FAQ", href: "/faq" },
 ];
@@ -51,18 +52,22 @@ export function PublicHeader() {
             </span>
 
             <nav className="hidden md:flex items-center justify-center gap-1 flex-1">
-              {navLinks.map((link) => (
+              {navLinks
+                .filter((link) => !link.auth || session?.user)
+                .map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={cn(
                     "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                    pathname === link.href
+                    pathname === link.href || pathname.startsWith(link.href + "/")
                       ? "text-primary-500 bg-primary-600/10"
+                      : link.auth
+                      ? "text-accent-400 hover:text-accent-300 hover:bg-accent-500/10"
                       : "text-surface-400 hover:text-white hover:bg-surface-800"
                   )}
                 >
-                  {link.label}
+                  {link.auth ? `🏆 ${link.label}` : link.label}
                 </Link>
               ))}
             </nav>

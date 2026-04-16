@@ -13,6 +13,9 @@ export async function GET(req: NextRequest) {
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       include: {
+        tradeRequest: {
+          select: { id: true, status: true },
+        },
         draw: {
           include: {
             raffle: {
@@ -41,6 +44,7 @@ export async function GET(req: NextRequest) {
       claimedAt: w.claimedAt,
       createdAt: w.createdAt,
       drawnAt: w.draw.drawnAt,
+      tradeRequest: w.tradeRequest ?? null,
       raffle: w.draw.raffle
         ? {
             ...w.draw.raffle,

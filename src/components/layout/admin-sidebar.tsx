@@ -16,6 +16,7 @@ import {
   MessageSquare,
   Activity,
   Bell,
+  ArrowRightLeft,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,7 @@ const navItems: NavItem[] = [
   { label: "Usuários", href: "/admin/users", icon: Users },
   { label: "Pagamentos", href: "/admin/payments", icon: CreditCard },
   { label: "Gateways", href: "/admin/gateways", icon: Settings2 },
+  { label: "Trades", href: "/admin/trades", icon: ArrowRightLeft },
   { label: "Cupons", href: "/admin/coupons", icon: Tag },
   { label: "Configurações", href: "/admin/settings", icon: Settings },
   { label: "Relatórios", href: "/admin/reports", icon: BarChart3 },

@@ -17,6 +17,7 @@ import {
   MessageSquare,
   Activity,
   Bell,
+  ArrowRightLeft,
 } from "lucide-react";
 
 const mobileNavItems = [
@@ -26,6 +27,7 @@ const mobileNavItems = [
   { label: "Usuários", href: "/admin/users", icon: Users },
   { label: "Pagamentos", href: "/admin/payments", icon: CreditCard },
   { label: "Gateways", href: "/admin/gateways", icon: Settings2 },
+  { label: "Trades", href: "/admin/trades", icon: ArrowRightLeft },
   { label: "Cupons", href: "/admin/coupons", icon: Tag },
   { label: "Configurações", href: "/admin/settings", icon: Settings },
   { label: "Relatórios", href: "/admin/reports", icon: BarChart3 },

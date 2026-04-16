@@ -78,6 +78,7 @@ model User {
   phone          String?        @unique
   cpf            String?        @unique
   steamId        String?        @unique
+  steamTradeUrl  String?
   passwordHash   String
   role           Role           @default(USER)
   avatarUrl      String?
@@ -92,6 +93,7 @@ model User {
   supportTickets  SupportTicket[]
   supportMessages SupportMessage[] @relation("SupportSender")
   raffleDraws     RaffleDraw[]     @relation("DrawAdmin")
+  tradeRequests   TradeRequest[]
 
   @@map("users")
 }
@@ -330,10 +332,39 @@ model Winner {
   seenAt    DateTime?  // null = popup not shown yet
   createdAt DateTime  @default(now())
 
-  draw RaffleDraw @relation(fields: [drawId], references: [id])
+  draw         RaffleDraw    @relation(fields: [drawId], references: [id])
+  tradeRequest TradeRequest?
 
   @@index([userId])
   @@map("winners")
+}
+
+model TradeRequest {
+  id            String       @id @default(cuid())
+  winnerId      String       @unique
+  userId        String
+  steamTradeUrl String
+  status        TradeStatus  @default(PENDING)
+  adminNotes    String?      @db.Text
+  sentAt        DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  winner Winner @relation(fields: [winnerId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("trade_requests")
+}
+
+enum TradeStatus {
+  PENDING       // user solicitou, admin ainda não agiu
+  SENT          // admin enviou a trade offer via Steam
+  COMPLETED     // trade aceito, skin entregue
+  FAILED        // trade falhou ou expirou
+  CANCELLED     // user ou admin cancelou
 }
 
 model Notification {

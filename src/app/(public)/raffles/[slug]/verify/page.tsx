@@ -101,9 +101,8 @@ export default function VerifyPage() {
   }, [slug]);
 
   async function runVerification() {
-    if (!data || !data.reveal) return;
+    if (!data || !data.reveal || verifying || result) return;
     setVerifying(true);
-    setResult(null);
 
     try {
       const seed = data.reveal.serverSeedRevealed!;
@@ -293,13 +292,22 @@ export default function VerifyPage() {
 
           <button
             onClick={runVerification}
-            disabled={verifying}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors disabled:opacity-50"
+            disabled={verifying || !!result}
+            className={`inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${
+              result
+                ? "bg-emerald-600 text-white"
+                : "bg-primary-600 text-white hover:bg-primary-700"
+            }`}
           >
             {verifying ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Verificando...
+              </>
+            ) : result ? (
+              <>
+                <CheckCircle2 className="h-4 w-4" />
+                Verificado ✓
               </>
             ) : (
               <>

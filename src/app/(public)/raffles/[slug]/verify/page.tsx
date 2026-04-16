@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -80,6 +80,7 @@ export default function VerifyPage() {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [result, setResult] = useState<VerifyResult | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const hasRun = useRef(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -101,7 +102,8 @@ export default function VerifyPage() {
   }, [slug]);
 
   async function runVerification() {
-    if (!data || !data.reveal || verifying || result) return;
+    if (!data || !data.reveal || hasRun.current) return;
+    hasRun.current = true;
     setVerifying(true);
 
     try {

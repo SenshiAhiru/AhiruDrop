@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { successResponse, errorResponse, handleApiError, requireAuth } from "@/lib/api-utils";
 import { supportService } from "@/services/support.service";
+import { applyRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const createSchema = z.object({
@@ -20,6 +21,14 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 5 tickets novos por IP a cada 10 minutos
+  const limited = applyRateLimit(req, {
+    key: "support-ticket-create",
+    limit: 5,
+    windowMs: 10 * 60 * 1000,
+  });
+  if (limited) return limited;
+
   try {
     const session = await requireAuth();
     const body = await req.json().catch(() => null);

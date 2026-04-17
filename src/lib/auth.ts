@@ -17,11 +17,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Senha", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const email = credentials.email as string;
+        const email = (credentials.email as string).toLowerCase().trim();
         const password = credentials.password as string;
+
+        // Rate limit por email (impede brute force em conta específica)
+        const { rateLimit, getClientIp } = await import("@/lib/rate-limit");
+        const emailCheck = rateLimit(email, {
+          key: "login-by-email",
+          limit: 5,
+          windowMs: 15 * 60 * 1000,
+        });
+        if (!emailCheck.ok) {
+          throw new Error(`Muitas tentativas. Tente novamente em ${emailCheck.resetInSec}s.`);
+        }
+
+        // Rate limit por IP (impede brute force massivo)
+        const ip = (request as any)?.headers?.get?.("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+        const ipCheck = rateLimit(ip, {
+          key: "login-by-ip",
+          limit: 20,
+          windowMs: 15 * 60 * 1000,
+        });
+        if (!ipCheck.ok) {
+          throw new Error(`Muitas tentativas. Tente novamente em ${ipCheck.resetInSec}s.`);
+        }
 
         const user = await prisma.user.findUnique({
           where: { email },

@@ -1,19 +1,29 @@
+import { NextRequest } from "next/server";
 import crypto from "crypto";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { successResponse, errorResponse, handleApiError } from "@/lib/api-utils";
+import { applyRateLimit } from "@/lib/rate-limit";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Email inválido").toLowerCase().trim(),
 });
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
+  // Rate limit: 3 solicitações de reset por IP a cada 15 minutos
+  const limited = applyRateLimit(req, {
+    key: "forgot-password",
+    limit: 3,
+    windowMs: 15 * 60 * 1000,
+  });
+  if (limited) return limited;
+
   try {
-    const body = await request.json();
+    const body = await req.json();
     const result = forgotPasswordSchema.safeParse(body);
 
     if (!result.success) {
-      return errorResponse(result.error.errors[0].message);
+      return errorResponse(result.error.issues[0].message);
     }
 
     const { email } = result.data;

@@ -18,14 +18,63 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ahirudrop.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "AhiruDrop - Rifas Online Premium",
+    default: "AhiruDrop — Rifas de Skins CS2 com Provably Fair",
     template: "%s | AhiruDrop",
   },
   description:
-    "Plataforma de rifas online com experiência premium, confiável e transparente.",
-  keywords: ["rifas", "sorteios", "prêmios", "ahirudrop"],
+    "Rifas de skins de Counter-Strike 2 com sorteios 100% verificáveis via blockchain Bitcoin. AK-47, AWP, facas, luvas e muito mais.",
+  keywords: [
+    "rifas cs2", "rifas skins", "sorteio cs2", "counter-strike 2",
+    "skins csgo", "ak-47", "awp", "karambit", "provably fair",
+    "rifa online", "ahirudrop",
+  ],
+  authors: [{ name: "AhiruDrop" }],
+  creator: "AhiruDrop",
+  publisher: "AhiruDrop",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: SITE_URL,
+    siteName: "AhiruDrop",
+    title: "AhiruDrop — Rifas de Skins CS2",
+    description:
+      "Participe de rifas de skins CS2 com sorteios verificáveis publicamente via Bitcoin.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AhiruDrop",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AhiruDrop — Rifas de Skins CS2",
+    description:
+      "Rifas de skins CS2 com provably fair. Transparente, justo e verificável.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({

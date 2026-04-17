@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,12 +37,14 @@ export default function ProfilePage() {
   const [steamName, setSteamName] = useState("");
   const [steamMessage, setSteamMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Check Steam link status and URL params
-  useState(() => {
-    // Fetch profile to check if steam is linked
+  // Fetch profile on mount + handle URL params (Steam callback, welcome)
+  useEffect(() => {
+    let cancelled = false;
+
     fetch("/api/user/profile")
       .then((r) => r.json())
       .then((json) => {
+        if (cancelled) return;
         const data = json.data || json;
         if (data.steamId) {
           setSteamLinked(true);
@@ -54,7 +56,6 @@ export default function ProfilePage() {
       })
       .catch(() => {});
 
-    // Check URL params for Steam link result
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       if (params.get("welcome") === "true") {
@@ -65,8 +66,10 @@ export default function ProfilePage() {
       if (steamResult === "success") {
         setSteamLinked(true);
         setSteamName(params.get("name") || "");
-        setSteamMessage({ type: "success", text: `Steam vinculada com sucesso! (${params.get("name") || ""})` });
-        // Clean URL
+        setSteamMessage({
+          type: "success",
+          text: `Steam vinculada com sucesso! (${params.get("name") || ""})`,
+        });
         window.history.replaceState({}, "", "/dashboard/profile");
       } else if (steamResult === "error") {
         const reason = params.get("reason");
@@ -77,18 +80,27 @@ export default function ProfilePage() {
           not_authenticated: "Você precisa estar logado para vincular.",
           unknown: "Erro desconhecido. Tente novamente.",
         };
-        setSteamMessage({ type: "error", text: messages[reason || "unknown"] || messages.unknown });
+        setSteamMessage({
+          type: "error",
+          text: messages[reason || "unknown"] || messages.unknown,
+        });
         window.history.replaceState({}, "", "/dashboard/profile");
       }
     }
-  });
 
-  // Initialize name from session once loaded
-  useState(() => {
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Sync name from session when session loads (if name is empty)
+  useEffect(() => {
     if (session?.user?.name && !name) {
       setName(session.user.name);
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.name]);
 
 
   function maskPhone(value: string) {

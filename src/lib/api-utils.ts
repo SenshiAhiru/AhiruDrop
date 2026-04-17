@@ -16,7 +16,7 @@ export async function validateBody<T>(request: Request, schema: ZodSchema<T>) {
     const body = await request.json();
     const result = schema.safeParse(body);
     if (!result.success) {
-      return { data: null, error: result.error.errors[0].message };
+      return { data: null, error: result.error.issues[0]?.message ?? "Dados inválidos" };
     }
     return { data: result.data, error: null };
   } catch {

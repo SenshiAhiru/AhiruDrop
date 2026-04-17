@@ -2,14 +2,13 @@ import { prisma } from "@/lib/prisma";
 import { raffleRepository } from "@/repositories/raffle.repository";
 import { raffleNumberRepository } from "@/repositories/raffle-number.repository";
 import { orderRepository } from "@/repositories/order.repository";
-import { couponService } from "./coupon.service";
 import { settingsService } from "./settings.service";
 import { OrderStatus, NumberStatus } from "@prisma/client";
 
 export const orderService = {
   async create(
     userId: string,
-    input: { raffleId: string; numbers: number[]; couponCode?: string }
+    input: { raffleId: string; numbers: number[] }
   ) {
     const raffle = await raffleRepository.findById(input.raffleId);
     if (!raffle) throw new Error("Rifa não encontrada");
@@ -43,23 +42,11 @@ export const orderService = {
       );
     }
 
-    // Calculate amounts
+    // Calculate amounts (coupons apply at deposit time, not here)
     const pricePerNumber = Number(raffle.pricePerNumber);
     const totalAmount = count * pricePerNumber;
-    let discount = 0;
-    let couponId: string | undefined;
-
-    // Validate coupon if provided
-    if (input.couponCode) {
-      const couponResult = await couponService.validate(
-        input.couponCode,
-        totalAmount
-      );
-      discount = couponResult.discount;
-      couponId = couponResult.coupon.id;
-    }
-
-    const finalAmount = totalAmount - discount;
+    const discount = 0;
+    const finalAmount = totalAmount;
 
     // Get reservation timeout from settings (default 15 minutes)
     const timeoutMinutes =
@@ -67,13 +54,12 @@ export const orderService = {
     const expiresAt = new Date(Date.now() + timeoutMinutes * 60 * 1000);
 
     // Create order with items in a transaction
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await prisma.$transaction(async () => {
       const created = await orderRepository.create({
         userId,
         totalAmount,
         discount,
         finalAmount,
-        couponId,
         expiresAt,
         items: [
           {
@@ -93,14 +79,6 @@ export const orderService = {
         expiresAt
       );
 
-      // Increment coupon uses if coupon was applied
-      if (couponId) {
-        await tx.coupon.update({
-          where: { id: couponId },
-          data: { currentUses: { increment: 1 } },
-        });
-      }
-
       return created;
     });
 
@@ -114,7 +92,7 @@ export const orderService = {
    */
   async purchaseWithBalance(
     userId: string,
-    input: { raffleId: string; numbers: number[]; couponCode?: string }
+    input: { raffleId: string; numbers: number[] }
   ) {
     const raffle = await raffleRepository.findById(input.raffleId);
     if (!raffle) throw new Error("Rifa não encontrada");
@@ -133,15 +111,9 @@ export const orderService = {
     const pricePerNumber = Number(raffle.pricePerNumber);
     const totalAmount = count * pricePerNumber;
 
-    let discount = 0;
-    let couponId: string | undefined;
-    if (input.couponCode) {
-      const couponResult = await couponService.validate(input.couponCode, totalAmount);
-      discount = couponResult.discount;
-      couponId = couponResult.coupon.id;
-    }
-
-    const finalAmount = totalAmount - discount;
+    // Coupons apply at deposit time, not at raffle purchase
+    const discount = 0;
+    const finalAmount = totalAmount;
 
     return prisma.$transaction(async (tx) => {
       // Lock user row and check balance
@@ -188,7 +160,6 @@ export const orderService = {
           totalAmount,
           discount,
           finalAmount,
-          couponId,
           expiresAt: new Date(),
           items: {
             create: [
@@ -214,14 +185,6 @@ export const orderService = {
         },
         data: { orderId: order.id, reservedUntil: null },
       });
-
-      // Increment coupon uses if applied
-      if (couponId) {
-        await tx.coupon.update({
-          where: { id: couponId },
-          data: { currentUses: { increment: 1 } },
-        });
-      }
 
       const newBalance = currentBalance - finalAmount;
       return { order, balance: newBalance, spent: finalAmount };

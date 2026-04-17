@@ -10,7 +10,6 @@ import { z } from "zod";
 
 const purchaseSchema = z.object({
   numbers: z.array(z.number().int().positive()).min(1).max(1000),
-  couponCode: z.string().trim().min(1).max(40).optional(),
 });
 
 export async function POST(
@@ -33,7 +32,6 @@ export async function POST(
     const result = await orderService.purchaseWithBalance(session.user.id, {
       raffleId,
       numbers: uniqueNumbers,
-      couponCode: parsed.data.couponCode,
     });
 
     return successResponse({
@@ -52,7 +50,6 @@ export async function POST(
         "Saldo insuficiente",
         "já foram vendidos",
         "Usuário não encontrado",
-        "Cupom",
       ];
       if (knownErrors.some((msg) => error.message.includes(msg))) {
         return errorResponse(error.message, 400);

@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/card";
 import { User, Mail, Lock, Eye, EyeOff, Check, X } from "lucide-react";
 import { validatePasswordStrength, PASSWORD_MIN_LENGTH } from "@/lib/password-policy";
+import { TurnstileWidget } from "@/components/shared/turnstile-widget";
+
+const TURNSTILE_ENABLED = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 
 const SCORE_CONFIG: Record<number, { color: string; width: string; text: string }> = {
   0: { color: "bg-surface-700", width: "w-0", text: "text-surface-500" },
@@ -37,6 +40,7 @@ export default function RegisterPage() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const policy = useMemo(() => validatePasswordStrength(password), [password]);
 
@@ -59,13 +63,23 @@ export default function RegisterPage() {
       return;
     }
 
+    if (TURNSTILE_ENABLED && !turnstileToken) {
+      setError("Complete a verificação humana antes de continuar.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          ...(turnstileToken ? { turnstileToken } : {}),
+        }),
       });
 
       const data = await res.json();
@@ -252,12 +266,18 @@ export default function RegisterPage() {
             </label>
           </div>
 
+          {TURNSTILE_ENABLED && (
+            <div className="pt-1">
+              <TurnstileWidget onToken={setTurnstileToken} theme="dark" />
+            </div>
+          )}
+
           <Button
             type="submit"
             className="w-full"
             size="lg"
             isLoading={isLoading}
-            disabled={!acceptTerms}
+            disabled={!acceptTerms || (TURNSTILE_ENABLED && !turnstileToken)}
           >
             Criar conta
           </Button>

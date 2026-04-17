@@ -3,8 +3,9 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { successResponse, errorResponse, handleApiError } from "@/lib/api-utils";
-import { applyRateLimit } from "@/lib/rate-limit";
+import { applyRateLimit, getClientIp } from "@/lib/rate-limit";
 import { validatePasswordStrength } from "@/lib/password-policy";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 const registerSchema = z.object({
   name: z
@@ -22,6 +23,7 @@ const registerSchema = z.object({
     .string()
     .min(8, "A senha deve ter no mínimo 8 caracteres")
     .max(128, "A senha deve ter no máximo 128 caracteres"),
+  turnstileToken: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -41,7 +43,13 @@ export async function POST(req: NextRequest) {
       return errorResponse(result.error.issues[0].message);
     }
 
-    const { name, email, password } = result.data;
+    const { name, email, password, turnstileToken } = result.data;
+
+    // CAPTCHA (Cloudflare Turnstile) — skipped if not configured
+    const turnstileResult = await verifyTurnstile(turnstileToken, getClientIp(req));
+    if (!turnstileResult.ok) {
+      return errorResponse(turnstileResult.message ?? "Verificação humana falhou", 403);
+    }
 
     // Strong password policy server-side
     const policyCheck = validatePasswordStrength(password);

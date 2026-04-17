@@ -18,6 +18,9 @@ import {
   ArrowUp,
   ArrowDown,
   ArrowUpDown,
+  CheckSquare,
+  Square,
+  X,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -93,6 +96,8 @@ export default function UsersPage() {
   const [total, setTotal] = useState(0);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulking, setBulking] = useState(false);
   const [sortBy, setSortBy] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
@@ -152,6 +157,68 @@ export default function UsersPage() {
     const t = setTimeout(load, 250); // debounce search
     return () => clearTimeout(t);
   }, [load]);
+
+  // Clear selection when page/filters change
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [page, search, roleFilter, statusFilter, sortBy, sortOrder]);
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    if (selectedIds.size === users.length && users.length > 0) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(users.map((u) => u.id)));
+    }
+  }
+
+  async function runBulkAction(
+    action: "block" | "unblock" | "promote" | "demote",
+    label: string,
+    variant: "default" | "destructive" = "default"
+  ) {
+    if (selectedIds.size === 0) return;
+    const ids = Array.from(selectedIds);
+    const ok = await confirm({
+      title: `${label} ${ids.length} usuário${ids.length > 1 ? "s" : ""}?`,
+      description: "Esta ação será aplicada em todos os selecionados de uma vez.",
+      confirmLabel: label,
+      variant,
+    });
+    if (!ok) return;
+
+    setBulking(true);
+    try {
+      const res = await fetch("/api/admin/users/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userIds: ids, action }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        addToast({
+          type: "success",
+          message: `${json.data.affected} usuário${json.data.affected !== 1 ? "s" : ""} atualizado${json.data.affected !== 1 ? "s" : ""}`,
+        });
+        setSelectedIds(new Set());
+        await load();
+      } else {
+        addToast({ type: "error", message: json.error || "Falha na ação em lote" });
+      }
+    } catch {
+      addToast({ type: "error", message: "Erro de conexão" });
+    } finally {
+      setBulking(false);
+    }
+  }
 
   async function downloadCSV() {
     setExporting(true);
@@ -250,7 +317,43 @@ export default function UsersPage() {
     }
   }
 
+  const allSelected = users.length > 0 && selectedIds.size === users.length;
+  const someSelected = selectedIds.size > 0 && !allSelected;
+
   const columns: Column<AdminUser & Record<string, unknown>>[] = [
+    {
+      key: "select",
+      label: (
+        <button
+          onClick={toggleSelectAll}
+          className="flex items-center justify-center text-surface-400 hover:text-white transition-colors"
+          title={allSelected ? "Desmarcar todos" : "Marcar todos"}
+        >
+          {allSelected ? (
+            <CheckSquare className="h-4 w-4 text-primary-400" />
+          ) : someSelected ? (
+            <CheckSquare className="h-4 w-4 text-primary-400/50" />
+          ) : (
+            <Square className="h-4 w-4" />
+          )}
+        </button>
+      ),
+      render: (item) => (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleSelect(item.id as string);
+          }}
+          className="flex items-center justify-center text-surface-400 hover:text-white transition-colors"
+        >
+          {selectedIds.has(item.id as string) ? (
+            <CheckSquare className="h-4 w-4 text-primary-400" />
+          ) : (
+            <Square className="h-4 w-4" />
+          )}
+        </button>
+      ),
+    },
     {
       key: "name",
       label: (
@@ -514,6 +617,65 @@ export default function UsersPage() {
       {error && (
         <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
           {error}
+        </div>
+      )}
+
+      {/* Bulk action bar (sticky when users are selected) */}
+      {selectedIds.size > 0 && (
+        <div className="sticky top-4 z-20 flex items-center justify-between gap-3 rounded-xl border border-primary-500/40 bg-primary-500/10 backdrop-blur-sm px-4 py-2.5 shadow-lg shadow-primary-500/10">
+          <div className="flex items-center gap-3 text-sm">
+            <span className="font-semibold text-primary-300">
+              {selectedIds.size} selecionado{selectedIds.size !== 1 ? "s" : ""}
+            </span>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="text-xs text-surface-400 hover:text-white transition-colors inline-flex items-center gap-1"
+              title="Limpar seleção"
+            >
+              <X className="h-3 w-3" />
+              Limpar
+            </button>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={bulking}
+              onClick={() => runBulkAction("unblock", "Desbloquear")}
+            >
+              <UserCheck className="h-3.5 w-3.5" />
+              Desbloquear
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={bulking}
+              onClick={() => runBulkAction("block", "Bloquear", "destructive")}
+              className="text-red-400 border-red-500/30 hover:bg-red-500/10"
+            >
+              <UserX className="h-3.5 w-3.5" />
+              Bloquear
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={bulking}
+              onClick={() => runBulkAction("promote", "Promover a Admin")}
+            >
+              <Shield className="h-3.5 w-3.5" />
+              Promover
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={bulking}
+              onClick={() => runBulkAction("demote", "Rebaixar a User", "destructive")}
+            >
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Rebaixar
+            </Button>
+            {bulking && <Loader2 className="h-4 w-4 animate-spin text-primary-400" />}
+          </div>
         </div>
       )}
 

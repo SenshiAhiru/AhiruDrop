@@ -2,8 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Search, ShoppingCart, Download, Loader2 } from "lucide-react";
+import {
+  Search, ShoppingCart, Download, Loader2, CheckSquare, Square, X, XCircle, Clock,
+} from "lucide-react";
 import { useToast } from "@/components/ui/toast";
+import { useConfirm } from "@/components/providers/confirm-provider";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,7 +56,10 @@ export default function OrdersPage() {
   const [pages, setPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [exporting, setExporting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulking, setBulking] = useState(false);
   const { addToast } = useToast();
+  const confirm = useConfirm();
 
   const buildParams = useCallback(() => {
     const params = new URLSearchParams();
@@ -90,6 +96,69 @@ export default function OrdersPage() {
     return () => clearTimeout(t);
   }, [load]);
 
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [page, search, activeTab]);
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    if (selectedIds.size === orders.length && orders.length > 0) {
+      setSelectedIds(new Set());
+    } else {
+      // Only select cancellable orders (PENDING)
+      setSelectedIds(
+        new Set(orders.filter((o) => o.status === "PENDING").map((o) => o.id))
+      );
+    }
+  }
+
+  async function runBulkAction(action: "cancel" | "expire", label: string) {
+    if (selectedIds.size === 0) return;
+    const ids = Array.from(selectedIds);
+    const ok = await confirm({
+      title: `${label} ${ids.length} pedido${ids.length > 1 ? "s" : ""}?`,
+      description:
+        "Números reservados serão liberados. Pedidos não-PENDING serão ignorados.",
+      confirmLabel: label,
+      variant: "destructive",
+    });
+    if (!ok) return;
+
+    setBulking(true);
+    try {
+      const res = await fetch("/api/admin/orders/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderIds: ids, action }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        addToast({
+          type: "success",
+          message: `${json.data.affected} pedido${json.data.affected !== 1 ? "s" : ""} atualizado${json.data.affected !== 1 ? "s" : ""}${
+            json.data.errors.length > 0 ? ` (${json.data.errors.length} falhas)` : ""
+          }`,
+        });
+        setSelectedIds(new Set());
+        await load();
+      } else {
+        addToast({ type: "error", message: json.error || "Falha na ação" });
+      }
+    } catch {
+      addToast({ type: "error", message: "Erro de conexão" });
+    } finally {
+      setBulking(false);
+    }
+  }
+
   async function downloadCSV() {
     setExporting(true);
     try {
@@ -116,7 +185,51 @@ export default function OrdersPage() {
     }
   }
 
+  const pendingOrders = orders.filter((o) => o.status === "PENDING");
+  const allPendingSelected =
+    pendingOrders.length > 0 && pendingOrders.every((o) => selectedIds.has(o.id));
+
   const columns: Column<AdminOrder & Record<string, unknown>>[] = [
+    {
+      key: "select",
+      label: (
+        <button
+          onClick={toggleSelectAll}
+          className="flex items-center justify-center text-surface-400 hover:text-white"
+          title={allPendingSelected ? "Desmarcar" : "Marcar pendentes"}
+          disabled={pendingOrders.length === 0}
+        >
+          {allPendingSelected ? (
+            <CheckSquare className="h-4 w-4 text-primary-400" />
+          ) : selectedIds.size > 0 ? (
+            <CheckSquare className="h-4 w-4 text-primary-400/50" />
+          ) : (
+            <Square className="h-4 w-4" />
+          )}
+        </button>
+      ),
+      render: (item) => {
+        const canSelect = (item.status as string) === "PENDING";
+        if (!canSelect) {
+          return <span className="text-surface-800">—</span>;
+        }
+        return (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSelect(item.id as string);
+            }}
+            className="flex items-center justify-center text-surface-400 hover:text-white"
+          >
+            {selectedIds.has(item.id as string) ? (
+              <CheckSquare className="h-4 w-4 text-primary-400" />
+            ) : (
+              <Square className="h-4 w-4" />
+            )}
+          </button>
+        );
+      },
+    },
     {
       key: "id",
       label: "ID",
@@ -243,6 +356,44 @@ export default function OrdersPage() {
       {error && (
         <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
           {error}
+        </div>
+      )}
+
+      {selectedIds.size > 0 && (
+        <div className="sticky top-4 z-20 flex items-center justify-between gap-3 rounded-xl border border-primary-500/40 bg-primary-500/10 backdrop-blur-sm px-4 py-2.5 shadow-lg shadow-primary-500/10">
+          <div className="flex items-center gap-3 text-sm">
+            <span className="font-semibold text-primary-300">
+              {selectedIds.size} pedido{selectedIds.size !== 1 ? "s" : ""} selecionado{selectedIds.size !== 1 ? "s" : ""}
+            </span>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="text-xs text-surface-400 hover:text-white inline-flex items-center gap-1"
+            >
+              <X className="h-3 w-3" /> Limpar
+            </button>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={bulking}
+              onClick={() => runBulkAction("cancel", "Cancelar")}
+              className="text-red-400 border-red-500/30 hover:bg-red-500/10"
+            >
+              <XCircle className="h-3.5 w-3.5" />
+              Cancelar
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={bulking}
+              onClick={() => runBulkAction("expire", "Expirar")}
+            >
+              <Clock className="h-3.5 w-3.5" />
+              Expirar
+            </Button>
+            {bulking && <Loader2 className="h-4 w-4 animate-spin text-primary-400" />}
+          </div>
         </div>
       )}
 

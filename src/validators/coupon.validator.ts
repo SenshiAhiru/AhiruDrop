@@ -6,7 +6,7 @@ export const createCouponSchema = z.object({
     .min(1, "Código é obrigatório")
     .max(30, "Código deve ter no máximo 30 caracteres")
     .transform((val) => val.toUpperCase()),
-  discountType: z.enum(["percentage", "fixed"], {
+  discountType: z.enum(["PERCENTAGE", "FIXED"], {
     error: "Tipo de desconto é obrigatório",
   }),
   discountValue: z

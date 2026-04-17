@@ -10,12 +10,14 @@ export async function GET(req: NextRequest) {
 
     const status = searchParams.get("status") as PaymentStatus | null;
     const gatewayId = searchParams.get("gateway") || undefined;
+    const search = searchParams.get("search") || undefined;
     const page = Number(searchParams.get("page") || "1");
-    const limit = Math.min(Number(searchParams.get("limit") || "20"), 100);
+    const limit = Math.min(Number(searchParams.get("limit") || "50"), 100);
 
     const result = await paymentService.listAll({
       status: status || undefined,
       gatewayId,
+      search,
       page,
       limit,
     });

@@ -71,18 +71,35 @@ export const paymentRepository = {
     limit?: number;
     status?: PaymentStatus;
     gatewayId?: string;
+    search?: string;
   }) {
-    const { page = 1, limit = 20, status, gatewayId } = params;
+    const { page = 1, limit = 20, status, gatewayId, search } = params;
     const where: Prisma.PaymentWhereInput = {};
 
     if (status) where.status = status;
     if (gatewayId) where.gatewayId = gatewayId;
+    if (search) {
+      where.OR = [
+        { id: { contains: search } },
+        { orderId: { contains: search } },
+        { externalId: { contains: search } },
+        { order: { user: { name: { contains: search, mode: "insensitive" } } } },
+        { order: { user: { email: { contains: search, mode: "insensitive" } } } },
+      ];
+    }
 
     const [data, total] = await Promise.all([
       prisma.payment.findMany({
         where,
         include: {
-          order: { select: { id: true, userId: true, status: true } },
+          order: {
+            select: {
+              id: true,
+              userId: true,
+              status: true,
+              user: { select: { name: true, email: true, avatarUrl: true } },
+            },
+          },
           gateway: { select: { id: true, name: true, displayName: true } },
         },
         orderBy: { createdAt: "desc" },

@@ -163,6 +163,7 @@ export const paymentService = {
     limit?: number;
     status?: PaymentStatus;
     gatewayId?: string;
+    search?: string;
   }) {
     return paymentRepository.findMany(params);
   },

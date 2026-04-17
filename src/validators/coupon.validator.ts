@@ -17,6 +17,11 @@ export const createCouponSchema = z.object({
     .int()
     .positive("Máximo de usos deve ser positivo")
     .optional(),
+  maxUsesPerUser: z
+    .number()
+    .int()
+    .positive("Máximo por usuário deve ser positivo")
+    .optional(),
   minOrderAmount: z
     .number()
     .positive("Valor mínimo do pedido deve ser positivo")

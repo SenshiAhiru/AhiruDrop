@@ -44,7 +44,8 @@ export async function POST(req: NextRequest) {
       try {
         const { coupon, discount } = await couponService.validate(
           couponCode.trim(),
-          ahcAmount
+          ahcAmount,
+          session.user.id
         );
         couponId = coupon.id;
         bonusAhc = discount;

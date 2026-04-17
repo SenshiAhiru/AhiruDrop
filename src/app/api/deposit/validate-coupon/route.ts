@@ -15,7 +15,7 @@ const schema = z.object({
  */
 export async function POST(req: NextRequest) {
   try {
-    await requireAuth();
+    const session = await requireAuth();
 
     const body = await req.json().catch(() => null);
     const parsed = schema.safeParse(body);
@@ -26,7 +26,8 @@ export async function POST(req: NextRequest) {
     try {
       const { coupon, discount } = await couponService.validate(
         parsed.data.code,
-        parsed.data.amount
+        parsed.data.amount,
+        session.user.id
       );
 
       return successResponse({

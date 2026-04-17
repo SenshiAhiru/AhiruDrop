@@ -284,22 +284,39 @@ model PaymentGatewayConfig {
 }
 
 model Coupon {
-  id             String    @id @default(cuid())
-  code           String    @unique
-  discountType   String
-  discountValue  Decimal   @db.Decimal(10, 2)
-  maxUses        Int?
-  currentUses    Int       @default(0)
-  minOrderAmount Decimal?  @db.Decimal(10, 2)
-  validFrom      DateTime  @default(now())
-  validUntil     DateTime?
-  isActive       Boolean   @default(true)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  code            String    @unique
+  discountType    String
+  discountValue   Decimal   @db.Decimal(10, 2)
+  maxUses         Int?      // total across all users; null = unlimited
+  maxUsesPerUser  Int?      // per-user limit; null = no per-user cap
+  currentUses     Int       @default(0)
+  minOrderAmount  Decimal?  @db.Decimal(10, 2)
+  validFrom       DateTime  @default(now())
+  validUntil      DateTime?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  orders Order[]
+  orders      Order[]
+  redemptions CouponRedemption[]
 
   @@map("coupons")
+}
+
+model CouponRedemption {
+  id         String   @id @default(cuid())
+  couponId   String
+  userId     String
+  context    String   // "deposit" | "order"
+  referenceId String? // Stripe payment intent id or Order id
+  createdAt  DateTime @default(now())
+
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
+
+  @@index([couponId, userId])
+  @@index([userId])
+  @@map("coupon_redemptions")
 }
 
 model RaffleDraw {

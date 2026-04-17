@@ -101,15 +101,26 @@ export async function POST(req: NextRequest) {
         select: { name: true },
       });
 
-      // Increment coupon usage (best-effort; webhook already paid so don't fail the hook)
+      // Increment coupon usage + record per-user redemption
+      // (best-effort; webhook already paid so don't fail the hook)
       if (couponId && bonusAhc > 0) {
         try {
-          await prisma.coupon.update({
-            where: { id: couponId },
-            data: { currentUses: { increment: 1 } },
-          });
+          await prisma.$transaction([
+            prisma.coupon.update({
+              where: { id: couponId },
+              data: { currentUses: { increment: 1 } },
+            }),
+            prisma.couponRedemption.create({
+              data: {
+                couponId,
+                userId,
+                context: "deposit",
+                referenceId: obj.id,
+              },
+            }),
+          ]);
         } catch (err) {
-          console.error("Failed to increment coupon usage:", err);
+          console.error("Failed to record coupon usage:", err);
         }
       }
 

@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
 export const couponService = {
-  async validate(code: string, orderAmount: number) {
+  async validate(code: string, orderAmount: number, userId?: string) {
     const coupon = await prisma.coupon.findUnique({
       where: { code: code.toUpperCase() },
     });
@@ -24,9 +24,23 @@ export const couponService = {
       throw new Error("Este cupom expirou");
     }
 
-    // Check max uses
+    // Check max uses (total)
     if (coupon.maxUses !== null && coupon.currentUses >= coupon.maxUses) {
       throw new Error("Este cupom atingiu o limite de utilizações");
+    }
+
+    // Check per-user limit
+    if (coupon.maxUsesPerUser !== null && userId) {
+      const userRedemptions = await prisma.couponRedemption.count({
+        where: { couponId: coupon.id, userId },
+      });
+      if (userRedemptions >= coupon.maxUsesPerUser) {
+        throw new Error(
+          coupon.maxUsesPerUser === 1
+            ? "Você já utilizou este cupom"
+            : `Você já utilizou este cupom ${coupon.maxUsesPerUser}x (limite atingido)`
+        );
+      }
     }
 
     // Check minimum order amount
@@ -60,6 +74,7 @@ export const couponService = {
     discountType: string;
     discountValue: number;
     maxUses?: number;
+    maxUsesPerUser?: number;
     minOrderAmount?: number;
     validFrom?: Date;
     validUntil?: Date;
@@ -80,6 +95,7 @@ export const couponService = {
         discountType: data.discountType,
         discountValue: data.discountValue,
         maxUses: data.maxUses,
+        maxUsesPerUser: data.maxUsesPerUser,
         minOrderAmount: data.minOrderAmount,
         validFrom: data.validFrom,
         validUntil: data.validUntil,
@@ -95,6 +111,7 @@ export const couponService = {
       discountType?: string;
       discountValue?: number;
       maxUses?: number | null;
+      maxUsesPerUser?: number | null;
       minOrderAmount?: number | null;
       validFrom?: Date;
       validUntil?: Date | null;
@@ -119,6 +136,22 @@ export const couponService = {
       data: {
         ...data,
         code: data.code ? data.code.toUpperCase() : undefined,
+      },
+    });
+  },
+
+  async recordRedemption(params: {
+    couponId: string;
+    userId: string;
+    context: "deposit" | "order";
+    referenceId?: string;
+  }) {
+    return prisma.couponRedemption.create({
+      data: {
+        couponId: params.couponId,
+        userId: params.userId,
+        context: params.context,
+        referenceId: params.referenceId,
       },
     });
   },

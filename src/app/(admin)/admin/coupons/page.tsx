@@ -21,6 +21,7 @@ type Coupon = {
   discountType: "PERCENTAGE" | "FIXED";
   discountValue: string | number;
   maxUses: number | null;
+  maxUsesPerUser: number | null;
   currentUses: number;
   minOrderAmount: string | number | null;
   validFrom: string;
@@ -34,6 +35,7 @@ type FormState = {
   discountType: "PERCENTAGE" | "FIXED";
   discountValue: string;
   maxUses: string;
+  maxUsesPerUser: string;
   minOrderAmount: string;
   validUntil: string;
   isActive: boolean;
@@ -44,6 +46,7 @@ const emptyForm: FormState = {
   discountType: "PERCENTAGE",
   discountValue: "",
   maxUses: "",
+  maxUsesPerUser: "",
   minOrderAmount: "",
   validUntil: "",
   isActive: true,
@@ -106,6 +109,7 @@ export default function CouponsPage() {
       discountType: c.discountType,
       discountValue: String(c.discountValue),
       maxUses: c.maxUses != null ? String(c.maxUses) : "",
+      maxUsesPerUser: c.maxUsesPerUser != null ? String(c.maxUsesPerUser) : "",
       minOrderAmount: c.minOrderAmount != null ? String(c.minOrderAmount) : "",
       validUntil: c.validUntil ? c.validUntil.split("T")[0] : "",
       isActive: c.isActive,
@@ -139,6 +143,7 @@ export default function CouponsPage() {
         isActive: form.isActive,
       };
       if (form.maxUses) payload.maxUses = parseInt(form.maxUses, 10);
+      if (form.maxUsesPerUser) payload.maxUsesPerUser = parseInt(form.maxUsesPerUser, 10);
       if (form.minOrderAmount) payload.minOrderAmount = parseFloat(form.minOrderAmount.replace(",", "."));
       if (form.validUntil) payload.validUntil = new Date(form.validUntil).toISOString();
 
@@ -430,7 +435,7 @@ export default function CouponsPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-surface-400 mb-1 block">Limite de usos (opcional)</label>
+              <label className="text-xs text-surface-400 mb-1 block">Limite total de usos (opcional)</label>
               <Input
                 type="number"
                 min="1"
@@ -440,15 +445,29 @@ export default function CouponsPage() {
               />
             </div>
             <div>
-              <label className="text-xs text-surface-400 mb-1 block">Valor mínimo (AHC)</label>
+              <label className="text-xs text-surface-400 mb-1 block">Limite por usuário (opcional)</label>
               <Input
                 type="number"
-                step="0.01"
-                value={form.minOrderAmount}
-                onChange={(e) => setForm({ ...form, minOrderAmount: e.target.value })}
-                placeholder="Sem mínimo"
+                min="1"
+                value={form.maxUsesPerUser}
+                onChange={(e) => setForm({ ...form, maxUsesPerUser: e.target.value })}
+                placeholder="Sem limite por user"
               />
+              <p className="text-[10px] text-surface-500 mt-1">
+                Use <span className="font-mono text-accent-400">1</span> para cupom único por usuário
+              </p>
             </div>
+          </div>
+
+          <div>
+            <label className="text-xs text-surface-400 mb-1 block">Valor mínimo (AHC)</label>
+            <Input
+              type="number"
+              step="0.01"
+              value={form.minOrderAmount}
+              onChange={(e) => setForm({ ...form, minOrderAmount: e.target.value })}
+              placeholder="Sem mínimo"
+            />
           </div>
 
           <div>

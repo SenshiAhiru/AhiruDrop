@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRightLeft, Loader2, Search, Copy, CheckCircle, Send,
-  Clock, AlertCircle, XCircle, Package, RefreshCw,
+  Clock, AlertCircle, XCircle, Package, RefreshCw, Bug,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,6 +93,12 @@ export default function AdminTradesPage() {
   // Verify
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
   const [verifyResult, setVerifyResult] = useState<string | null>(null);
+
+  // Debug
+  const [debugOpen, setDebugOpen] = useState(false);
+  const [debugLoading, setDebugLoading] = useState(false);
+  const [debugData, setDebugData] = useState<any>(null);
+  const [debugTradeId, setDebugTradeId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -225,6 +231,26 @@ export default function AdminTradesPage() {
       } catch {}
     }
   }, 30000);
+
+  async function openDebug(tradeId: string) {
+    setDebugTradeId(tradeId);
+    setDebugOpen(true);
+    setDebugLoading(true);
+    setDebugData(null);
+    try {
+      const res = await fetch("/api/admin/trades/debug-steam", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tradeId }),
+      });
+      const json = await res.json();
+      setDebugData(json.success ? json.data : { error: json.error });
+    } catch (e) {
+      setDebugData({ error: "Erro de conexão" });
+    } finally {
+      setDebugLoading(false);
+    }
+  }
 
   function copyTradeUrl(url: string) {
     navigator.clipboard.writeText(url);
@@ -366,6 +392,14 @@ export default function AdminTradesPage() {
                       <>
                         <Button
                           size="sm"
+                          variant="outline"
+                          onClick={() => openDebug(t.id)}
+                          title="Debug Steam API"
+                        >
+                          <Bug className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          size="sm"
                           disabled={verifyingId === t.id}
                           onClick={() => verifySteam(t.id)}
                         >
@@ -442,6 +476,118 @@ export default function AdminTradesPage() {
             {sendLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             Confirmar envio
           </Button>
+        </DialogFooter>
+      </Dialog>
+
+      {/* Debug Steam Dialog */}
+      <Dialog open={debugOpen} onOpenChange={setDebugOpen}>
+        <DialogClose onClick={() => setDebugOpen(false)} />
+        <DialogHeader>
+          <DialogTitle>Debug Steam API</DialogTitle>
+          <DialogDescription>
+            Resposta bruta da Steam GetTradeOffers. Use pra ver por que a
+            auto-detecção não está achando a trade.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="py-2 max-h-[60vh] overflow-y-auto">
+          {debugLoading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="h-6 w-6 animate-spin text-primary-500" />
+            </div>
+          ) : debugData ? (
+            <div className="space-y-3 text-xs">
+              {debugData.error && (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-red-400">
+                  {debugData.error}
+                </div>
+              )}
+
+              {debugData.trade && (
+                <section>
+                  <h3 className="font-semibold text-white mb-1">Trade no banco</h3>
+                  <pre className="rounded bg-surface-900/80 p-2 overflow-x-auto font-mono text-[10px]">
+                    {JSON.stringify(debugData.trade, null, 2)}
+                  </pre>
+                </section>
+              )}
+
+              {debugData.steamApi && (
+                <section>
+                  <h3 className="font-semibold text-white mb-1">Steam API</h3>
+                  <pre className="rounded bg-surface-900/80 p-2 overflow-x-auto font-mono text-[10px]">
+                    {JSON.stringify(debugData.steamApi, null, 2)}
+                  </pre>
+                </section>
+              )}
+
+              {debugData.response && (
+                <section>
+                  <h3 className="font-semibold text-white mb-1">
+                    Offers enviadas ({debugData.response.totalSentOffers})
+                  </h3>
+                  {debugData.response.totalSentOffers === 0 ? (
+                    <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-amber-300 text-xs">
+                      ⚠️ Steam retornou <strong>0 offers enviadas</strong>. Possíveis causas:
+                      <ul className="mt-2 ml-4 list-disc space-y-1">
+                        <li>A trade foi enviada de uma conta Steam DIFERENTE da dona da API key</li>
+                        <li>A Steam Web API está com delay (pode demorar alguns minutos pra aparecer)</li>
+                        <li>A conta Steam tem inventário privado</li>
+                      </ul>
+                    </div>
+                  ) : (
+                    <pre className="rounded bg-surface-900/80 p-2 overflow-x-auto font-mono text-[10px]">
+                      {JSON.stringify(debugData.response.offers, null, 2)}
+                    </pre>
+                  )}
+                </section>
+              )}
+
+              {debugData.trade?.extractedPartnerId && debugData.response?.offers?.length > 0 && (
+                <section>
+                  <h3 className="font-semibold text-white mb-1">Comparação de IDs</h3>
+                  <div className="rounded bg-surface-900/80 p-2 font-mono text-[10px] space-y-1">
+                    <div>
+                      Partner esperado (da Trade URL):{" "}
+                      <span className="text-amber-400">{debugData.trade.extractedPartnerId}</span>
+                    </div>
+                    <div>
+                      Partners encontrados:{" "}
+                      <span className="text-primary-400">
+                        {debugData.response.offers
+                          .map((o: any) => o.accountid_other)
+                          .join(", ")}
+                      </span>
+                    </div>
+                    <div className="pt-1 border-t border-surface-800">
+                      Match?{" "}
+                      {debugData.response.offers.some(
+                        (o: any) => String(o.accountid_other) === debugData.trade.extractedPartnerId
+                      ) ? (
+                        <span className="text-emerald-400">✅ Sim</span>
+                      ) : (
+                        <span className="text-red-400">❌ Não</span>
+                      )}
+                    </div>
+                  </div>
+                </section>
+              )}
+            </div>
+          ) : (
+            <p className="text-sm text-surface-500 text-center py-6">Sem dados</p>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setDebugOpen(false)}>
+            Fechar
+          </Button>
+          {debugTradeId && (
+            <Button onClick={() => openDebug(debugTradeId)} disabled={debugLoading}>
+              <RefreshCw className="h-4 w-4" />
+              Refazer
+            </Button>
+          )}
         </DialogFooter>
       </Dialog>
     </div>

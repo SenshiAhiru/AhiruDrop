@@ -14,6 +14,7 @@ import {
   CalendarDays,
   BarChart3,
   Trophy,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DateTimePicker } from "@/components/ui/date-picker";
@@ -260,6 +261,14 @@ export default function EditRafflePage() {
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
+          {raffle.slug && (
+            <Link href={`/raffles/${raffle.slug}`} target="_blank" rel="noreferrer">
+              <Button variant="outline" size="sm">
+                <Eye className="h-4 w-4" />
+                Preview público
+              </Button>
+            </Link>
+          )}
           {raffle.status === "CLOSED" && (
             <Link href={`/admin/raffles/${raffle.id}/draw`}>
               <Button variant="accent" size="sm">

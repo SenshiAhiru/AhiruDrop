@@ -263,8 +263,39 @@ export default function RaffleDetailPage() {
   const paidPercentage = calculatePercentage(raffle.stats.paid, raffle.totalNumbers);
   const statusInfo = statusMap[raffle.status];
 
+  // Non-public statuses: show preview banner on top
+  const isPreview =
+    raffle.status === "DRAFT" ||
+    raffle.status === "PAUSED" ||
+    raffle.status === "CANCELLED";
+
   return (
     <div className="min-h-screen">
+      {isPreview && (
+        <div className="sticky top-0 z-40 bg-gradient-to-r from-amber-500/20 via-amber-500/15 to-amber-500/20 border-b border-amber-500/40 backdrop-blur-sm">
+          <div className="mx-auto max-w-7xl px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-2 text-sm">
+              <svg className="h-4 w-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>
+              <span className="font-bold text-amber-400 uppercase tracking-wider text-[11px]">
+                Preview Admin
+              </span>
+              <span className="text-amber-200/90 text-xs">
+                Esta rifa está <strong>{statusInfo?.label ?? raffle.status}</strong> e não aparece no site público.
+              </span>
+            </div>
+            <Link
+              href={`/admin/raffles/${raffle.id}`}
+              className="rounded-lg bg-amber-500/20 border border-amber-500/40 px-3 py-1 text-xs font-semibold text-amber-300 hover:bg-amber-500/30 transition-colors"
+            >
+              ← Voltar para edição
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Hero section with skin showcase */}
       <div
         className="relative overflow-hidden"

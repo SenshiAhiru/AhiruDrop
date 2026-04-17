@@ -81,30 +81,51 @@ export async function POST(req: NextRequest) {
 
     const userId = obj.metadata?.userId;
     const ahcAmount = Number(obj.metadata?.ahcAmount || 0);
+    const bonusAhc = Number(obj.metadata?.bonusAhc || 0);
+    const couponId = obj.metadata?.couponId as string | undefined;
+    const couponCode = obj.metadata?.couponCode as string | undefined;
 
     if (!userId || !ahcAmount) {
       console.error("Missing metadata in Stripe event:", obj.id);
       return NextResponse.json({ error: "Missing metadata" }, { status: 400 });
     }
 
+    const totalCredit = ahcAmount + (bonusAhc > 0 ? bonusAhc : 0);
+
     try {
       const updated = await prisma.user.update({
         where: { id: userId },
         data: {
-          balance: { increment: ahcAmount },
+          balance: { increment: totalCredit },
         },
         select: { name: true },
       });
 
-      console.log(`Webhook: Credited ${ahcAmount} AHC to user ${userId}`);
+      // Increment coupon usage (best-effort; webhook already paid so don't fail the hook)
+      if (couponId && bonusAhc > 0) {
+        try {
+          await prisma.coupon.update({
+            where: { id: couponId },
+            data: { currentUses: { increment: 1 } },
+          });
+        } catch (err) {
+          console.error("Failed to increment coupon usage:", err);
+        }
+      }
+
+      console.log(
+        `Webhook: Credited ${totalCredit} AHC (base ${ahcAmount}${
+          bonusAhc > 0 ? ` + bonus ${bonusAhc} via ${couponCode}` : ""
+        }) to user ${userId}`
+      );
 
       // Notify admins if deposit crosses the threshold
-      if (ahcAmount >= BIG_DEPOSIT_THRESHOLD_AHC) {
+      if (totalCredit >= BIG_DEPOSIT_THRESHOLD_AHC) {
         try {
           await notificationService.notifyAdminsBigDeposit(
             userId,
             updated.name ?? "Usuário",
-            ahcAmount
+            totalCredit
           );
         } catch (err) {
           console.error("Failed to notify admins of big deposit:", err);

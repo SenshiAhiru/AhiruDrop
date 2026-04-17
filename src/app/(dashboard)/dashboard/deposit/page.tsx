@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2, Tag, X, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 
 const CURRENCIES = [
@@ -20,7 +20,7 @@ const CURRENCIES = [
 const PRESETS_AHC = [10, 25, 50, 100, 250, 500];
 
 // ─── Payment Form (inside Elements) ───
-function PaymentForm({ amount, currency, onSuccess }: { amount: number; currency: string; onSuccess: () => void }) {
+function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () => void }) {
   const stripe = useStripe();
   const elements = useElements();
   const [paying, setPaying] = useState(false);
@@ -65,7 +65,7 @@ function PaymentForm({ amount, currency, onSuccess }: { amount: number; currency
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/ahc-coin.png" alt="" className="h-5 w-5 rounded-full mr-2" />
-            Pagar e receber {amount} AHC
+            Pagar e receber {totalAhc.toFixed(2)} AHC
           </>
         )}
       </Button>
@@ -88,6 +88,17 @@ export default function DepositPage() {
   const [creating, setCreating] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  // Coupon state
+  const [couponInput, setCouponInput] = useState("");
+  const [couponApplied, setCouponApplied] = useState<{
+    code: string;
+    bonusAhc: number;
+    discountType: string;
+    discountValue: number;
+  } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+
   useEffect(() => {
     fetch("/api/user/balance")
       .then((r) => r.json())
@@ -101,6 +112,57 @@ export default function DepositPage() {
   const numAhc = parseFloat(ahcAmount) || 0;
   const currencyInfo = CURRENCIES.find((c) => c.code === currency)!;
 
+  // If the amount changes after a coupon was applied, drop the coupon (needs revalidation
+  // because minOrderAmount/discount may differ at the new amount).
+  useEffect(() => {
+    if (couponApplied) {
+      setCouponApplied(null);
+      setCouponError(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ahcAmount]);
+
+  const handleApplyCoupon = async () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    if (numAhc < 1) {
+      setCouponError("Defina a quantidade de AHC antes");
+      return;
+    }
+    setValidatingCoupon(true);
+    setCouponError(null);
+
+    try {
+      const res = await fetch("/api/deposit/validate-coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, amount: numAhc }),
+      });
+      const json = await res.json();
+
+      if (json.success) {
+        setCouponApplied({
+          code: json.data.code,
+          bonusAhc: Number(json.data.bonusAhc),
+          discountType: json.data.discountType,
+          discountValue: Number(json.data.discountValue),
+        });
+        setCouponInput("");
+      } else {
+        setCouponError(json.error || "Cupom inválido");
+      }
+    } catch {
+      setCouponError("Erro ao validar cupom");
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponApplied(null);
+    setCouponError(null);
+  };
+
   const handleStartPayment = async () => {
     if (numAhc < 1) return;
     setCreating(true);
@@ -109,7 +171,11 @@ export default function DepositPage() {
       const res = await fetch("/api/deposit/intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: numAhc, currency }),
+        body: JSON.stringify({
+          amount: numAhc,
+          currency,
+          couponCode: couponApplied?.code,
+        }),
       });
       const json = await res.json();
 
@@ -130,8 +196,12 @@ export default function DepositPage() {
   const handleSuccess = () => {
     setSuccess(true);
     setShowPayment(false);
-    setBalance((prev) => (prev || 0) + numAhc);
+    const totalCredit = numAhc + (couponApplied?.bonusAhc ?? 0);
+    setBalance((prev) => (prev || 0) + totalCredit);
   };
+
+  const bonusAhc = couponApplied?.bonusAhc ?? 0;
+  const totalAhcReceived = numAhc + bonusAhc;
 
   if (success) {
     return (
@@ -144,7 +214,7 @@ export default function DepositPage() {
         <div className="flex items-center gap-2 mb-8">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/ahc-coin.png" alt="AHC" className="h-8 w-8 rounded-full" />
-          <span className="text-3xl font-bold text-accent-400">+{numAhc} AHC</span>
+          <span className="text-3xl font-bold text-accent-400">+{totalAhcReceived.toFixed(2)} AHC</span>
         </div>
         <div className="flex gap-3">
           <a
@@ -262,8 +332,21 @@ export default function DepositPage() {
               {numAhc > 0 && (
                 <div className="rounded-xl border border-surface-700 bg-surface-800/50 p-4 space-y-2 text-sm">
                   <div className="flex justify-between">
+                    <span className="text-surface-400">AHC base</span>
+                    <span className="font-semibold text-white">{numAhc} AHC</span>
+                  </div>
+                  {bonusAhc > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-emerald-400 flex items-center gap-1">
+                        <Sparkles className="h-3.5 w-3.5" />
+                        Bônus cupom {couponApplied?.code}
+                      </span>
+                      <span className="font-semibold text-emerald-400">+{bonusAhc.toFixed(2)} AHC</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
                     <span className="text-surface-400">Você recebe</span>
-                    <span className="font-bold text-accent-400">{numAhc} AHC</span>
+                    <span className="font-bold text-accent-400">{totalAhcReceived.toFixed(2)} AHC</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-surface-400">Você paga</span>
@@ -272,10 +355,69 @@ export default function DepositPage() {
                   <hr className="border-surface-700" />
                   <div className="flex justify-between">
                     <span className="text-surface-400">Saldo após depósito</span>
-                    <span className="font-bold text-accent-400">{((balance || 0) + numAhc).toFixed(2)} AHC</span>
+                    <span className="font-bold text-accent-400">{((balance || 0) + totalAhcReceived).toFixed(2)} AHC</span>
                   </div>
                 </div>
               )}
+
+              {/* Coupon */}
+              <div className="rounded-xl border border-surface-700 bg-surface-800/30 p-3 space-y-2">
+                <label className="flex items-center gap-1.5 text-xs font-semibold text-surface-300">
+                  <Tag className="h-3.5 w-3.5 text-accent-400" />
+                  Cupom de bônus (opcional)
+                </label>
+
+                {couponApplied ? (
+                  <div className="flex items-center justify-between rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-emerald-400" />
+                      <div className="text-sm">
+                        <span className="font-bold text-emerald-400">{couponApplied.code}</span>
+                        <span className="text-surface-400 ml-2">
+                          +{couponApplied.bonusAhc.toFixed(2)} AHC de bônus
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="text-surface-400 hover:text-red-400 transition-colors"
+                      aria-label="Remover cupom"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex gap-2">
+                      <Input
+                        value={couponInput}
+                        onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                        placeholder="Digite o código"
+                        disabled={validatingCoupon || numAhc < 1}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleApplyCoupon();
+                          }
+                        }}
+                        className="font-mono uppercase"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleApplyCoupon}
+                        disabled={validatingCoupon || !couponInput.trim() || numAhc < 1}
+                      >
+                        {validatingCoupon ? <Loader2 className="h-4 w-4 animate-spin" /> : "Aplicar"}
+                      </Button>
+                    </div>
+                    {couponError && (
+                      <p className="text-xs text-red-400">{couponError}</p>
+                    )}
+                  </>
+                )}
+              </div>
 
               <Button
                 className="w-full"
@@ -302,7 +444,11 @@ export default function DepositPage() {
               <div>
                 <CardTitle className="text-base">Pagamento</CardTitle>
                 <CardDescription>
-                  {numAhc} AHC • {currencyInfo.flag} {currencyInfo.symbol} {numAhc.toFixed(2)}
+                  {totalAhcReceived.toFixed(2)} AHC
+                  {bonusAhc > 0 && (
+                    <span className="text-emerald-400"> (+{bonusAhc.toFixed(2)} bônus)</span>
+                  )}{" "}
+                  • {currencyInfo.flag} {currencyInfo.symbol} {numAhc.toFixed(2)}
                 </CardDescription>
               </div>
               <button
@@ -351,7 +497,7 @@ export default function DepositPage() {
                   },
                 }}
               >
-                <PaymentForm amount={numAhc} currency={currency} onSuccess={handleSuccess} />
+                <PaymentForm totalAhc={totalAhcReceived} onSuccess={handleSuccess} />
               </Elements>
             ) : (
               <div className="flex items-center justify-center py-10">

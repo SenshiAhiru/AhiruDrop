@@ -142,8 +142,10 @@ export default function ProfilePage() {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setPasswordMessage({ type: "error", text: "A nova senha deve ter no mínimo 6 caracteres." });
+    const { validatePasswordStrength } = await import("@/lib/password-policy");
+    const policy = validatePasswordStrength(newPassword);
+    if (!policy.ok) {
+      setPasswordMessage({ type: "error", text: policy.message });
       return;
     }
 

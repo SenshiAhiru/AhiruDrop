@@ -14,26 +14,15 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, Check, X } from "lucide-react";
+import { validatePasswordStrength, PASSWORD_MIN_LENGTH } from "@/lib/password-policy";
 
-type PasswordStrength = "weak" | "medium" | "strong";
-
-function getPasswordStrength(password: string): PasswordStrength {
-  if (password.length < 6) return "weak";
-  const hasUpper = /[A-Z]/.test(password);
-  const hasLower = /[a-z]/.test(password);
-  const hasNumber = /\d/.test(password);
-  const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-  const score = [hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length;
-  if (password.length >= 8 && score >= 3) return "strong";
-  if (password.length >= 6 && score >= 2) return "medium";
-  return "weak";
-}
-
-const strengthConfig: Record<PasswordStrength, { label: string; color: string; width: string }> = {
-  weak: { label: "Fraca", color: "bg-danger", width: "w-1/3" },
-  medium: { label: "Média", color: "bg-warning", width: "w-2/3" },
-  strong: { label: "Forte", color: "bg-success", width: "w-full" },
+const SCORE_CONFIG: Record<number, { color: string; width: string; text: string }> = {
+  0: { color: "bg-surface-700", width: "w-0", text: "text-surface-500" },
+  1: { color: "bg-red-500", width: "w-1/5", text: "text-red-400" },
+  2: { color: "bg-orange-500", width: "w-2/5", text: "text-orange-400" },
+  3: { color: "bg-amber-500", width: "w-3/5", text: "text-amber-400" },
+  4: { color: "bg-emerald-500", width: "w-full", text: "text-emerald-400" },
 };
 
 export default function RegisterPage() {
@@ -49,7 +38,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const passwordStrength = useMemo(() => getPasswordStrength(password), [password]);
+  const policy = useMemo(() => validatePasswordStrength(password), [password]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -60,8 +49,8 @@ export default function RegisterPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("A senha deve ter no mínimo 6 caracteres.");
+    if (!policy.ok) {
+      setError(policy.message);
       return;
     }
 
@@ -180,7 +169,7 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10 pr-10"
                 required
-                minLength={6}
+                minLength={PASSWORD_MIN_LENGTH}
                 autoComplete="new-password"
               />
               <button
@@ -192,26 +181,24 @@ export default function RegisterPage() {
               </button>
             </div>
             {password.length > 0 && (
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <div className="h-1.5 w-full rounded-full bg-surface-800 overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-300 ${strengthConfig[passwordStrength].color} ${strengthConfig[passwordStrength].width}`}
+                    className={`h-full rounded-full transition-all duration-300 ${SCORE_CONFIG[policy.score].color} ${SCORE_CONFIG[policy.score].width}`}
                   />
                 </div>
-                <p className="text-xs text-[var(--muted-foreground)]">
-                  Força da senha:{" "}
-                  <span
-                    className={
-                      passwordStrength === "strong"
-                        ? "text-success"
-                        : passwordStrength === "medium"
-                          ? "text-warning"
-                          : "text-danger"
-                    }
-                  >
-                    {strengthConfig[passwordStrength].label}
+                <p className="text-xs">
+                  <span className="text-surface-400">Força: </span>
+                  <span className={`font-semibold capitalize ${SCORE_CONFIG[policy.score].text}`}>
+                    {policy.label}
                   </span>
                 </p>
+                <ul className="text-[11px] space-y-0.5">
+                  <PolicyCheck ok={password.length >= PASSWORD_MIN_LENGTH} text={`Pelo menos ${PASSWORD_MIN_LENGTH} caracteres`} />
+                  <PolicyCheck ok={/[A-Z]/.test(password)} text="Uma letra maiúscula" />
+                  <PolicyCheck ok={/[a-z]/.test(password)} text="Uma letra minúscula" />
+                  <PolicyCheck ok={/[0-9]/.test(password)} text="Um número" />
+                </ul>
               </div>
             )}
           </div>
@@ -286,5 +273,14 @@ export default function RegisterPage() {
         </p>
       </CardFooter>
     </Card>
+  );
+}
+
+function PolicyCheck({ ok, text }: { ok: boolean; text: string }) {
+  return (
+    <li className={`flex items-center gap-1.5 ${ok ? "text-emerald-400" : "text-surface-500"}`}>
+      {ok ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+      {text}
+    </li>
   );
 }

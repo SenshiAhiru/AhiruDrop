@@ -43,41 +43,38 @@ export async function POST(req: NextRequest) {
   const body = await req.text();
   const signature = req.headers.get("stripe-signature");
 
-  let event: Stripe.Event;
-
-  try {
-    const secrets = await getWebhookSecrets();
-
-    // Try each webhook secret until one works
-    let verified = false;
-    const tempStripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_dummy");
-
-    if (signature && secrets.length > 0) {
-      for (const secret of secrets) {
-        try {
-          event = tempStripe.webhooks.constructEvent(body, signature, secret);
-          verified = true;
-          break;
-        } catch {
-          continue;
-        }
-      }
-      if (!verified) {
-        // If no secret worked, parse directly (less secure but functional)
-        event = JSON.parse(body) as Stripe.Event;
-      }
-    } else {
-      event = JSON.parse(body) as Stripe.Event;
-    }
-  } catch (err) {
-    console.error("Stripe webhook parse failed:", err);
-    return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+  if (!signature) {
+    console.error("Stripe webhook: missing signature header");
+    return NextResponse.json({ error: "Missing signature" }, { status: 400 });
   }
 
-  const eventType = event!.type;
+  const secrets = await getWebhookSecrets();
+  if (secrets.length === 0) {
+    console.error("Stripe webhook: no webhook secrets configured");
+    return NextResponse.json({ error: "Webhook not configured" }, { status: 503 });
+  }
+
+  // Try each configured secret; one must verify the signature.
+  const tempStripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_dummy");
+  let event: Stripe.Event | null = null;
+  for (const secret of secrets) {
+    try {
+      event = tempStripe.webhooks.constructEvent(body, signature, secret);
+      break;
+    } catch {
+      continue;
+    }
+  }
+
+  if (!event) {
+    console.error("Stripe webhook: signature failed all configured secrets");
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  }
+
+  const eventType = event.type;
 
   if (eventType === "checkout.session.completed" || eventType === "payment_intent.succeeded") {
-    const obj = event!.data.object as any;
+    const obj = event.data.object as any;
 
     const userId = obj.metadata?.userId;
     const ahcAmount = Number(obj.metadata?.ahcAmount || 0);
@@ -90,9 +87,41 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing metadata" }, { status: 400 });
     }
 
+    // Idempotency: if credited flag is already set in PI metadata, skip.
+    // The /api/deposit/confirm route may have processed this first.
+    if (obj.metadata?.credited === "true") {
+      console.log(`Webhook: PI ${obj.id} already credited — skipping`);
+      return NextResponse.json({ received: true, skipped: "already_credited" });
+    }
+
     const totalCredit = ahcAmount + (bonusAhc > 0 ? bonusAhc : 0);
 
     try {
+      // Mark credited first to close the race with /deposit/confirm
+      if (eventType === "payment_intent.succeeded") {
+        try {
+          const gateway = await prisma.paymentGateway.findUnique({
+            where: { name: "stripe" },
+            include: { configs: true },
+          });
+          const prefix = gateway?.sandbox ? "test_" : "live_";
+          const skConfig =
+            gateway?.configs.find((c) => c.key === `${prefix}secret_key`) ||
+            gateway?.configs.find((c) => c.key === "secret_key");
+          if (skConfig) {
+            let secretKey: string;
+            try { secretKey = decrypt(skConfig.value); } catch { secretKey = skConfig.value; }
+            const stripeClient = new Stripe(secretKey);
+            await stripeClient.paymentIntents.update(obj.id, {
+              metadata: { ...obj.metadata, credited: "true" },
+            });
+          }
+        } catch (err) {
+          console.error("Failed to mark PI as credited:", err);
+          // Continue — DB-level idempotency on CouponRedemption still protects coupon counts
+        }
+      }
+
       const updated = await prisma.user.update({
         where: { id: userId },
         data: {
@@ -101,24 +130,28 @@ export async function POST(req: NextRequest) {
         select: { name: true },
       });
 
-      // Increment coupon usage + record per-user redemption
-      // (best-effort; webhook already paid so don't fail the hook)
+      // Increment coupon usage + record per-user redemption (idempotent on referenceId)
       if (couponId && bonusAhc > 0) {
         try {
-          await prisma.$transaction([
-            prisma.coupon.update({
-              where: { id: couponId },
-              data: { currentUses: { increment: 1 } },
-            }),
-            prisma.couponRedemption.create({
-              data: {
-                couponId,
-                userId,
-                context: "deposit",
-                referenceId: obj.id,
-              },
-            }),
-          ]);
+          const existing = await prisma.couponRedemption.findFirst({
+            where: { couponId, userId, referenceId: obj.id },
+          });
+          if (!existing) {
+            await prisma.$transaction([
+              prisma.coupon.update({
+                where: { id: couponId },
+                data: { currentUses: { increment: 1 } },
+              }),
+              prisma.couponRedemption.create({
+                data: {
+                  couponId,
+                  userId,
+                  context: "deposit",
+                  referenceId: obj.id,
+                },
+              }),
+            ]);
+          }
         } catch (err) {
           console.error("Failed to record coupon usage:", err);
         }

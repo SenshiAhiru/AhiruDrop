@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { successResponse, errorResponse } from "@/lib/api-utils";
+import { successResponse, errorResponse, requireAdmin } from "@/lib/api-utils";
 
 // Cache skins data for 24 hours
 let skinsCache: any[] | null = null;
@@ -42,6 +42,9 @@ async function fetchSkins() {
 
 export async function GET(req: NextRequest) {
   try {
+    // Admin-only: used by the raffle creation form to pick skins
+    await requireAdmin();
+
     const { searchParams } = new URL(req.url);
     const q = searchParams.get("q")?.toLowerCase().trim() || "";
     const type = searchParams.get("type")?.toLowerCase() || "";

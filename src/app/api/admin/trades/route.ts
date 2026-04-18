@@ -1,9 +1,28 @@
 import { NextRequest } from "next/server";
-import { successResponse, errorResponse, handleApiError, requireAdmin } from "@/lib/api-utils";
+import {
+  successResponse,
+  errorResponse,
+  handleApiError,
+  requireAdmin,
+  validateBody,
+} from "@/lib/api-utils";
 import { prisma } from "@/lib/prisma";
 import { notificationService } from "@/services/notification.service";
 import { auditService } from "@/services/audit.service";
 import type { TradeStatus } from "@prisma/client";
+import { z } from "zod";
+
+const patchTradeSchema = z
+  .object({
+    tradeId: z.string().min(1, "tradeId obrigatório"),
+    status: z.enum(["PENDING", "SENT", "COMPLETED", "FAILED", "CANCELLED"]).optional(),
+    adminNotes: z.string().max(2000).optional(),
+    steamTradeOfferId: z.string().regex(/^\d+$/, "Offer ID deve ser numérico").max(32).optional(),
+  })
+  .refine(
+    (d) => d.status !== undefined || d.adminNotes !== undefined || d.steamTradeOfferId !== undefined,
+    { message: "Nada para atualizar" }
+  );
 
 /** List all trade requests with filters */
 export async function GET(req: NextRequest) {
@@ -58,20 +77,10 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const session = await requireAdmin();
-    const body = await req.json().catch(() => null);
 
-    const { tradeId, status, adminNotes, steamTradeOfferId } = body ?? {};
-    if (!tradeId) return errorResponse("tradeId obrigatório", 422);
-
-    // Allow offer-id-only updates (status optional on PATCH)
-    if (!status && steamTradeOfferId === undefined && adminNotes === undefined) {
-      return errorResponse("Nada para atualizar", 422);
-    }
-
-    if (status) {
-      const validStatuses: TradeStatus[] = ["PENDING", "SENT", "COMPLETED", "FAILED", "CANCELLED"];
-      if (!validStatuses.includes(status)) return errorResponse("Status inválido", 422);
-    }
+    const parsed = await validateBody(req, patchTradeSchema);
+    if (parsed.error) return errorResponse(parsed.error, 422);
+    const { tradeId, status, adminNotes, steamTradeOfferId } = parsed.data!;
 
     const trade = await prisma.tradeRequest.findUnique({
       where: { id: tradeId },
@@ -83,13 +92,19 @@ export async function PATCH(req: NextRequest) {
     });
     if (!trade) return errorResponse("Trade não encontrado", 404);
 
-    const data: any = {};
-    if (status) data.status = status;
-    if (adminNotes !== undefined) data.adminNotes = adminNotes;
-    if (steamTradeOfferId) data.steamTradeOfferId = String(steamTradeOfferId).trim();
-    if (status === "SENT" && !trade.sentAt) data.sentAt = new Date();
+    const updateData: {
+      status?: TradeStatus;
+      adminNotes?: string;
+      steamTradeOfferId?: string;
+      sentAt?: Date;
+      completedAt?: Date;
+    } = {};
+    if (status) updateData.status = status;
+    if (adminNotes !== undefined) updateData.adminNotes = adminNotes;
+    if (steamTradeOfferId) updateData.steamTradeOfferId = steamTradeOfferId.trim();
+    if (status === "SENT" && !trade.sentAt) updateData.sentAt = new Date();
     if (status === "COMPLETED" && !trade.completedAt) {
-      data.completedAt = new Date();
+      updateData.completedAt = new Date();
       // Also mark the winner as claimed
       await prisma.winner.update({
         where: { id: trade.winnerId },
@@ -99,7 +114,7 @@ export async function PATCH(req: NextRequest) {
 
     const updated = await prisma.tradeRequest.update({
       where: { id: tradeId },
-      data,
+      data: updateData,
     });
 
     // Notify the user

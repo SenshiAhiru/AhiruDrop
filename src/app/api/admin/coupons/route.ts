@@ -7,7 +7,11 @@ import {
   validateBody,
 } from "@/lib/api-utils";
 import { couponService } from "@/services/coupon.service";
-import { createCouponSchema } from "@/validators/coupon.validator";
+import {
+  createCouponSchema,
+  updateCouponSchema,
+  deleteCouponSchema,
+} from "@/validators/coupon.validator";
 
 export async function GET(req: NextRequest) {
   try {
@@ -58,19 +62,10 @@ export async function PATCH(req: NextRequest) {
   try {
     await requireAdmin();
 
-    let body: any;
-    try {
-      body = await req.json();
-    } catch {
-      return errorResponse("Invalid JSON body", 422);
-    }
+    const { data, error } = await validateBody(req, updateCouponSchema);
+    if (error) return errorResponse(error, 422);
 
-    const { id, ...updateData } = body;
-
-    if (!id) {
-      return errorResponse("ID do cupom é obrigatório", 422);
-    }
-
+    const { id, ...updateData } = data!;
     const updated = await couponService.update(id, updateData);
 
     return successResponse(updated);
@@ -91,20 +86,10 @@ export async function DELETE(req: NextRequest) {
   try {
     await requireAdmin();
 
-    let body: any;
-    try {
-      body = await req.json();
-    } catch {
-      return errorResponse("Invalid JSON body", 422);
-    }
+    const { data, error } = await validateBody(req, deleteCouponSchema);
+    if (error) return errorResponse(error, 422);
 
-    const { id } = body;
-
-    if (!id) {
-      return errorResponse("ID do cupom é obrigatório", 422);
-    }
-
-    await couponService.delete(id);
+    await couponService.delete(data!.id);
 
     return successResponse({ message: "Cupom excluído com sucesso" });
   } catch (error) {

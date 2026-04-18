@@ -131,7 +131,13 @@ export async function POST(req: NextRequest) {
     const offer = steamJson?.response?.offer;
 
     if (!offer) {
-      return errorResponse("Trade offer não encontrada na Steam. Verifique o ID.", 404);
+      // Steam sometimes returns empty response for offers that exist, due to
+      // indexing delay (can take hours) or the new cursor-based API quirks.
+      // Don't surface as "not found" — suggest manual action instead.
+      return errorResponse(
+        "Steam API não retornou dados para esta offer. Pode ser delay de indexação (até algumas horas após aceite). Se você confirmou o aceite manualmente, use o botão ✅ Entregue.",
+        503
+      );
     }
 
     const state = offer.trade_offer_state as number;

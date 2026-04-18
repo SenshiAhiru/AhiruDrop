@@ -32,3 +32,25 @@ export const createCouponSchema = z.object({
 });
 
 export type CreateCouponSchema = z.infer<typeof createCouponSchema>;
+
+export const updateCouponSchema = z.object({
+  id: z.string().min(1, "ID do cupom é obrigatório"),
+  code: z
+    .string()
+    .min(1)
+    .max(30)
+    .transform((val) => val.toUpperCase())
+    .optional(),
+  discountType: z.enum(["PERCENTAGE", "FIXED"]).optional(),
+  discountValue: z.number().positive().optional(),
+  maxUses: z.number().int().positive().nullable().optional(),
+  maxUsesPerUser: z.number().int().positive().nullable().optional(),
+  minOrderAmount: z.number().positive().nullable().optional(),
+  validFrom: z.coerce.date().optional(),
+  validUntil: z.coerce.date().nullable().optional(),
+  isActive: z.boolean().optional(),
+});
+
+export const deleteCouponSchema = z.object({
+  id: z.string().min(1, "ID do cupom é obrigatório"),
+});

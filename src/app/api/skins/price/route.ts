@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { successResponse, errorResponse } from "@/lib/api-utils";
+import { successResponse, errorResponse, requireAdmin } from "@/lib/api-utils";
 
 // Cache prices for 1 hour
 const priceCache = new Map<string, { price: number; time: number }>();
@@ -7,6 +7,9 @@ const PRICE_CACHE_TTL = 60 * 60 * 1000; // 1h
 
 export async function GET(req: NextRequest) {
   try {
+    // Admin-only: this proxies uncached queries to Steam Market
+    await requireAdmin();
+
     const { searchParams } = new URL(req.url);
     const skinName = searchParams.get("name");
     const wear = searchParams.get("wear") || "";

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
-  Plus, Search, Tag, Loader2, Pencil, Trash2, Power, AlertCircle,
+  Plus, Search, Tag, Loader2, Pencil, Trash2, Power, AlertCircle, History, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,6 +65,25 @@ export default function CouponsPage() {
   const [total, setTotal] = useState(0);
 
   const [formOpen, setFormOpen] = useState(false);
+
+  // Redemptions dialog
+  const [redemptionsOpen, setRedemptionsOpen] = useState(false);
+  const [redemptionsCoupon, setRedemptionsCoupon] = useState<Coupon | null>(null);
+  const [redemptionsLoading, setRedemptionsLoading] = useState(false);
+  const [redemptionsData, setRedemptionsData] = useState<Array<{
+    id: string;
+    userName: string;
+    userEmail: string | null;
+    context: string;
+    referenceId: string | null;
+    createdAt: string;
+    bonusAhc: number | null;
+    ahcTotal: number | null;
+    amountPaid: number | null;
+    currency: string | null;
+    depositStatus: string | null;
+  }>>([]);
+  const [redemptionsTotalBonus, setRedemptionsTotalBonus] = useState(0);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [formError, setFormError] = useState<string | null>(null);
@@ -94,6 +113,44 @@ export default function CouponsPage() {
     const t = setTimeout(load, 250);
     return () => clearTimeout(t);
   }, [load]);
+
+  // Stats
+  const [stats, setStats] = useState<{
+    totalCoupons: number;
+    activeCoupons: number;
+    totalRedemptions: number;
+    redemptionsLast30d: number;
+    totalBonusGranted: number;
+    topCoupons: Array<{ code: string; uses: number }>;
+  } | null>(null);
+  useEffect(() => {
+    fetch("/api/admin/coupons/stats", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success) setStats(json.data);
+      })
+      .catch(() => {});
+  }, []);
+
+  async function openRedemptions(c: Coupon) {
+    setRedemptionsCoupon(c);
+    setRedemptionsOpen(true);
+    setRedemptionsLoading(true);
+    setRedemptionsData([]);
+    setRedemptionsTotalBonus(0);
+    try {
+      const res = await fetch(`/api/admin/coupons/${c.id}/redemptions?limit=100`, {
+        cache: "no-store",
+      });
+      const json = await res.json();
+      if (json.success) {
+        setRedemptionsData(json.data.data);
+        setRedemptionsTotalBonus(Number(json.data.totalBonusGranted ?? 0));
+      }
+    } finally {
+      setRedemptionsLoading(false);
+    }
+  }
 
   function openCreate() {
     setEditingId(null);
@@ -242,6 +299,51 @@ export default function CouponsPage() {
         </Button>
       </div>
 
+      {/* Stats */}
+      {stats && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="rounded-xl border border-surface-800 bg-surface-900/40 p-4">
+            <p className="text-xs text-surface-500 uppercase tracking-wider mb-1">Ativos</p>
+            <p className="text-2xl font-bold text-white">
+              {stats.activeCoupons}
+              <span className="text-sm text-surface-500 font-normal"> / {stats.totalCoupons}</span>
+            </p>
+          </div>
+          <div className="rounded-xl border border-surface-800 bg-surface-900/40 p-4">
+            <p className="text-xs text-surface-500 uppercase tracking-wider mb-1">Resgates total</p>
+            <p className="text-2xl font-bold text-white">{stats.totalRedemptions}</p>
+          </div>
+          <div className="rounded-xl border border-surface-800 bg-surface-900/40 p-4">
+            <p className="text-xs text-surface-500 uppercase tracking-wider mb-1">Últimos 30 dias</p>
+            <p className="text-2xl font-bold text-primary-400">{stats.redemptionsLast30d}</p>
+          </div>
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+            <p className="text-xs text-emerald-400/70 uppercase tracking-wider mb-1 flex items-center gap-1">
+              <Sparkles className="h-3 w-3" /> Bônus concedido
+            </p>
+            <p className="text-2xl font-bold text-emerald-400">
+              +{stats.totalBonusGranted.toFixed(2)} <span className="text-sm font-normal">AHC</span>
+            </p>
+          </div>
+          {stats.topCoupons.length > 0 && (
+            <div className="col-span-2 lg:col-span-4 rounded-xl border border-surface-800 bg-surface-900/40 p-4">
+              <p className="text-xs text-surface-500 uppercase tracking-wider mb-2">Top 5 cupons mais usados</p>
+              <div className="flex flex-wrap gap-2">
+                {stats.topCoupons.map((tc) => (
+                  <div
+                    key={tc.code}
+                    className="flex items-center gap-2 rounded-lg bg-surface-800/60 px-3 py-1.5"
+                  >
+                    <code className="font-mono font-bold text-primary-400 text-sm">{tc.code}</code>
+                    <span className="text-xs text-surface-400">{tc.uses} uso{tc.uses !== 1 ? "s" : ""}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
@@ -349,6 +451,9 @@ export default function CouponsPage() {
                             onClick={() => toggleActive(c)}
                           >
                             <Power className={`h-4 w-4 ${c.isActive ? "text-emerald-400" : "text-surface-500"}`} />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openRedemptions(c)} title="Ver usos">
+                            <History className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(c)} title="Editar">
                             <Pencil className="h-4 w-4" />
@@ -504,6 +609,113 @@ export default function CouponsPage() {
           <Button onClick={submitForm} disabled={saving}>
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
             {editingId ? "Salvar alterações" : "Criar cupom"}
+          </Button>
+        </DialogFooter>
+      </Dialog>
+
+      {/* Redemptions dialog */}
+      <Dialog open={redemptionsOpen} onOpenChange={setRedemptionsOpen}>
+        <DialogClose onClick={() => setRedemptionsOpen(false)} />
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <History className="h-5 w-5" />
+            Histórico de uso — <code className="font-mono text-primary-400">{redemptionsCoupon?.code}</code>
+          </DialogTitle>
+          <DialogDescription>
+            Usuários que resgataram este cupom (ordem: mais recentes primeiro).
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="py-2 max-h-[60vh] overflow-y-auto">
+          {redemptionsLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="h-6 w-6 animate-spin text-primary-500" />
+            </div>
+          ) : redemptionsData.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <Tag className="h-10 w-10 text-surface-600 mb-3" />
+              <p className="text-surface-400 text-sm">Nenhum uso registrado ainda.</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-3 gap-3 mb-4 text-sm">
+                <div className="rounded-lg bg-surface-800/50 p-3 text-center">
+                  <p className="text-xs text-surface-500 uppercase tracking-wider">Usos</p>
+                  <p className="text-xl font-bold text-white">{redemptionsData.length}</p>
+                </div>
+                <div className="rounded-lg bg-surface-800/50 p-3 text-center">
+                  <p className="text-xs text-surface-500 uppercase tracking-wider">Usuários únicos</p>
+                  <p className="text-xl font-bold text-white">
+                    {new Set(redemptionsData.map((r) => r.userEmail ?? r.userName)).size}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3 text-center">
+                  <p className="text-xs text-emerald-400/70 uppercase tracking-wider">Bônus concedido</p>
+                  <p className="text-xl font-bold text-emerald-400">
+                    +{redemptionsTotalBonus.toFixed(2)} AHC
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-surface-800 overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-surface-900/50">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-surface-400">Usuário</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-surface-400">Contexto</th>
+                      <th className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wider text-surface-400">Bônus</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-surface-400">Quando</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-surface-800">
+                    {redemptionsData.map((r) => (
+                      <tr key={r.id} className="hover:bg-surface-900/40">
+                        <td className="px-3 py-2">
+                          <div className="font-semibold text-white text-xs">{r.userName}</div>
+                          {r.userEmail && (
+                            <div className="text-[10px] text-surface-500">{r.userEmail}</div>
+                          )}
+                        </td>
+                        <td className="px-3 py-2">
+                          <Badge variant="default" className="text-[10px]">
+                            {r.context}
+                          </Badge>
+                          {r.depositStatus && (
+                            <Badge
+                              variant={
+                                r.depositStatus === "COMPLETED" ? "success" : "warning"
+                              }
+                              className="ml-1 text-[10px]"
+                            >
+                              {r.depositStatus}
+                            </Badge>
+                          )}
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          {r.bonusAhc !== null ? (
+                            <span className="font-semibold text-emerald-400 flex items-center justify-end gap-1">
+                              <Sparkles className="h-3 w-3" />
+                              +{r.bonusAhc.toFixed(2)}
+                            </span>
+                          ) : (
+                            <span className="text-surface-500">—</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2 text-xs text-surface-400">
+                          {new Date(r.createdAt).toLocaleString("pt-BR")}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setRedemptionsOpen(false)}>
+            Fechar
           </Button>
         </DialogFooter>
       </Dialog>

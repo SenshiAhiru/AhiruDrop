@@ -73,12 +73,17 @@ export async function POST(req: NextRequest) {
     const totalCredit = ahcAmount + (bonusAhc > 0 ? bonusAhc : 0);
     const couponId = pi.metadata?.couponId as string | undefined;
 
-    // Credit AHC + record coupon redemption in a transaction
+    // Credit AHC + record coupon redemption + mark deposit in a transaction
     const updated = await prisma.$transaction(async (tx) => {
       const user = await tx.user.update({
         where: { id: session.user.id },
         data: { balance: { increment: totalCredit } },
         select: { balance: true },
+      });
+
+      await tx.deposit.updateMany({
+        where: { paymentIntentId, status: "PENDING" },
+        data: { status: "COMPLETED", completedAt: new Date() },
       });
 
       if (couponId && bonusAhc > 0) {

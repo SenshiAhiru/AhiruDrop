@@ -81,6 +81,27 @@ export async function POST(req: NextRequest) {
       automatic_payment_methods: { enabled: true },
     });
 
+    // Record deposit attempt (status PENDING) — completed on webhook
+    try {
+      await prisma.deposit.create({
+        data: {
+          userId: session.user.id,
+          paymentIntentId: paymentIntent.id,
+          currency: currencyCode.toUpperCase(),
+          amountPaid: ahcAmount, // 1:1 for now (BRL). Multi-FX later.
+          ahcBase: ahcAmount,
+          ahcBonus: bonusAhc,
+          ahcTotal: ahcAmount + bonusAhc,
+          couponId: couponId ?? undefined,
+          couponCode: normalizedCouponCode ?? undefined,
+          status: "PENDING",
+        },
+      });
+    } catch (err) {
+      // Don't fail the intent creation if deposit log fails
+      console.error("Failed to record deposit:", err);
+    }
+
     // Get publishable key for frontend
     const gateway = await prisma.paymentGateway.findUnique({
       where: { name: "stripe" },

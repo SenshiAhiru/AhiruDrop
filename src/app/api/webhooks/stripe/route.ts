@@ -130,6 +130,16 @@ export async function POST(req: NextRequest) {
         select: { name: true },
       });
 
+      // Mark the deposit row as COMPLETED (best-effort)
+      try {
+        await prisma.deposit.updateMany({
+          where: { paymentIntentId: obj.id, status: "PENDING" },
+          data: { status: "COMPLETED", completedAt: new Date() },
+        });
+      } catch (err) {
+        console.error("Failed to mark deposit COMPLETED:", err);
+      }
+
       // Increment coupon usage + record per-user redemption (idempotent on referenceId)
       if (couponId && bonusAhc > 0) {
         try {

@@ -12,6 +12,7 @@ import {
   Coins,
   Trophy,
   MessageSquare,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Visão Geral", href: "/dashboard", icon: LayoutDashboard },
   { label: "Depositar AHC", href: "/dashboard/deposit", icon: Coins },
+  { label: "Meus Depósitos", href: "/dashboard/deposits", icon: Wallet },
   { label: "Meus Pedidos", href: "/dashboard/orders", icon: ShoppingCart },
   { label: "Minhas Vitórias", href: "/dashboard/winnings", icon: Trophy },
   { label: "Suporte", href: "/dashboard/support", icon: MessageSquare },

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRightLeft, Loader2, Search, Copy, CheckCircle, Send,
-  Clock, AlertCircle, XCircle, Package, RefreshCw, Bug,
+  Clock, AlertCircle, XCircle, Package, RefreshCw, Bug, Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -100,6 +100,12 @@ export default function AdminTradesPage() {
   const [debugData, setDebugData] = useState<any>(null);
   const [debugTradeId, setDebugTradeId] = useState<string | null>(null);
 
+  // Manual offer id edit
+  const [offerIdOpen, setOfferIdOpen] = useState(false);
+  const [offerIdTradeId, setOfferIdTradeId] = useState<string | null>(null);
+  const [offerIdValue, setOfferIdValue] = useState("");
+  const [offerIdLoading, setOfferIdLoading] = useState(false);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -179,6 +185,41 @@ export default function AdminTradesPage() {
       addToast({ type: "error", message: "Erro de conexão" });
     } finally {
       setSendLoading(false);
+    }
+  }
+
+  function openOfferIdDialog(tradeId: string, current: string | null) {
+    setOfferIdTradeId(tradeId);
+    setOfferIdValue(current ?? "");
+    setOfferIdOpen(true);
+  }
+
+  async function submitOfferId() {
+    if (!offerIdTradeId) return;
+    const value = offerIdValue.trim();
+    if (!/^\d+$/.test(value)) {
+      addToast({ type: "error", message: "Offer ID deve ser um número" });
+      return;
+    }
+    setOfferIdLoading(true);
+    try {
+      const res = await fetch("/api/admin/trades", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tradeId: offerIdTradeId, steamTradeOfferId: value }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        addToast({ type: "success", message: "Offer ID atualizado" });
+        setOfferIdOpen(false);
+        await load();
+      } else {
+        addToast({ type: "error", message: json.error || "Falha" });
+      }
+    } catch {
+      addToast({ type: "error", message: "Erro de conexão" });
+    } finally {
+      setOfferIdLoading(false);
     }
   }
 
@@ -400,6 +441,15 @@ export default function AdminTradesPage() {
                         </Button>
                         <Button
                           size="sm"
+                          variant="outline"
+                          onClick={() => openOfferIdDialog(t.id, t.steamTradeOfferId)}
+                          title={t.steamTradeOfferId ? "Editar Offer ID" : "Informar Offer ID"}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          {!t.steamTradeOfferId && <span className="ml-1 text-[10px]">Offer ID</span>}
+                        </Button>
+                        <Button
+                          size="sm"
                           disabled={verifyingId === t.id}
                           onClick={() => verifySteam(t.id)}
                         >
@@ -475,6 +525,51 @@ export default function AdminTradesPage() {
           <Button onClick={submitSend} disabled={sendLoading}>
             {sendLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             Confirmar envio
+          </Button>
+        </DialogFooter>
+      </Dialog>
+
+      {/* Offer ID manual edit dialog */}
+      <Dialog open={offerIdOpen} onOpenChange={setOfferIdOpen}>
+        <DialogClose onClick={() => setOfferIdOpen(false)} />
+        <DialogHeader>
+          <DialogTitle>Informar Trade Offer ID</DialogTitle>
+          <DialogDescription>
+            Use quando a auto-detecção da Steam API não encontrar a trade
+            (API com delay, cache, etc.). Após salvar, clique em &ldquo;Verificar Steam&rdquo;.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-2">
+          <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 text-xs text-surface-300 space-y-2">
+            <p className="font-semibold text-amber-400">Como achar o Offer ID:</p>
+            <p>1. Acesse <code className="bg-surface-800 px-1 rounded">steamcommunity.com/id/SEU_USER/tradeoffers/sent</code></p>
+            <p>2. Abra o DevTools (F12) → aba <strong>Console</strong></p>
+            <p>3. Cole e rode:</p>
+            <code className="block bg-surface-900 p-2 rounded text-[10px] break-all">
+              [...document.querySelectorAll(&apos;[id^=&quot;tradeofferid_&quot;]&apos;)].map(e =&gt; e.id.replace(&apos;tradeofferid_&apos;,&apos;&apos;))
+            </code>
+            <p>4. Vai listar todos os IDs das suas trades enviadas. Identifica pela ordem (mais recente primeiro).</p>
+          </div>
+
+          <div>
+            <label className="text-xs text-surface-400 mb-1 block">Trade Offer ID</label>
+            <Input
+              value={offerIdValue}
+              onChange={(e) => setOfferIdValue(e.target.value.replace(/\D/g, ""))}
+              placeholder="Ex: 7193456789"
+              inputMode="numeric"
+            />
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOfferIdOpen(false)} disabled={offerIdLoading}>
+            Cancelar
+          </Button>
+          <Button onClick={submitOfferId} disabled={offerIdLoading || !offerIdValue.trim()}>
+            {offerIdLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
+            Salvar
           </Button>
         </DialogFooter>
       </Dialog>

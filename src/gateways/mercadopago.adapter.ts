@@ -237,11 +237,13 @@ export class MercadoPagoAdapter implements PaymentGatewayAdapter {
     }
   }
 
+  // Responses are untyped JSON from MP; use any to avoid narrowing every field.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async request(
     method: string,
     path: string,
     body?: Record<string, unknown>,
-  ): Promise<Record<string, unknown>> {
+  ): Promise<any> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
 

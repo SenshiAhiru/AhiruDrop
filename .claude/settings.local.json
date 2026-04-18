@@ -7,7 +7,9 @@
       "Bash(rm -f src/components/order/order-card.tsx src/components/order/order-status-badge.tsx src/components/raffle/raffle-image-gallery.tsx src/components/raffle/raffle-progress-bar.tsx src/components/raffle/raffle-detail-header.tsx src/components/shared/loading-spinner.tsx src/components/shared/confirm-dialog.tsx)",
       "Bash(rmdir src/components/order)",
       "Bash(rm -rf src/app/api/exchange)",
-      "Bash(npx next *)"
+      "Bash(npx next *)",
+      "Bash(grep -rn \"from \\\\\"@/lib/stripe\\\\\"\" src/)",
+      "Bash(grep -rn \"from \\\\\"./stripe\\\\\"\\\\|from \\\\\"../stripe\\\\\"\" src/)"
     ]
   }
 }

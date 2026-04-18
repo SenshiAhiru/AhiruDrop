@@ -112,7 +112,7 @@ export const paymentRepository = {
     return { data, total, pages: Math.ceil(total / limit) };
   },
 
-  async createLog(paymentId: string, event: string, data: Prisma.JsonValue) {
+  async createLog(paymentId: string, event: string, data: Prisma.InputJsonValue) {
     return prisma.paymentLog.create({
       data: {
         paymentId,

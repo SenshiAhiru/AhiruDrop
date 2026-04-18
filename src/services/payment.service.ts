@@ -18,6 +18,13 @@ export const paymentService = {
       throw new Error("Apenas pedidos pendentes podem gerar pagamento");
     }
 
+    // Load the user so we can pass customer info to the gateway adapter
+    const user = await prisma.user.findUnique({
+      where: { id: order.userId },
+      select: { name: true, email: true, cpf: true },
+    });
+    if (!user) throw new Error("Usuário do pedido não encontrado");
+
     // Get gateway (by name or default)
     const gateway = await prisma.paymentGateway.findFirst({
       where: gatewayName
@@ -30,12 +37,6 @@ export const paymentService = {
       throw new Error("Nenhum gateway de pagamento disponível");
     }
 
-    // Build config map for the adapter
-    const configMap: Record<string, string> = {};
-    for (const cfg of gateway.configs) {
-      configMap[cfg.key] = cfg.value;
-    }
-
     // Get gateway adapter via dynamic import
     const { PaymentGatewayFactory } = await import("@/gateways/payment-gateway.factory");
     const adapter = await PaymentGatewayFactory.create(gateway.name);
@@ -44,8 +45,12 @@ export const paymentService = {
     const paymentResult = await adapter.createPayment({
       orderId: order.id,
       amount: Number(order.finalAmount),
+      currency: "BRL",
       description: `Pedido #${order.id}`,
       method,
+      customerEmail: user.email,
+      customerName: user.name,
+      customerDocument: user.cpf ?? undefined,
     });
 
     // Save payment record
@@ -53,7 +58,7 @@ export const paymentService = {
       orderId: order.id,
       gatewayId: gateway.id,
       amount: Number(order.finalAmount),
-      method: method || paymentResult.method,
+      method,
       expiresAt: paymentResult.expiresAt,
     });
 

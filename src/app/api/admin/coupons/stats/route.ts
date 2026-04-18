@@ -18,9 +18,8 @@ export async function GET() {
       }),
       prisma.couponRedemption.count(),
       prisma.couponRedemption.count({ where: { createdAt: { gte: monthAgo } } }),
-      prisma.deposit.aggregate({
-        where: { status: "COMPLETED", ahcBonus: { gt: 0 } },
-        _sum: { ahcBonus: true },
+      prisma.couponRedemption.aggregate({
+        _sum: { bonusAhc: true },
       }),
       prisma.couponRedemption.groupBy({
         by: ["couponId"],
@@ -44,7 +43,7 @@ export async function GET() {
       activeCoupons,
       totalRedemptions,
       redemptionsLast30d,
-      totalBonusGranted: Number(bonusSum._sum.ahcBonus ?? 0),
+      totalBonusGranted: Number(bonusSum._sum.bonusAhc ?? 0),
       topCoupons: topCoupons.map((t) => ({
         couponId: t.couponId,
         code: topCouponMap[t.couponId] ?? "?",

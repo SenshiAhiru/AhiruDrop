@@ -19,7 +19,7 @@ export async function GET(
     });
     if (!coupon) return errorResponse("Cupom não encontrado", 404);
 
-    const [rows, total] = await Promise.all([
+    const [rows, total, bonusAgg] = await Promise.all([
       prisma.couponRedemption.findMany({
         where: { couponId },
         orderBy: { createdAt: "desc" },
@@ -27,9 +27,13 @@ export async function GET(
         take: limit,
       }),
       prisma.couponRedemption.count({ where: { couponId } }),
+      prisma.couponRedemption.aggregate({
+        where: { couponId },
+        _sum: { bonusAhc: true },
+      }),
     ]);
 
-    // Enrich with user + deposit info
+    // Enrich with user info + optional deposit context
     const userIds = [...new Set(rows.map((r) => r.userId))];
     const users = await prisma.user.findMany({
       where: { id: { in: userIds } },
@@ -45,7 +49,6 @@ export async function GET(
           where: { paymentIntentId: { in: refIds } },
           select: {
             paymentIntentId: true,
-            ahcBonus: true,
             ahcTotal: true,
             amountPaid: true,
             currency: true,
@@ -67,18 +70,13 @@ export async function GET(
         context: r.context,
         referenceId: r.referenceId,
         createdAt: r.createdAt,
-        bonusAhc: deposit ? Number(deposit.ahcBonus) : null,
+        bonusAhc: Number(r.bonusAhc),
         ahcTotal: deposit ? Number(deposit.ahcTotal) : null,
         amountPaid: deposit ? Number(deposit.amountPaid) : null,
         currency: deposit?.currency ?? null,
         depositStatus: deposit?.status ?? null,
       };
     });
-
-    const totalBonusGranted = deposits.reduce(
-      (acc, d) => acc + (d.status === "COMPLETED" ? Number(d.ahcBonus) : 0),
-      0
-    );
 
     return successResponse({
       coupon: {
@@ -95,7 +93,7 @@ export async function GET(
       total,
       pages: Math.ceil(total / limit),
       page,
-      totalBonusGranted,
+      totalBonusGranted: Number(bonusAgg._sum.bonusAhc ?? 0),
     });
   } catch (error) {
     return handleApiError(error);

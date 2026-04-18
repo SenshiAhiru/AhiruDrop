@@ -102,6 +102,7 @@ export async function POST(req: NextRequest) {
               userId: session.user.id,
               context: "deposit",
               referenceId: paymentIntentId,
+              bonusAhc,
             },
           });
         }

@@ -158,6 +158,7 @@ export async function POST(req: NextRequest) {
                   userId,
                   context: "deposit",
                   referenceId: obj.id,
+                  bonusAhc,
                 },
               }),
             ]);

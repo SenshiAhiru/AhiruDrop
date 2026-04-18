@@ -145,6 +145,7 @@ export const couponService = {
     userId: string;
     context: "deposit" | "order";
     referenceId?: string;
+    bonusAhc?: number;
   }) {
     return prisma.couponRedemption.create({
       data: {
@@ -152,6 +153,7 @@ export const couponService = {
         userId: params.userId,
         context: params.context,
         referenceId: params.referenceId,
+        bonusAhc: params.bonusAhc ?? 0,
       },
     });
   },

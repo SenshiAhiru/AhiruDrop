@@ -168,7 +168,7 @@ export default function RafflesPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-10 flex items-center justify-center gap-2">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-2 gap-y-3">
           <Button
             variant="outline"
             size="sm"

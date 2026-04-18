@@ -282,8 +282,11 @@ export default function RaffleDetailPage() {
               <span className="font-bold text-amber-400 uppercase tracking-wider text-[11px]">
                 Preview Admin
               </span>
-              <span className="text-amber-200/90 text-xs">
+              <span className="hidden sm:inline text-amber-200/90 text-xs">
                 Esta rifa está <strong>{statusInfo?.label ?? raffle.status}</strong> e não aparece no site público.
+              </span>
+              <span className="sm:hidden text-amber-200/90 text-xs font-semibold">
+                {statusInfo?.label ?? raffle.status}
               </span>
             </div>
             <Link

@@ -265,7 +265,7 @@ export function NumberSelector({
 
       {/* Buy Modal */}
       {buyModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setBuyModal(false)} />
           <div className="relative w-full max-w-md rounded-2xl border border-surface-700 bg-surface-900 p-6 shadow-2xl">
             <button
@@ -295,9 +295,9 @@ export function NumberSelector({
                   <span className="text-surface-400">Preço por cota</span>
                   <span className="font-semibold text-white">{pricePerNumber} AHC</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-surface-400">Números</span>
-                  <span className="font-mono text-xs text-surface-300 max-w-[200px] truncate text-right">
+                <div className="flex justify-between items-start gap-3">
+                  <span className="text-surface-400 flex-shrink-0">Números</span>
+                  <span className="font-mono text-xs text-surface-300 text-right break-all">
                     {selectedNumbers.sort((a, b) => a - b).join(", ")}
                   </span>
                 </div>
@@ -354,7 +354,7 @@ export function NumberSelector({
 
       {/* Success Modal */}
       {successData && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeSuccess} />
           <div className="relative w-full max-w-md rounded-2xl border border-emerald-500/30 bg-surface-900 p-6 shadow-2xl">
             <div className="flex flex-col items-center text-center">

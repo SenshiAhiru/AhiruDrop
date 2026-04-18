@@ -182,7 +182,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[var(--foreground)]">E-mail</p>
-                  <a href="mailto:suporte@ahirudrop.com" className="text-sm text-primary-500 hover:underline">
+                  <a href="mailto:suporte@ahirudrop.com" className="text-sm text-primary-500 hover:underline break-all">
                     suporte@ahirudrop.com
                   </a>
                 </div>

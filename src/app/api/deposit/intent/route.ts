@@ -3,6 +3,7 @@ import { successResponse, errorResponse, handleApiError, requireAuth } from "@/l
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
 import { couponService } from "@/services/coupon.service";
+import { applyRateLimitWithId } from "@/lib/rate-limit";
 import Stripe from "stripe";
 
 async function getStripeClient(): Promise<Stripe> {
@@ -29,6 +30,14 @@ async function getStripeClient(): Promise<Stripe> {
 export async function POST(req: NextRequest) {
   try {
     const session = await requireAuth();
+
+    // Rate limit: max 10 intents per user per hour
+    const limited = applyRateLimitWithId(req, session.user.id, {
+      key: "deposit_intent",
+      limit: 10,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (limited) return limited;
 
     const { amount, currency, couponCode } = await req.json();
     const ahcAmount = Number(amount);

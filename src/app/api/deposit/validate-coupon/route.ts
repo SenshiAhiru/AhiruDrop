@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { successResponse, errorResponse, handleApiError, requireAuth } from "@/lib/api-utils";
 import { couponService } from "@/services/coupon.service";
+import { applyRateLimitWithId } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const schema = z.object({
@@ -16,6 +17,14 @@ const schema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const session = await requireAuth();
+
+    // Rate limit: 20 validations per hour to discourage brute-force code guessing
+    const limited = applyRateLimitWithId(req, session.user.id, {
+      key: "coupon_validate",
+      limit: 20,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (limited) return limited;
 
     const body = await req.json().catch(() => null);
     const parsed = schema.safeParse(body);

@@ -85,6 +85,7 @@ model User {
   balance        Decimal        @default(0) @db.Decimal(10, 2)
   isActive       Boolean        @default(true)
   onboardedAt    DateTime?      // null = user hasn't completed the welcome tutorial
+  signupIp       String?        // first IP used at signup (best-effort)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
@@ -96,6 +97,7 @@ model User {
   raffleDraws     RaffleDraw[]     @relation("DrawAdmin")
   tradeRequests   TradeRequest[]
 
+  @@index([signupIp])
   @@map("users")
 }
 

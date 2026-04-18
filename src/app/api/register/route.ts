@@ -6,6 +6,10 @@ import { successResponse, errorResponse, handleApiError } from "@/lib/api-utils"
 import { applyRateLimit, getClientIp } from "@/lib/rate-limit";
 import { validatePasswordStrength } from "@/lib/password-policy";
 import { verifyTurnstile } from "@/lib/turnstile";
+import { notificationService } from "@/services/notification.service";
+
+const MULTI_ACCOUNT_THRESHOLD = 3; // >= this many accounts from same IP within window triggers alert
+const MULTI_ACCOUNT_WINDOW_MS = 24 * 60 * 60 * 1000; // 24h
 
 const registerSchema = z.object({
   name: z
@@ -69,12 +73,15 @@ export async function POST(req: NextRequest) {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Create user
+    const ip = getClientIp(req);
+
+    // Create user with signup IP tracked
     const user = await prisma.user.create({
       data: {
         name,
         email,
         passwordHash,
+        signupIp: ip,
       },
       select: {
         id: true,
@@ -84,6 +91,31 @@ export async function POST(req: NextRequest) {
         createdAt: true,
       },
     });
+
+    // Multi-account detection: count other accounts from the same IP
+    // in the last 24h. Does NOT block signup (false positives are bad UX —
+    // shared NAT, university, VPN), but notifies admins.
+    if (ip && ip !== "unknown") {
+      try {
+        const recentFromIp = await prisma.user.count({
+          where: {
+            signupIp: ip,
+            createdAt: { gte: new Date(Date.now() - MULTI_ACCOUNT_WINDOW_MS) },
+            id: { not: user.id },
+          },
+        });
+        if (recentFromIp + 1 >= MULTI_ACCOUNT_THRESHOLD) {
+          await notificationService.sendToAdmins(
+            "SYSTEM",
+            "Possível multi-conta detectada",
+            `IP ${ip} criou ${recentFromIp + 1} contas em 24h. Último: ${user.name} (${user.email}).`,
+            { userId: user.id, ip, count: recentFromIp + 1, link: "/admin/users" }
+          );
+        }
+      } catch (err) {
+        console.error("Multi-account detection failed:", err);
+      }
+    }
 
     return successResponse(user, 201);
   } catch (error) {

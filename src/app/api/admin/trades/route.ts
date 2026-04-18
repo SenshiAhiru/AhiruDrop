@@ -61,10 +61,17 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json().catch(() => null);
 
     const { tradeId, status, adminNotes, steamTradeOfferId } = body ?? {};
-    if (!tradeId || !status) return errorResponse("tradeId e status obrigatórios", 422);
+    if (!tradeId) return errorResponse("tradeId obrigatório", 422);
 
-    const validStatuses: TradeStatus[] = ["PENDING", "SENT", "COMPLETED", "FAILED", "CANCELLED"];
-    if (!validStatuses.includes(status)) return errorResponse("Status inválido", 422);
+    // Allow offer-id-only updates (status optional on PATCH)
+    if (!status && steamTradeOfferId === undefined && adminNotes === undefined) {
+      return errorResponse("Nada para atualizar", 422);
+    }
+
+    if (status) {
+      const validStatuses: TradeStatus[] = ["PENDING", "SENT", "COMPLETED", "FAILED", "CANCELLED"];
+      if (!validStatuses.includes(status)) return errorResponse("Status inválido", 422);
+    }
 
     const trade = await prisma.tradeRequest.findUnique({
       where: { id: tradeId },
@@ -76,7 +83,8 @@ export async function PATCH(req: NextRequest) {
     });
     if (!trade) return errorResponse("Trade não encontrado", 404);
 
-    const data: any = { status };
+    const data: any = {};
+    if (status) data.status = status;
     if (adminNotes !== undefined) data.adminNotes = adminNotes;
     if (steamTradeOfferId) data.steamTradeOfferId = String(steamTradeOfferId).trim();
     if (status === "SENT" && !trade.sentAt) data.sentAt = new Date();
@@ -102,7 +110,7 @@ export async function PATCH(req: NextRequest) {
       CANCELLED: "Trade cancelado.",
     };
 
-    if (statusLabels[status]) {
+    if (status && statusLabels[status]) {
       try {
         await notificationService.create(
           trade.userId,
@@ -116,10 +124,10 @@ export async function PATCH(req: NextRequest) {
 
     await auditService.log(
       session.user.id,
-      "TRADE_STATUS_CHANGED",
+      status ? "TRADE_STATUS_CHANGED" : "TRADE_UPDATED",
       "trade_request",
       tradeId,
-      { status, adminNotes }
+      { status, adminNotes, steamTradeOfferId }
     );
 
     return successResponse(updated);

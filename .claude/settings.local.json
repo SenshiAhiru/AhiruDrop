@@ -9,7 +9,10 @@
       "Bash(rm -rf src/app/api/exchange)",
       "Bash(npx next *)",
       "Bash(grep -rn \"from \\\\\"@/lib/stripe\\\\\"\" src/)",
-      "Bash(grep -rn \"from \\\\\"./stripe\\\\\"\\\\|from \\\\\"../stripe\\\\\"\" src/)"
+      "Bash(grep -rn \"from \\\\\"./stripe\\\\\"\\\\|from \\\\\"../stripe\\\\\"\" src/)",
+      "Bash(curl -s -o /dev/null -w \"deposit/intent: %{http_code}\\\\n\" https://ahirudrop.vercel.app/api/deposit/intent -X POST -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(curl -s -o /dev/null -w \"webhooks/stripe: %{http_code}\\\\n\" https://ahirudrop.vercel.app/api/webhooks/stripe -X POST -d 'test')",
+      "Bash(curl -s -o /dev/null -w \"user/balance: %{http_code}\\\\n\" https://ahirudrop.vercel.app/api/user/balance)"
     ]
   }
 }

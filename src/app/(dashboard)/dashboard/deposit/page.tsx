@@ -33,16 +33,48 @@ function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () 
     setPaying(true);
     setError(null);
 
-    const result = await stripe.confirmPayment({
-      elements,
-      redirect: "if_required",
-    });
+    try {
+      const result = await stripe.confirmPayment({
+        elements,
+        redirect: "if_required",
+      });
 
-    if (result.error) {
-      setError(result.error.message || "Erro no pagamento");
+      if (result.error) {
+        setError(result.error.message || "Erro no pagamento");
+        setPaying(false);
+        return;
+      }
+
+      const status = result.paymentIntent?.status;
+      if (status === "succeeded") {
+        onSuccess();
+        return;
+      }
+
+      // Any other status (requires_action, processing, requires_capture…)
+      // means the payment isn't complete. Surface it instead of looping forever.
+      if (status === "processing") {
+        setError(
+          "Pagamento está sendo processado pelo banco. Aguarde alguns segundos e recarregue a página — o saldo será creditado assim que confirmar."
+        );
+      } else if (status === "requires_action") {
+        setError(
+          "O banco exigiu autenticação adicional que não foi concluída. Tente novamente."
+        );
+      } else if (status) {
+        setError(`Pagamento retornou status inesperado: ${status}`);
+      } else {
+        setError("Resposta inesperada do Stripe. Tente novamente.");
+      }
       setPaying(false);
-    } else if (result.paymentIntent?.status === "succeeded") {
-      onSuccess();
+    } catch (err) {
+      console.error("confirmPayment threw:", err);
+      setError(
+        err instanceof Error
+          ? `Erro: ${err.message}`
+          : "Falha ao confirmar pagamento. Verifique sua conexão e tente novamente."
+      );
+      setPaying(false);
     }
   };
 

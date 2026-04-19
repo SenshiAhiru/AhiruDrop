@@ -484,51 +484,111 @@ export default function VerifyPage() {
         </section>
       )}
 
-      {/* External tools */}
-      <div className="rounded-xl border border-surface-800 bg-surface-900/30 p-5">
-        <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-          <ExternalLink className="h-4 w-4 text-surface-400" />
-          Ferramentas externas (opcional)
-        </h3>
-        <p className="text-xs text-surface-400 mb-3">
-          Prefere recomputar de forma totalmente independente? Sugestões:
-        </p>
-        <ul className="space-y-1.5 text-xs">
-          <li>
-            <a
-              href="https://emn178.github.io/online-tools/sha256.html"
-              target="_blank"
-              rel="noreferrer"
-              className="text-primary-400 hover:underline inline-flex items-center gap-1"
-            >
-              emn178 SHA-256 online <ExternalLink className="h-3 w-3" />
-            </a>
-            <span className="text-surface-500"> — pra testar o passo 1 (commit check)</span>
-          </li>
-          <li>
-            <a
-              href="https://www.devglan.com/online-tools/hmac-sha256-online"
-              target="_blank"
-              rel="noreferrer"
-              className="text-primary-400 hover:underline inline-flex items-center gap-1"
-            >
-              devglan HMAC-SHA256 <ExternalLink className="h-3 w-3" />
-            </a>
-            <span className="text-surface-500"> — pro passo 2 (HMAC com server seed como chave)</span>
-          </li>
-          <li>
-            <a
-              href="https://mempool.space/"
-              target="_blank"
-              rel="noreferrer"
-              className="text-primary-400 hover:underline inline-flex items-center gap-1"
-            >
-              mempool.space <ExternalLink className="h-3 w-3" />
-            </a>
-            <span className="text-surface-500"> — pra confirmar o bloco do Bitcoin</span>
-          </li>
-        </ul>
-      </div>
+      {/* External verification walkthrough */}
+      {canVerify && (
+        <section className="rounded-xl border border-surface-800 bg-surface-900/30 overflow-hidden">
+          <header className="flex items-center gap-2 px-5 py-4 border-b border-surface-800 bg-surface-900/50">
+            <ExternalLink className="h-5 w-5 text-surface-400" />
+            <h3 className="text-base font-semibold text-white">
+              Verificação manual (independente)
+            </h3>
+          </header>
+
+          <div className="p-5 space-y-6 text-sm">
+            <p className="text-surface-400">
+              Não precisa confiar no botão acima. Abaixo está o passo-a-passo pra
+              recomputar em ferramentas de terceiros — cola os valores exatos, confere
+              que bate.
+            </p>
+
+            {/* Step 1 — SHA-256 commit check */}
+            <ExternalStep
+              number={1}
+              title="Confira o commit do seed"
+              description="Calcule o SHA-256 do server seed revelado. O resultado tem que ser igual ao Public Hash."
+              toolName="emn178 SHA-256 online"
+              toolUrl="https://emn178.github.io/online-tools/sha256.html"
+              inputs={[
+                { label: "Cola no campo 'Input'", value: data.reveal!.serverSeedRevealed! },
+              ]}
+              expected={{
+                label: "Output esperado",
+                value: data.commit.serverSeedHash!,
+              }}
+              onCopy={copy}
+            />
+
+            {/* Step 2 — HMAC */}
+            <ExternalStep
+              number={2}
+              title="Recompute o HMAC"
+              description="HMAC-SHA256 com o server seed como chave e 'block_hash:raffle_id' como mensagem."
+              toolName="devglan HMAC-SHA256"
+              toolUrl="https://www.devglan.com/online-tools/hmac-sha256-online"
+              inputs={[
+                {
+                  label: "Secret Key",
+                  value: data.reveal!.serverSeedRevealed!,
+                },
+                {
+                  label: "Plain Text",
+                  value: `${data.reveal!.blockHash!}:${data.raffleId}`,
+                },
+              ]}
+              expected={{
+                label: "Output esperado (começa com...)",
+                value: "— calcule e pegue os primeiros 16 caracteres hex",
+                noCopy: true,
+              }}
+              onCopy={copy}
+            />
+
+            {/* Step 3 — modular math */}
+            <div className="rounded-lg border border-surface-800 bg-surface-900/40 p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 text-xs font-bold">
+                  3
+                </span>
+                <h4 className="text-sm font-semibold text-white">Calcule o índice final</h4>
+              </div>
+              <p className="text-xs text-surface-400">
+                Pega os <strong>primeiros 16 caracteres hex</strong> do HMAC do passo 2,
+                converte pra número inteiro (base 16) e aplica{" "}
+                <code className="font-mono text-accent-400">mod {data.totalPaidTickets}</code>.
+                O resultado tem que ser o <strong>índice</strong> que aponta pro
+                ticket vencedor na lista ordenada.
+              </p>
+              <div className="rounded-md bg-surface-900/60 border border-surface-800 p-3 font-mono text-xs text-surface-300 space-y-1">
+                <div>// exemplo em JavaScript (console do browser)</div>
+                <div className="text-emerald-400">
+                  const hex = &quot;<span className="text-amber-300">primeiros_16_hex_do_passo_2</span>&quot;;
+                </div>
+                <div className="text-emerald-400">
+                  const idx = Number(BigInt(&quot;0x&quot; + hex) % {BigInt(data.totalPaidTickets).toString()}n);
+                </div>
+                <div className="text-white">
+                  console.log(idx); <span className="text-surface-500">// deve dar o índice do vencedor</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 4 — block check */}
+            <ExternalStep
+              number={4}
+              title="Confirme o bloco do Bitcoin"
+              description="Confere que o block hash realmente corresponde ao bloco na altura declarada (ninguém pode forjar um hash de bloco)."
+              toolName={`mempool.space/block/${data.reveal!.blockHeight}`}
+              toolUrl={`https://mempool.space/block/${data.reveal!.blockHeight}`}
+              inputs={[]}
+              expected={{
+                label: "A página deve mostrar este hash como o do bloco",
+                value: data.reveal!.blockHash!,
+              }}
+              onCopy={copy}
+            />
+          </div>
+        </section>
+      )}
     </div>
   );
 }
@@ -602,6 +662,87 @@ function DataRow({
         ) : (
           <span className="text-xs text-surface-600 italic">Aguardando sorteio</span>
         )}
+      </div>
+    </div>
+  );
+}
+
+function ExternalStep({
+  number,
+  title,
+  description,
+  toolName,
+  toolUrl,
+  inputs,
+  expected,
+  onCopy,
+}: {
+  number: number;
+  title: string;
+  description: string;
+  toolName: string;
+  toolUrl: string;
+  inputs: Array<{ label: string; value: string }>;
+  expected: { label: string; value: string; noCopy?: boolean };
+  onCopy: (text: string) => void;
+}) {
+  return (
+    <div className="rounded-lg border border-surface-800 bg-surface-900/40 p-4 space-y-3">
+      <div className="flex items-center gap-2">
+        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/20 text-primary-400 text-xs font-bold">
+          {number}
+        </span>
+        <h4 className="text-sm font-semibold text-white">{title}</h4>
+      </div>
+      <p className="text-xs text-surface-400">{description}</p>
+
+      <a
+        href={toolUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-1 text-xs font-semibold text-primary-400 hover:underline"
+      >
+        Abrir {toolName} <ExternalLink className="h-3 w-3" />
+      </a>
+
+      {inputs.length > 0 && (
+        <div className="space-y-2">
+          {inputs.map((inp, i) => (
+            <div key={i} className="space-y-1">
+              <div className="text-[11px] text-surface-500">{inp.label}:</div>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 min-w-0 rounded-md border border-surface-800 bg-surface-900/70 px-2 py-1.5 font-mono text-[11px] text-surface-300 break-all">
+                  {inp.value}
+                </code>
+                <button
+                  onClick={() => onCopy(inp.value)}
+                  className="flex-shrink-0 p-1.5 rounded-md border border-surface-800 text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
+                  title="Copiar"
+                >
+                  <Copy className="h-3 w-3" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="rounded-md border border-emerald-500/20 bg-emerald-500/5 p-3 space-y-1">
+        <div className="text-[11px] text-emerald-400/80">{expected.label}:</div>
+        <div className="flex items-center gap-2">
+          <code className="flex-1 min-w-0 font-mono text-[11px] text-emerald-300 break-all">
+            {expected.value}
+          </code>
+          {!expected.noCopy && (
+            <button
+              onClick={() => onCopy(expected.value)}
+              className="flex-shrink-0 p-1.5 rounded-md border border-emerald-500/20 text-emerald-400/70 hover:text-emerald-300 hover:bg-emerald-500/10 transition-colors"
+              title="Copiar"
+            >
+              <Copy className="h-3 w-3" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

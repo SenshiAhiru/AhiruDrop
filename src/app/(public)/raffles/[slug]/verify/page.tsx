@@ -11,6 +11,9 @@ import {
   Loader2,
   AlertCircle,
   Copy,
+  Check,
+  ChevronDown,
+  FileJson,
 } from "lucide-react";
 
 type VerifyData = {
@@ -37,11 +40,10 @@ type VerifyData = {
 type VerifyResult = {
   hashMatches: boolean | null;
   computedIndex: number | null;
-  indexMatches: boolean | null;
   error: string | null;
 };
 
-// Browser-side SHA-256 using SubtleCrypto
+// Browser-side SHA-256
 async function sha256Hex(input: string): Promise<string> {
   const data = new TextEncoder().encode(input);
   const buf = await crypto.subtle.digest("SHA-256", data);
@@ -52,7 +54,6 @@ async function sha256Hex(input: string): Promise<string> {
 
 // Browser-side HMAC-SHA256
 async function hmacSha256Hex(keyHex: string, message: string): Promise<string> {
-  // Import key as raw bytes (the hex-string interpreted as ASCII chars, matching Node's default)
   const keyBytes = new TextEncoder().encode(keyHex);
   const key = await crypto.subtle.importKey(
     "raw",
@@ -61,11 +62,7 @@ async function hmacSha256Hex(keyHex: string, message: string): Promise<string> {
     false,
     ["sign"]
   );
-  const sig = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    new TextEncoder().encode(message)
-  );
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(message));
   return Array.from(new Uint8Array(sig))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
@@ -80,6 +77,8 @@ export default function VerifyPage() {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [result, setResult] = useState<VerifyResult | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
+  const [copiedJson, setCopiedJson] = useState(false);
   const hasRun = useRef(false);
 
   useEffect(() => {
@@ -111,32 +110,24 @@ export default function VerifyPage() {
       const committedHash = data.commit.serverSeedHash!;
       const blockHash = data.reveal.blockHash!;
 
-      // 1) Seed commitment check
       const computedHash = await sha256Hex(seed);
       const hashMatches = computedHash.toLowerCase() === committedHash.toLowerCase();
 
-      // 2) Recompute winning index via HMAC
       const message = `${blockHash}:${data.raffleId}`;
       const hmacHex = await hmacSha256Hex(seed, message);
       const slice = hmacHex.slice(0, 16);
       const bigNum = BigInt("0x" + slice);
       const idx = Number(bigNum % BigInt(data.totalPaidTickets));
 
-      // Note: index vs winningNumber — winningNumber is the actual label,
-      // idx is the position in the sorted paid list. We can't fully reproduce
-      // the mapping without the full paid list, so we just report the computed
-      // index. The server stored winningNumber = eligible[idx].number.
       setResult({
         hashMatches,
         computedIndex: idx,
-        indexMatches: null, // pure position check not available without paid list
         error: null,
       });
     } catch (err) {
       setResult({
         hashMatches: null,
         computedIndex: null,
-        indexMatches: null,
         error: err instanceof Error ? err.message : "Erro na verificação",
       });
     } finally {
@@ -146,6 +137,41 @@ export default function VerifyPage() {
 
   function copy(text: string) {
     navigator.clipboard.writeText(text).catch(() => {});
+  }
+
+  function copyJSON() {
+    if (!data) return;
+    const payload = {
+      raffle_id: data.raffleId,
+      raffle_title: data.raffleTitle,
+      total_paid_tickets: data.totalPaidTickets,
+      commit: {
+        server_seed_hash: data.commit.serverSeedHash,
+        draw_block_height: data.commit.drawBlockHeight,
+      },
+      reveal: data.reveal
+        ? {
+            drawn_at: data.reveal.drawnAt,
+            server_seed: data.reveal.serverSeedRevealed,
+            block_hash: data.reveal.blockHash,
+            block_height: data.reveal.blockHeight,
+            winning_number: data.reveal.winningNumber,
+          }
+        : null,
+      algorithm: {
+        commit_check: "SHA-256(server_seed) === server_seed_hash",
+        winner_formula:
+          "index = ( first_16_hex( HMAC-SHA256(server_seed, block_hash + ':' + raffle_id) ) as uint64 ) mod total_paid_tickets",
+      },
+    };
+    const json = JSON.stringify(payload, null, 2);
+    navigator.clipboard
+      .writeText(json)
+      .then(() => {
+        setCopiedJson(true);
+        setTimeout(() => setCopiedJson(false), 2000);
+      })
+      .catch(() => {});
   }
 
   if (loading) {
@@ -166,253 +192,415 @@ export default function VerifyPage() {
     );
   }
 
+  const canVerify =
+    data.reveal &&
+    data.commit.serverSeedHash &&
+    data.reveal.serverSeedRevealed &&
+    data.reveal.blockHash;
+
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-      {/* Header */}
-      <div>
-        <Link
-          href={`/raffles/${slug}`}
-          className="text-sm text-surface-400 hover:text-white transition-colors"
-        >
-          ← Voltar para a rifa
-        </Link>
-        <div className="flex items-center gap-3 mt-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-500/10">
-            <Shield className="h-6 w-6 text-primary-400" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white">Provably Fair</h1>
-            <p className="text-sm text-surface-400">{data.raffleTitle}</p>
-          </div>
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+      {/* Back link */}
+      <Link
+        href={`/raffles/${slug}`}
+        className="text-sm text-surface-400 hover:text-white transition-colors inline-block"
+      >
+        ← Voltar para a rifa
+      </Link>
+
+      {/* Hero */}
+      <div className="rounded-2xl border border-primary-500/20 bg-gradient-to-br from-primary-950/40 via-surface-900/60 to-surface-900/60 p-8 text-center">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/10 ring-1 ring-primary-500/30">
+          <Shield className="h-8 w-8 text-primary-400" />
         </div>
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-400 mb-2">
+          Algoritmo Provably Fair
+        </p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+          {data.raffleTitle}
+        </h1>
+        <p className="text-sm text-surface-400 max-w-2xl mx-auto">
+          O AhiruDrop usa commit-reveal ancorado na blockchain do Bitcoin pra garantir
+          imparcialidade total. Ninguém — nem a plataforma — pode prever ou alterar o
+          número vencedor. Confira você mesmo.
+        </p>
+
+        <button
+          onClick={() => setShowIntro(!showIntro)}
+          className="mt-5 inline-flex items-center gap-2 rounded-lg border border-primary-500/30 bg-primary-500/10 px-4 py-2 text-sm font-semibold text-primary-300 hover:bg-primary-500/20 transition-colors"
+        >
+          {showIntro ? "Ocultar explicação" : "Mostrar como funciona"}
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${showIntro ? "rotate-180" : ""}`}
+          />
+        </button>
       </div>
 
-      {/* Explanation */}
-      <div className="rounded-xl border border-surface-700 bg-surface-900/50 p-5 text-sm text-surface-300 space-y-2">
-        <p>
-          Esta rifa usa um esquema de <strong>commit-reveal</strong> com o hash de um
-          bloco do Bitcoin como fonte de aleatoriedade pública. Ninguém — nem o
-          AhiruDrop — pode prever ou manipular o vencedor.
-        </p>
-        <p>
-          <strong>1.</strong> Na criação, o servidor gerou um seed aleatório e publicou
-          o hash SHA-256 dele (abaixo). <strong>2.</strong> Também travou a altura de
-          um bloco futuro do Bitcoin. <strong>3.</strong> No sorteio, o seed é
-          revelado e combinado com o hash do bloco real via HMAC-SHA256 para escolher
-          o ganhador. Qualquer pessoa pode conferir.
-        </p>
-      </div>
-
-      {/* Commit */}
-      <section className="rounded-xl border border-surface-700 bg-surface-900/50 p-5 space-y-4">
-        <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/20 text-primary-400 text-xs font-bold">
-            1
-          </span>
-          Compromisso (commit)
-        </h2>
-        <FieldRow
-          label="Hash do seed (SHA-256)"
-          value={data.commit.serverSeedHash}
-          mono
-          onCopy={copy}
-        />
-        <FieldRow
-          label="Altura do bloco alvo (Bitcoin)"
-          value={data.commit.drawBlockHeight?.toString() ?? null}
-          link={
-            data.commit.drawBlockHeight
-              ? `https://mempool.space/block/${data.commit.drawBlockHeight}`
-              : undefined
-          }
-        />
-      </section>
-
-      {/* Reveal */}
-      <section className="rounded-xl border border-surface-700 bg-surface-900/50 p-5 space-y-4">
-        <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/20 text-primary-400 text-xs font-bold">
-            2
-          </span>
-          Revelação (reveal)
-        </h2>
-
-        {!data.reveal ? (
-          <p className="text-sm text-surface-400">
-            O sorteio ainda não foi realizado. Os dados de revelação aparecerão aqui
-            após o draw.
+      {/* Explanation (collapsible) */}
+      {showIntro && (
+        <div className="rounded-xl border border-surface-700 bg-surface-900/50 p-6 text-sm text-surface-300 space-y-4">
+          <p>
+            Nossa fórmula é aberta e qualquer pessoa pode recomputar. Você vai precisar
+            dos valores abaixo:
           </p>
-        ) : (
-          <>
-            <FieldRow
-              label="Seed revelado"
-              value={data.reveal.serverSeedRevealed}
-              mono
-              onCopy={copy}
-            />
-            <FieldRow
-              label="Hash do bloco usado"
-              value={data.reveal.blockHash}
-              mono
-              onCopy={copy}
-              link={
-                data.reveal.blockHash
-                  ? `https://mempool.space/block/${data.reveal.blockHash}`
-                  : undefined
-              }
-            />
-            <FieldRow
-              label="Altura do bloco usado"
-              value={data.reveal.blockHeight?.toString() ?? null}
-            />
-            <FieldRow
-              label="Número vencedor"
-              value={data.reveal.winningNumber.toString()}
-              highlight
-            />
-            <FieldRow
-              label="Total de tickets pagos"
-              value={data.totalPaidTickets.toString()}
-            />
-          </>
-        )}
-      </section>
-
-      {/* Verification */}
-      {data.reveal && data.commit.serverSeedHash && data.reveal.serverSeedRevealed && data.reveal.blockHash && (
-        <section className="rounded-xl border border-surface-700 bg-surface-900/50 p-5 space-y-4">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/20 text-primary-400 text-xs font-bold">
-              3
-            </span>
-            Verificação no seu navegador
-          </h2>
-          <p className="text-sm text-surface-400">
-            Clique no botão abaixo pra calcular localmente, sem nenhum pedido ao
-            servidor, e conferir que tudo bate.
+          <ul className="space-y-2 pl-5 list-disc marker:text-primary-400">
+            <li>
+              <strong className="text-white">Server Seed:</strong> string aleatória
+              gerada pelo servidor antes da rifa começar. O hash SHA-256 dele é
+              publicado na hora da criação — o seed original só é revelado depois do
+              sorteio, provando que não foi alterado.
+            </li>
+            <li>
+              <strong className="text-white">Block Hash (Bitcoin):</strong> hash do
+              bloco do Bitcoin na altura pré-definida. Impossível de prever ou
+              manipular (a rede Bitcoin gera uns 144 blocos/dia de forma distribuída).
+            </li>
+            <li>
+              <strong className="text-white">Raffle ID:</strong> identificador único
+              desta rifa, usado como nonce.
+            </li>
+          </ul>
+          <div className="rounded-lg border border-surface-700 bg-surface-800/40 p-4 space-y-3 font-mono text-xs">
+            <div>
+              <span className="text-surface-500">// Passo 1 — prova do seed:</span>
+              <br />
+              <span className="text-emerald-400">SHA-256</span>(server_seed) ={" "}
+              <span className="text-amber-300">server_seed_hash</span>
+            </div>
+            <div>
+              <span className="text-surface-500">// Passo 2 — escolha do vencedor:</span>
+              <br />
+              h ={" "}
+              <span className="text-emerald-400">HMAC-SHA256</span>(server_seed, block_hash + &quot;:&quot; + raffle_id)
+              <br />
+              idx = (h[0..16] como uint64){" "}
+              <span className="text-accent-400">mod</span> total_tickets_pagos
+              <br />
+              <span className="text-amber-300">winning_number</span> = ticket_pagos_ordenados[idx]
+            </div>
+          </div>
+          <p className="text-xs text-surface-400">
+            Basta aplicar a fórmula nos valores abaixo usando qualquer ferramenta
+            SHA-256/HMAC (ex: biblioteca crypto do Node, Python, ou ferramentas
+            online). O botão &ldquo;Verificar agora&rdquo; faz isso localmente no seu
+            navegador com WebCrypto.
           </p>
+        </div>
+      )}
 
+      {/* Data table */}
+      <section className="rounded-xl border border-surface-700 bg-surface-900/50 overflow-hidden">
+        <header className="flex items-center justify-between gap-3 px-5 py-4 border-b border-surface-700 bg-surface-900/70">
+          <div className="flex items-center gap-2">
+            <FileJson className="h-5 w-5 text-accent-400" />
+            <h2 className="text-base font-semibold text-white">Dados do sorteio</h2>
+          </div>
           <button
-            onClick={runVerification}
-            disabled={verifying || !!result}
-            className={`inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${
-              result
-                ? "bg-emerald-600 text-white"
-                : "bg-primary-600 text-white hover:bg-primary-700"
-            }`}
+            onClick={copyJSON}
+            className="inline-flex items-center gap-2 rounded-lg border border-accent-500/30 bg-accent-500/10 px-3 py-1.5 text-xs font-semibold text-accent-300 hover:bg-accent-500/20 transition-colors"
           >
-            {verifying ? (
+            {copiedJson ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Verificando...
-              </>
-            ) : result ? (
-              <>
-                <CheckCircle2 className="h-4 w-4" />
-                Verificado ✓
+                <Check className="h-3.5 w-3.5" />
+                Copiado!
               </>
             ) : (
               <>
-                <Shield className="h-4 w-4" />
-                Verificar agora
+                <Copy className="h-3.5 w-3.5" />
+                Copiar JSON
               </>
             )}
           </button>
+        </header>
 
-          {result && (
-            <div className="mt-4 space-y-3">
-              {result.error ? (
-                <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400 flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  {result.error}
-                </div>
+        <div className="divide-y divide-surface-800">
+          <DataRow
+            label="Public Hash"
+            sublabel="SHA-256(server_seed) — committed antes do sorteio"
+            value={data.commit.serverSeedHash}
+            onCopy={copy}
+          />
+          <DataRow
+            label="Server Seed"
+            sublabel={
+              data.reveal?.serverSeedRevealed
+                ? "Revelado após o sorteio"
+                : "Será revelado após o sorteio"
+            }
+            value={data.reveal?.serverSeedRevealed ?? null}
+            onCopy={copy}
+          />
+          <DataRow
+            label="Block Hash (Bitcoin)"
+            sublabel="Hash do bloco BTC usado como entropia pública"
+            value={data.reveal?.blockHash ?? null}
+            onCopy={copy}
+            link={
+              data.reveal?.blockHash
+                ? `https://mempool.space/block/${data.reveal.blockHash}`
+                : undefined
+            }
+            linkLabel="mempool.space"
+          />
+          <DataRow
+            label="Block Height"
+            sublabel="Altura do bloco Bitcoin"
+            value={
+              data.reveal?.blockHeight?.toString() ??
+              data.commit.drawBlockHeight?.toString() ??
+              null
+            }
+            link={
+              data.reveal?.blockHeight
+                ? `https://mempool.space/block/${data.reveal.blockHeight}`
+                : data.commit.drawBlockHeight
+                ? `https://mempool.space/block/${data.commit.drawBlockHeight}`
+                : undefined
+            }
+            linkLabel="mempool.space"
+            plain
+          />
+          <DataRow
+            label="Raffle ID"
+            sublabel="Identificador único da rifa (nonce)"
+            value={data.raffleId}
+            onCopy={copy}
+          />
+          <DataRow
+            label="Total de tickets pagos"
+            sublabel="Denominador no cálculo modular"
+            value={data.totalPaidTickets.toString()}
+            plain
+          />
+          {data.reveal && (
+            <DataRow
+              label="Winning Number"
+              sublabel="Resultado final do sorteio"
+              value={data.reveal.winningNumber.toString()}
+              highlight
+              plain
+            />
+          )}
+        </div>
+      </section>
+
+      {/* Verification */}
+      {canVerify && (
+        <section className="rounded-xl border border-surface-700 bg-surface-900/50 overflow-hidden">
+          <header className="flex items-center justify-between gap-3 px-5 py-4 border-b border-surface-700 bg-surface-900/70">
+            <div className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary-400" />
+              <h2 className="text-base font-semibold text-white">
+                Verificar no seu navegador
+              </h2>
+            </div>
+          </header>
+
+          <div className="p-5 space-y-4">
+            <p className="text-sm text-surface-400">
+              O cálculo roda localmente via WebCrypto (nenhum dado vai pro servidor).
+            </p>
+
+            <button
+              onClick={runVerification}
+              disabled={verifying || !!result}
+              className={`inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${
+                result && !result.error
+                  ? "bg-emerald-600 text-white"
+                  : "bg-primary-600 text-white hover:bg-primary-700"
+              }`}
+            >
+              {verifying ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Verificando...
+                </>
+              ) : result && !result.error ? (
+                <>
+                  <CheckCircle2 className="h-4 w-4" />
+                  Verificado
+                </>
               ) : (
                 <>
-                  <CheckRow
-                    ok={result.hashMatches === true}
-                    label="SHA-256(seed revelado) === hash commitado"
-                    detail={
-                      result.hashMatches
-                        ? "O seed original foi preservado desde a criação."
-                        : "ATENÇÃO: o seed não corresponde ao hash commitado."
-                    }
-                  />
-                  <div className="rounded-lg border border-surface-700 bg-surface-800/40 p-3 text-xs space-y-1">
-                    <div className="text-surface-400">Cálculo independente:</div>
-                    <div className="text-surface-300">
-                      HMAC-SHA256(seed, &ldquo;{data.reveal!.blockHash!.slice(0, 12)}...:
-                      {data.raffleId.slice(0, 8)}...&rdquo;) → primeiros 16 hex ÷ por{" "}
-                      {data.totalPaidTickets}
-                    </div>
-                    <div className="text-white font-mono">
-                      Índice computado:{" "}
-                      <span className="text-accent-400">{result.computedIndex}</span>
-                      <span className="text-surface-500">
-                        {" "}
-                        (0 a {data.totalPaidTickets - 1})
-                      </span>
-                    </div>
-                    <div className="text-surface-400 text-[11px] mt-2">
-                      O servidor mapeou esse índice para o número vencedor{" "}
-                      <strong className="text-white">#{data.reveal!.winningNumber}</strong>{" "}
-                      da lista ordenada de tickets pagos.
-                    </div>
-                  </div>
+                  <Shield className="h-4 w-4" />
+                  Verificar agora
                 </>
               )}
-            </div>
-          )}
+            </button>
+
+            {result && (
+              <div className="space-y-3 pt-2">
+                {result.error ? (
+                  <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400 flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    {result.error}
+                  </div>
+                ) : (
+                  <>
+                    <CheckRow
+                      ok={result.hashMatches === true}
+                      label="SHA-256(server_seed) === Public Hash"
+                      detail={
+                        result.hashMatches
+                          ? "O server seed não foi alterado desde a criação da rifa."
+                          : "ATENÇÃO: o seed não corresponde ao hash commitado."
+                      }
+                    />
+
+                    <div className="rounded-lg border border-surface-700 bg-surface-800/40 p-4 space-y-2 font-mono text-xs">
+                      <div className="text-surface-500">Cálculo independente:</div>
+                      <div className="text-surface-300 break-all">
+                        HMAC-SHA256(server_seed, block_hash + &quot;:&quot; + raffle_id)
+                      </div>
+                      <div className="text-white">
+                        → primeiros 16 hex, mod{" "}
+                        <span className="text-accent-400">
+                          {data.totalPaidTickets}
+                        </span>
+                      </div>
+                      <div className="pt-2 text-white text-sm">
+                        Índice computado:{" "}
+                        <span className="text-accent-400 font-bold">
+                          {result.computedIndex}
+                        </span>
+                        <span className="text-surface-500 text-xs">
+                          {" "}
+                          (range: 0 a {data.totalPaidTickets - 1})
+                        </span>
+                      </div>
+                      <div className="text-surface-400 text-[11px] pt-1">
+                        O servidor mapeou esse índice para o número vencedor{" "}
+                        <strong className="text-accent-400">
+                          #{data.reveal!.winningNumber}
+                        </strong>{" "}
+                        na lista ordenada de tickets pagos.
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </section>
       )}
+
+      {/* External tools */}
+      <div className="rounded-xl border border-surface-800 bg-surface-900/30 p-5">
+        <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+          <ExternalLink className="h-4 w-4 text-surface-400" />
+          Ferramentas externas (opcional)
+        </h3>
+        <p className="text-xs text-surface-400 mb-3">
+          Prefere recomputar de forma totalmente independente? Sugestões:
+        </p>
+        <ul className="space-y-1.5 text-xs">
+          <li>
+            <a
+              href="https://emn178.github.io/online-tools/sha256.html"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary-400 hover:underline inline-flex items-center gap-1"
+            >
+              emn178 SHA-256 online <ExternalLink className="h-3 w-3" />
+            </a>
+            <span className="text-surface-500"> — pra testar o passo 1 (commit check)</span>
+          </li>
+          <li>
+            <a
+              href="https://www.devglan.com/online-tools/hmac-sha256-online"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary-400 hover:underline inline-flex items-center gap-1"
+            >
+              devglan HMAC-SHA256 <ExternalLink className="h-3 w-3" />
+            </a>
+            <span className="text-surface-500"> — pro passo 2 (HMAC com server seed como chave)</span>
+          </li>
+          <li>
+            <a
+              href="https://mempool.space/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary-400 hover:underline inline-flex items-center gap-1"
+            >
+              mempool.space <ExternalLink className="h-3 w-3" />
+            </a>
+            <span className="text-surface-500"> — pra confirmar o bloco do Bitcoin</span>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }
 
-function FieldRow({
+/* ── Components ── */
+
+function DataRow({
   label,
+  sublabel,
   value,
-  mono,
   highlight,
-  link,
+  plain,
   onCopy,
+  link,
+  linkLabel,
 }: {
   label: string;
+  sublabel?: string;
   value: string | null;
-  mono?: boolean;
   highlight?: boolean;
-  link?: string;
+  plain?: boolean;
   onCopy?: (text: string) => void;
+  link?: string;
+  linkLabel?: string;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs text-surface-400">{label}</span>
-      <div className="flex items-center gap-2">
-        <div
-          className={`flex-1 rounded-lg border border-surface-700 bg-surface-800/60 px-3 py-2 text-sm ${
-            mono ? "font-mono text-xs" : ""
-          } ${highlight ? "text-accent-400 font-bold text-lg" : "text-white"} break-all`}
-        >
-          {value ?? <span className="text-surface-500">—</span>}
-        </div>
-        {value && onCopy && (
-          <button
-            onClick={() => onCopy(value)}
-            className="p-2 rounded-lg border border-surface-700 text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
-            title="Copiar"
-          >
-            <Copy className="h-4 w-4" />
-          </button>
+    <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-2 px-5 py-4 hover:bg-surface-900/40 transition-colors">
+      <div className="flex flex-col">
+        <span className={`text-sm font-semibold ${highlight ? "text-accent-400" : "text-white"}`}>
+          {label}
+        </span>
+        {sublabel && (
+          <span className="text-[11px] text-surface-500 mt-0.5">{sublabel}</span>
         )}
-        {link && (
-          <a
-            href={link}
-            target="_blank"
-            rel="noreferrer"
-            className="p-2 rounded-lg border border-surface-700 text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
-            title="Abrir no mempool.space"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </a>
+      </div>
+      <div className="flex items-center gap-2 min-w-0">
+        {value ? (
+          <>
+            <code
+              className={`flex-1 min-w-0 rounded-md border border-surface-800 bg-surface-900/60 px-3 py-1.5 text-xs break-all ${
+                highlight
+                  ? "text-accent-400 font-bold text-base"
+                  : plain
+                  ? "text-surface-200 font-mono"
+                  : "text-surface-300 font-mono"
+              }`}
+            >
+              {value}
+            </code>
+            {onCopy && (
+              <button
+                onClick={() => onCopy(value)}
+                className="flex-shrink-0 p-1.5 rounded-md border border-surface-800 text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
+                title="Copiar"
+              >
+                <Copy className="h-3.5 w-3.5" />
+              </button>
+            )}
+            {link && (
+              <a
+                href={link}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-shrink-0 p-1.5 rounded-md border border-surface-800 text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
+                title={linkLabel ?? "Abrir"}
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            )}
+          </>
+        ) : (
+          <span className="text-xs text-surface-600 italic">Aguardando sorteio</span>
         )}
       </div>
     </div>

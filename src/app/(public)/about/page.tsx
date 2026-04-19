@@ -3,45 +3,52 @@ import Link from "next/link";
 const STEPS = [
   {
     number: "01",
-    title: "Cadastre-se",
+    title: "Crie sua conta",
     description:
-      "Crie sua conta em poucos segundos usando e-mail ou redes sociais. O processo é simples, rápido e seguro.",
+      "Cadastre-se em segundos usando e-mail e senha, ou entre direto com sua conta Steam. Você precisa ser maior de 18 anos.",
     icon: UserPlusIcon,
   },
   {
     number: "02",
-    title: "Escolha uma rifa",
+    title: "Deposite AhiruCoins (AHC)",
     description:
-      "Navegue pelo catálogo de rifas ativas. Veja detalhes do prêmio, quantidade de números, preços e datas de sorteio.",
-    icon: SearchIcon,
+      "AHC é a moeda interna da plataforma: 1 BRL = 1 AHC. Deposite via cartão de crédito (Stripe), em BRL, USD, EUR ou GBP. Tem cupom? Aplica na hora e ganha AHC bônus.",
+    icon: CoinIcon,
   },
   {
     number: "03",
-    title: "Escolha seus números",
+    title: "Escolha uma skin CS2",
     description:
-      "Selecione seus números da sorte manualmente ou gere números aleatórios. Você escolhe quantos quiser, dentro do limite por compra.",
-    icon: GridIcon,
+      "Navegue pelas rifas ativas de skins de Counter-Strike 2 — AK-47, AWP, facas, luvas e mais. Veja raridade, wear, float e preço por cota.",
+    icon: SearchIcon,
   },
   {
     number: "04",
-    title: "Realize o pagamento",
+    title: "Compre seus números",
     description:
-      "Pague via PIX de forma instantânea e segura. Seu pagamento é confirmado em segundos e os números são reservados automaticamente.",
-    icon: CreditCardIcon,
+      "Selecione os números manualmente ou gera 5/10 aleatórios. A compra é instantânea: debita do seu saldo AHC e os números ficam seus na hora — sem janela de reserva, sem pagar duas vezes.",
+    icon: GridIcon,
   },
   {
     number: "05",
-    title: "Aguarde o sorteio",
+    title: "Aguarde o sorteio Provably Fair",
     description:
-      "Acompanhe o progresso da rifa em tempo real. Você será notificado quando o sorteio estiver próximo e quando for realizado.",
-    icon: ClockIcon,
+      "Usamos commit-reveal com hash de bloco do Bitcoin + server seed publicado antes da rifa. Qualquer pessoa pode verificar que o resultado não foi manipulado — página de verificação pública em /raffles/[rifa]/verify.",
+    icon: ShieldIcon,
   },
   {
     number: "06",
-    title: "Confira o resultado",
+    title: "Ganhou? Informe sua Steam Trade URL",
     description:
-      "Resultados públicos e transparentes. Todo sorteio gera um hash criptográfico verificável, garantindo total integridade.",
-    icon: CheckCircleIcon,
+      "Se o seu número foi sorteado, acesse Minhas Vitórias no dashboard e cole sua Steam Trade URL. Um popup de celebração aparece na sua primeira visita após o sorteio.",
+    icon: TrophyIcon,
+  },
+  {
+    number: "07",
+    title: "Receba a skin na Steam",
+    description:
+      "Nossa equipe envia a trade offer direto pra sua conta Steam. Você aceita no cliente/app e a skin vai pro seu inventário. O status da entrega fica visível em tempo real no dashboard.",
+    icon: PackageIcon,
   },
 ];
 
@@ -51,11 +58,11 @@ export default function AboutPage() {
       {/* Hero */}
       <div className="mb-16 text-center">
         <h1 className="text-3xl font-bold text-[var(--foreground)] sm:text-4xl">
-          Como Funciona o <span className="text-gradient">AhiruDrop</span>
+          Como funciona o <span className="text-gradient">AhiruDrop</span>
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-[var(--muted-foreground)]">
-          Participar de uma rifa no AhiruDrop é simples, seguro e transparente.
-          Confira o passo a passo completo.
+          Rifas de skins CS2 com sorteios 100% verificáveis via Bitcoin. Do cadastro ao
+          recebimento da skin, em 7 passos.
         </p>
       </div>
 
@@ -118,26 +125,57 @@ export default function AboutPage() {
         </div>
       </div>
 
+      {/* Highlights */}
+      <div className="mt-20 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6">
+          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+            <ShieldIcon />
+          </div>
+          <h3 className="font-bold text-[var(--foreground)]">Provably Fair</h3>
+          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+            Sorteios ancorados na blockchain do Bitcoin. Ninguém, nem o AhiruDrop, consegue prever ou alterar o resultado.
+          </p>
+        </div>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6">
+          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
+            <CoinIcon />
+          </div>
+          <h3 className="font-bold text-[var(--foreground)]">AHC com bônus</h3>
+          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+            Moeda interna 1:1 com BRL. Cupons dão bônus de AHC na hora do depósito. Saldo nunca expira.
+          </p>
+        </div>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6">
+          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-500/10 text-primary-400">
+            <PackageIcon />
+          </div>
+          <h3 className="font-bold text-[var(--foreground)]">Entrega pela Steam</h3>
+          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+            Ganhou? A skin vai direto pro seu inventário via trade offer oficial. Sem endereço, sem correios, sem espera.
+          </p>
+        </div>
+      </div>
+
       {/* CTA */}
       <div className="mt-20 flex flex-col items-center gap-6 rounded-2xl border border-[var(--border)] bg-gradient-to-br from-primary-950/50 to-surface-900/50 p-10 text-center">
         <h2 className="text-2xl font-bold text-[var(--foreground)]">
           Pronto para tentar a sorte?
         </h2>
         <p className="max-w-md text-[var(--muted-foreground)]">
-          Explore as rifas disponíveis e escolha seus números da sorte.
+          Explore as rifas ativas de skins CS2 e escolha seus números da sorte.
         </p>
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/raffles"
             className="inline-flex h-12 items-center justify-center rounded-lg bg-primary-600 px-8 text-base font-semibold text-white shadow-lg shadow-primary-600/25 transition-all hover:bg-primary-700"
           >
-            Ver Rifas
+            Ver rifas
           </Link>
           <Link
             href="/faq"
             className="inline-flex h-12 items-center justify-center rounded-lg border border-[var(--border)] px-8 text-base font-semibold text-[var(--foreground)] transition-all hover:border-primary-600/40 hover:text-primary-500"
           >
-            Perguntas Frequentes
+            Perguntas frequentes
           </Link>
         </div>
       </div>
@@ -171,26 +209,34 @@ function GridIcon() {
   );
 }
 
-function CreditCardIcon() {
+function CoinIcon() {
   return (
     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
     </svg>
   );
 }
 
-function ClockIcon() {
-  return (
-    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-    </svg>
-  );
-}
-
-function CheckCircleIcon() {
+function ShieldIcon() {
   return (
     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    </svg>
+  );
+}
+
+function TrophyIcon() {
+  return (
+    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" />
+    </svg>
+  );
+}
+
+function PackageIcon() {
+  return (
+    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="m7.5 7.5-3.75 3.75m0 0 3.75 3.75m-3.75-3.75h16.5m-4.5-6L12 3m0 0-3.75 3.75M12 3v18" />
     </svg>
   );
 }

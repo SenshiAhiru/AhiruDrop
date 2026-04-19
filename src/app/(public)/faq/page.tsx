@@ -102,7 +102,7 @@ const FAQ: FaqSection[] = [
       {
         question: "Como verifico um sorteio específico?",
         answer:
-          "Toda rifa sorteada tem uma página pública em /raffles/[slug]/verify que mostra todos os insumos (server seed, block hash, altura do bloco, fórmula) e o cálculo passo-a-passo. Você pode recomputar manualmente com qualquer ferramenta SHA-256.",
+          "Toda rifa sorteada tem uma página pública de verificação (acessível pelo link Verificar na própria rifa) que mostra todos os insumos — server seed, block hash, altura do bloco e fórmula — com o cálculo passo-a-passo. Você pode recomputar manualmente com qualquer ferramenta SHA-256.",
       },
       {
         question: "Quando o sorteio acontece?",

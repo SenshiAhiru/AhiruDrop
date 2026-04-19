@@ -33,7 +33,7 @@ const STEPS = [
     number: "05",
     title: "Aguarde o sorteio Provably Fair",
     description:
-      "Usamos commit-reveal com hash de bloco do Bitcoin + server seed publicado antes da rifa. Qualquer pessoa pode verificar que o resultado não foi manipulado — página de verificação pública em /raffles/[rifa]/verify.",
+      "Usamos commit-reveal com hash de bloco do Bitcoin + server seed publicado antes da rifa. Qualquer pessoa pode verificar que o resultado não foi manipulado — cada rifa tem uma página pública de verificação com a fórmula completa.",
     icon: ShieldIcon,
   },
   {

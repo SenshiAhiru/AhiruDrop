@@ -26,11 +26,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem("ahiru-theme") as Theme | null;
-      if (stored && stored !== theme) {
-        setThemeState(stored);
-      }
+      const initial: Theme = stored === "light" || stored === "dark" ? stored : "dark";
+      setThemeState(initial);
+      document.documentElement.classList.toggle("dark", initial === "dark");
+    } catch {
       document.documentElement.classList.add("dark");
-    } catch {}
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setTheme = useCallback((next: Theme) => {

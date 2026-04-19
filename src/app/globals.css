@@ -2,8 +2,8 @@
 
 /* ─── AhiruDrop Theme ─── */
 
-@theme inline {
-  /* Brand Colors */
+@theme {
+  /* Brand Colors — static across themes */
   --color-primary-50: #f5f3ff;
   --color-primary-100: #ede9fe;
   --color-primary-200: #ddd6fe;
@@ -32,18 +32,19 @@
   --color-danger: #ef4444;
   --color-info: #3b82f6;
 
-  /* Neutral palette */
-  --color-surface-50: #fafafa;
-  --color-surface-100: #f4f4f5;
-  --color-surface-200: #e4e4e7;
-  --color-surface-300: #d4d4d8;
-  --color-surface-400: #a1a1aa;
+  /* Neutral palette — SEMANTIC: low = deep surface, high = fg text.
+     Values are overridden per-theme in :root and .dark below. */
+  --color-surface-50: #09090b;
+  --color-surface-100: #18181b;
+  --color-surface-200: #27272a;
+  --color-surface-300: #3f3f46;
+  --color-surface-400: #52525b;
   --color-surface-500: #71717a;
-  --color-surface-600: #52525b;
-  --color-surface-700: #3f3f46;
-  --color-surface-800: #27272a;
-  --color-surface-900: #18181b;
-  --color-surface-950: #09090b;
+  --color-surface-600: #a1a1aa;
+  --color-surface-700: #d4d4d8;
+  --color-surface-800: #e4e4e7;
+  --color-surface-900: #f4f4f5;
+  --color-surface-950: #fafafa;
 
   /* Semantic */
   --color-background: var(--background);
@@ -62,20 +63,54 @@
 }
 
 /* ─── CSS Variables ─── */
+/*
+  Semantic surface tokens are THEME-AWARE.
+  The historical codebase uses bg-surface-900 / bg-surface-800 / etc
+  as "deep surface" / "card background" — so in light mode those must
+  become LIGHT colors and in dark mode they must be DARK colors.
+  We achieve this by inverting the numeric scale per theme.
+*/
 
 :root {
+  /* Light mode — scale inverted so low indexes are text-colored and
+     high indexes are surface-colored. */
+  --color-surface-50: #09090b;
+  --color-surface-100: #18181b;
+  --color-surface-200: #27272a;
+  --color-surface-300: #3f3f46;
+  --color-surface-400: #52525b;
+  --color-surface-500: #71717a;
+  --color-surface-600: #a1a1aa;
+  --color-surface-700: #d4d4d8;
+  --color-surface-800: #e4e4e7;
+  --color-surface-900: #f4f4f5;
+  --color-surface-950: #fafafa;
+
   --background: #fafafa;
   --foreground: #18181b;
   --card: #ffffff;
   --card-foreground: #18181b;
   --border: #e4e4e7;
-  --input: #e4e4e7;
+  --input: #ffffff;
   --ring: #7c3aed;
   --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  --muted-foreground: #52525b;
 }
 
 .dark {
+  /* Dark mode — original scale: low = dark surface, high = light text. */
+  --color-surface-50: #fafafa;
+  --color-surface-100: #f4f4f5;
+  --color-surface-200: #e4e4e7;
+  --color-surface-300: #d4d4d8;
+  --color-surface-400: #a1a1aa;
+  --color-surface-500: #71717a;
+  --color-surface-600: #52525b;
+  --color-surface-700: #3f3f46;
+  --color-surface-800: #27272a;
+  --color-surface-900: #18181b;
+  --color-surface-950: #09090b;
+
   --background: #09090b;
   --foreground: #fafafa;
   --card: #18181b;

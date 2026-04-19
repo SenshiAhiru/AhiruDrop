@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
-  Plus, Search, Tag, Loader2, Pencil, Trash2, Power, AlertCircle, History, Sparkles,
+  Plus, Search, Tag, Loader2, Pencil, Trash2, Power, AlertCircle, History, Sparkles, RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -131,6 +131,32 @@ export default function CouponsPage() {
       })
       .catch(() => {});
   }, []);
+
+  const [backfilling, setBackfilling] = useState(false);
+  async function runBackfill() {
+    setBackfilling(true);
+    try {
+      const res = await fetch("/api/admin/coupons/backfill-bonuses", { method: "POST" });
+      const json = await res.json();
+      if (json.success) {
+        const { scanned, redemptionsUpdated, depositsCreated } = json.data;
+        addToast({
+          type: "success",
+          message: `Sincronizado: ${redemptionsUpdated}/${scanned} bônus + ${depositsCreated} depósitos criados`,
+        });
+        // Reload stats
+        const s = await fetch("/api/admin/coupons/stats", { cache: "no-store" });
+        const sj = await s.json();
+        if (sj.success) setStats(sj.data);
+      } else {
+        addToast({ type: "error", message: json.error || "Falha" });
+      }
+    } catch {
+      addToast({ type: "error", message: "Erro de conexão" });
+    } finally {
+      setBackfilling(false);
+    }
+  }
 
   async function openRedemptions(c: Coupon) {
     setRedemptionsCoupon(c);
@@ -294,9 +320,19 @@ export default function CouponsPage() {
             {total} cupom{total !== 1 ? "s" : ""}
           </p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="h-4 w-4" /> Novo Cupom
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={runBackfill} disabled={backfilling} title="Puxa do Stripe os bônus de resgates antigos que ficaram zerados">
+            {backfilling ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4" />
+            )}
+            Sincronizar bônus
+          </Button>
+          <Button onClick={openCreate}>
+            <Plus className="h-4 w-4" /> Novo Cupom
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}

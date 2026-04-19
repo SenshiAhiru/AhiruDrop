@@ -1,13 +1,12 @@
 import { NextRequest } from "next/server";
 import { successResponse, errorResponse, handleApiError, requireAdmin } from "@/lib/api-utils";
-import { prisma } from "@/lib/prisma";
 import { orderService } from "@/services/order.service";
 import { auditService } from "@/services/audit.service";
 import { z } from "zod";
 
 const bulkSchema = z.object({
   orderIds: z.array(z.string()).min(1).max(500),
-  action: z.enum(["cancel", "expire"]),
+  action: z.enum(["cancel", "expire", "refund"]),
 });
 
 export async function POST(req: NextRequest) {
@@ -29,6 +28,8 @@ export async function POST(req: NextRequest) {
       try {
         if (action === "cancel") {
           await orderService.cancel(id);
+        } else if (action === "refund") {
+          await orderService.refund(id);
         } else {
           await orderService.expire(id);
         }

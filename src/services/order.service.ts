@@ -218,6 +218,41 @@ export const orderService = {
     return orderRepository.findMany(params);
   },
 
+  /**
+   * Refund a CONFIRMED order: credit back finalAmount to user balance,
+   * release numbers to AVAILABLE, mark order as REFUNDED.
+   */
+  async refund(id: string) {
+    const order = await orderRepository.findById(id);
+    if (!order) throw new Error("Pedido não encontrado");
+
+    if (order.status !== "CONFIRMED") {
+      throw new Error("Apenas pedidos confirmados podem ser reembolsados");
+    }
+
+    const refundAmount = Number(order.finalAmount);
+
+    return prisma.$transaction(async (tx) => {
+      // Release numbers back to AVAILABLE
+      await tx.raffleNumber.updateMany({
+        where: { orderId: id },
+        data: { status: NumberStatus.AVAILABLE, orderId: null, reservedUntil: null },
+      });
+
+      // Credit user balance back
+      await tx.user.update({
+        where: { id: order.userId },
+        data: { balance: { increment: refundAmount } },
+      });
+
+      // Mark order as REFUNDED
+      return tx.order.update({
+        where: { id },
+        data: { status: OrderStatus.REFUNDED },
+      });
+    });
+  },
+
   async cancel(id: string, userId?: string) {
     const order = await orderRepository.findById(id);
     if (!order) throw new Error("Pedido não encontrado");

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
-  Search, ShoppingCart, Download, Loader2, CheckSquare, Square, X, XCircle, Clock,
+  Search, ShoppingCart, Download, Loader2, CheckSquare, Square, X, XCircle, Clock, RotateCcw,
 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { useConfirm } from "@/components/providers/confirm-provider";
@@ -110,23 +110,31 @@ export default function OrdersPage() {
   }
 
   function toggleSelectAll() {
-    if (selectedIds.size === orders.length && orders.length > 0) {
+    const selectable = orders.filter(
+      (o) => o.status === "PENDING" || o.status === "CONFIRMED"
+    );
+    if (
+      selectedIds.size === selectable.length &&
+      selectable.length > 0 &&
+      selectable.every((o) => selectedIds.has(o.id))
+    ) {
       setSelectedIds(new Set());
     } else {
-      // Only select cancellable orders (PENDING)
-      setSelectedIds(
-        new Set(orders.filter((o) => o.status === "PENDING").map((o) => o.id))
-      );
+      setSelectedIds(new Set(selectable.map((o) => o.id)));
     }
   }
 
-  async function runBulkAction(action: "cancel" | "expire", label: string) {
+  async function runBulkAction(action: "cancel" | "expire" | "refund", label: string) {
     if (selectedIds.size === 0) return;
     const ids = Array.from(selectedIds);
     const ok = await confirm({
       title: `${label} ${ids.length} pedido${ids.length > 1 ? "s" : ""}?`,
       description:
-        "Números reservados serão liberados. Pedidos não-PENDING serão ignorados.",
+        action === "refund"
+          ? "Reembolso devolve o AHC ao usuário e libera os números. Pedidos não-CONFIRMED serão ignorados."
+          : action === "cancel"
+          ? "Cancelamento libera números reservados. Pedidos não-PENDING serão ignorados."
+          : "Pedidos expirados liberam os números. Apenas pedidos PENDING são afetados.",
       confirmLabel: label,
       variant: "destructive",
     });
@@ -185,9 +193,17 @@ export default function OrdersPage() {
     }
   }
 
-  const pendingOrders = orders.filter((o) => o.status === "PENDING");
-  const allPendingSelected =
-    pendingOrders.length > 0 && pendingOrders.every((o) => selectedIds.has(o.id));
+  const selectableOrders = orders.filter(
+    (o) => o.status === "PENDING" || o.status === "CONFIRMED"
+  );
+  const allSelected =
+    selectableOrders.length > 0 &&
+    selectableOrders.every((o) => selectedIds.has(o.id));
+
+  // Derive what actions are valid for the current selection
+  const selectedOrders = orders.filter((o) => selectedIds.has(o.id));
+  const hasPendingSelected = selectedOrders.some((o) => o.status === "PENDING");
+  const hasConfirmedSelected = selectedOrders.some((o) => o.status === "CONFIRMED");
 
   const columns: Column<AdminOrder & Record<string, unknown>>[] = [
     {
@@ -196,10 +212,10 @@ export default function OrdersPage() {
         <button
           onClick={toggleSelectAll}
           className="flex items-center justify-center text-surface-400 hover:text-white"
-          title={allPendingSelected ? "Desmarcar" : "Marcar pendentes"}
-          disabled={pendingOrders.length === 0}
+          title={allSelected ? "Desmarcar todos" : "Marcar todos"}
+          disabled={selectableOrders.length === 0}
         >
-          {allPendingSelected ? (
+          {allSelected ? (
             <CheckSquare className="h-4 w-4 text-primary-400" />
           ) : selectedIds.size > 0 ? (
             <CheckSquare className="h-4 w-4 text-primary-400/50" />
@@ -209,7 +225,8 @@ export default function OrdersPage() {
         </button>
       ),
       render: (item) => {
-        const canSelect = (item.status as string) === "PENDING";
+        const status = item.status as string;
+        const canSelect = status === "PENDING" || status === "CONFIRMED";
         if (!canSelect) {
           return <span className="text-surface-800">—</span>;
         }
@@ -373,25 +390,41 @@ export default function OrdersPage() {
             </button>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={bulking}
-              onClick={() => runBulkAction("cancel", "Cancelar")}
-              className="text-red-400 border-red-500/30 hover:bg-red-500/10"
-            >
-              <XCircle className="h-3.5 w-3.5" />
-              Cancelar
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={bulking}
-              onClick={() => runBulkAction("expire", "Expirar")}
-            >
-              <Clock className="h-3.5 w-3.5" />
-              Expirar
-            </Button>
+            {hasPendingSelected && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={bulking}
+                  onClick={() => runBulkAction("cancel", "Cancelar")}
+                  className="text-red-400 border-red-500/30 hover:bg-red-500/10"
+                >
+                  <XCircle className="h-3.5 w-3.5" />
+                  Cancelar
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={bulking}
+                  onClick={() => runBulkAction("expire", "Expirar")}
+                >
+                  <Clock className="h-3.5 w-3.5" />
+                  Expirar
+                </Button>
+              </>
+            )}
+            {hasConfirmedSelected && (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={bulking}
+                onClick={() => runBulkAction("refund", "Reembolsar")}
+                className="text-amber-400 border-amber-500/30 hover:bg-amber-500/10"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Reembolsar
+              </Button>
+            )}
             {bulking && <Loader2 className="h-4 w-4 animate-spin text-primary-400" />}
           </div>
         </div>

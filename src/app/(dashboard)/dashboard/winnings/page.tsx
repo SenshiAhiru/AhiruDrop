@@ -162,9 +162,9 @@ export default function WinningsPage() {
         <div className="rounded-xl border border-surface-700 bg-surface-900/50 p-10 text-center">
           <Trophy className="h-10 w-10 mx-auto text-surface-600 mb-3" />
           <p className="text-surface-400 mb-1">{t("myWins.empty")}</p>
-          <p className="text-xs text-surface-500 mb-4">Boa sorte na próxima!</p>
+          <p className="text-xs text-surface-500 mb-4">{t("myWins.emptyHint")}</p>
           <Link href="/raffles" className="inline-block rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700">
-            Ver rifas ativas
+            {t("myWins.browseActive")}
           </Link>
         </div>
       ) : (

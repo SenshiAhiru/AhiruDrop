@@ -365,6 +365,8 @@ export const pt = {
   "myWins.title": "Minhas Vitórias",
   "myWins.subtitle": "Rifas que você ganhou. Clique em uma pra ver a prova do sorteio.",
   "myWins.empty": "Você ainda não ganhou nenhuma rifa.",
+  "myWins.emptyHint": "Boa sorte na próxima!",
+  "myWins.browseActive": "Ver rifas ativas",
   "myWins.youWon": "VOCÊ GANHOU!",
   "myWins.winningNumber": "Número sorteado",
   "myWins.drawnAt": "Sorteado em",

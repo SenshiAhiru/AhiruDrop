@@ -342,6 +342,8 @@ export const en: Record<MessageKey, string> = {
   "myWins.title": "My Wins",
   "myWins.subtitle": "Raffles you've won. Click one to see the draw proof.",
   "myWins.empty": "You haven't won any raffle yet.",
+  "myWins.emptyHint": "Good luck next time!",
+  "myWins.browseActive": "View active raffles",
   "myWins.youWon": "YOU WON!",
   "myWins.winningNumber": "Winning number",
   "myWins.drawnAt": "Drawn on",

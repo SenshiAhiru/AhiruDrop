@@ -8,6 +8,7 @@ import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "@/i18n/provider";
 
 type Raffle = {
   id: string;
@@ -27,6 +28,7 @@ type Raffle = {
 type CategoryFilter = "ALL" | "Rifle" | "Knife" | "Gloves" | "Pistol" | "Sniper Rifle";
 
 export default function RafflesPage() {
+  const { t } = useTranslation();
   const [raffles, setRaffles] = useState<Raffle[]>([]);
   const [loading, setLoading] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("ALL");
@@ -87,10 +89,8 @@ export default function RafflesPage() {
     <div className="mx-auto max-w-7xl px-6 py-10">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[var(--foreground)]">Rifas de Skins CS2</h1>
-        <p className="mt-2 text-[var(--muted-foreground)]">
-          Explore todas as rifas de skins disponíveis. Armas, facas, luvas e muito mais.
-        </p>
+        <h1 className="text-3xl font-bold text-[var(--foreground)]">{t("rafflesList.title")}</h1>
+        <p className="mt-2 text-[var(--muted-foreground)]">{t("rafflesList.subtitle")}</p>
       </div>
 
       {/* Filter bar */}
@@ -107,7 +107,7 @@ export default function RafflesPage() {
           </svg>
           <Input
             type="text"
-            placeholder="Buscar skins..."
+            placeholder={t("rafflesList.search")}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -125,7 +125,7 @@ export default function RafflesPage() {
           }}
           className="w-full sm:w-48"
         >
-          <option value="ALL">Todas as Categorias</option>
+          <option value="ALL">{t("rafflesList.allCategories")}</option>
           <option value="Rifle">Rifles</option>
           <option value="Pistol">Pistolas</option>
           <option value="Sniper Rifle">Snipers</option>

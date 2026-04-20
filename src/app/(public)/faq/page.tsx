@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslation } from "@/i18n/provider";
 
 type FaqItem = {
   question: string;
@@ -10,7 +13,7 @@ type FaqSection = {
   items: FaqItem[];
 };
 
-const FAQ: FaqSection[] = [
+const FAQ_PT: FaqSection[] = [
   {
     title: "Sobre a plataforma",
     items: [
@@ -188,16 +191,197 @@ const FAQ: FaqSection[] = [
   },
 ];
 
+const FAQ_EN: FaqSection[] = [
+  {
+    title: "About the platform",
+    items: [
+      {
+        question: "What is AhiruDrop?",
+        answer:
+          "AhiruDrop is a Brazilian online platform for Counter-Strike 2 (CS2) skin raffles. You buy numbers with AhiruCoins (AHC), wait for the draw — which is 100% verifiable via the Bitcoin blockchain — and if you win, the skin is delivered straight to your Steam inventory.",
+      },
+      {
+        question: "Do I need a Steam account to join?",
+        answer:
+          "To enter raffles you only need an email account. To receive the skin after winning, you need a Steam account with a valid Steam Trade URL (configurable in your profile). You can also sign up linking Steam directly on the login page.",
+      },
+    ],
+  },
+  {
+    title: "AhiruCoins (AHC)",
+    items: [
+      {
+        question: "What is AhiruCoin (AHC)?",
+        answer:
+          "AHC is AhiruDrop's internal currency, pegged to the US dollar (1 AHC = $1 USD). You deposit in your local currency, receive AHC in your balance and use AHC to buy numbers in any raffle. The balance never expires.",
+      },
+      {
+        question: "How do I deposit?",
+        answer:
+          "On the dashboard, go to Deposit AHC. Pick a currency (BRL or USD), the AHC amount and pay with a credit card via Stripe — processed in seconds. The balance is credited automatically as soon as the card is approved.",
+      },
+      {
+        question: "Which payment methods are accepted?",
+        answer:
+          "Today we accept credit card via Stripe. Other methods (including PIX via Mercado Pago) are on the roadmap and coming soon.",
+      },
+      {
+        question: "Can I withdraw AHC back to cash?",
+        answer:
+          "No. AHC is platform balance — used exclusively to join raffles. Deposits are not auto-refundable to cash. For billing errors, open a support ticket.",
+      },
+    ],
+  },
+  {
+    title: "Bonus coupons",
+    items: [
+      {
+        question: "How do coupons work?",
+        answer:
+          "Coupons apply at deposit time and grant bonus AHC on top of the amount you pay. You pay the full price; you receive extra AHC. Example: a $100 deposit with a 10% coupon = you pay $100 and receive 110 AHC (100 base + 10 bonus).",
+      },
+      {
+        question: "Where do I find coupons?",
+        answer:
+          "Coupons are shared on our social channels, email campaigns, partners and streamers. Keep an eye out! Some are one-use per user; others have a global cap and can run out.",
+      },
+      {
+        question: "Can I stack multiple coupons?",
+        answer:
+          "No — only one coupon per deposit. If a coupon has a per-user limit (e.g. 1 per account), it can't be reapplied once redeemed.",
+      },
+    ],
+  },
+  {
+    title: "Buying numbers",
+    items: [
+      {
+        question: "How do I buy numbers in a raffle?",
+        answer:
+          "On the raffle page, pick numbers manually (click on the grid) or roll 5/10 random, then click Buy. The amount is debited from your AHC balance and the numbers are yours immediately — no reservation window, no external payment.",
+      },
+      {
+        question: "Is there a limit per purchase?",
+        answer:
+          "Yes. Each raffle defines a maximum per purchase (typically 10 numbers). You can make multiple purchases in the same raffle, subject to number availability.",
+      },
+      {
+        question: "What if my balance isn't enough?",
+        answer:
+          "The Buy button is disabled. Just hit Deposit AHC, top up and come back — your selected numbers aren't locked.",
+      },
+    ],
+  },
+  {
+    title: "Draw — Provably Fair",
+    items: [
+      {
+        question: "Is the draw really fair?",
+        answer:
+          "Yes, and verifiable. We use commit-reveal anchored on the Bitcoin blockchain: before the raffle starts, we publish the SHA-256 of a secret server seed + the BTC block height to be used as anchor. When the draw happens, we reveal the original server seed and combine it with the BTC block hash at that height via HMAC-SHA256 to derive the winning number. Anyone can recompute and verify.",
+      },
+      {
+        question: "How do I verify a specific draw?",
+        answer:
+          "Every drawn raffle has a public verification page (reachable via the Verify link on the raffle) showing all inputs — server seed, block hash, block height and formula — with the step-by-step math. You can recompute manually with any SHA-256 tool.",
+      },
+      {
+        question: "When does the draw happen?",
+        answer:
+          "Depends on the raffle — it can be a scheduled date, a sales threshold, or when all numbers sell out. It's shown on the raffle page. The system only allows drawing after the anchor Bitcoin block has been mined.",
+      },
+    ],
+  },
+  {
+    title: "I won — now what?",
+    items: [
+      {
+        question: "How do I know if I won?",
+        answer:
+          "If your number was drawn, a celebration popup appears on your next visit. The win is also logged in My Wins in the dashboard with an in-app notification. Email notifications for winners are on the roadmap.",
+      },
+      {
+        question: "How do I receive the skin?",
+        answer:
+          "In My Wins, submit your Steam Trade URL (grab it from steamcommunity.com/id/YOUR_USER/tradeoffers/privacy). Our team sends the trade offer to you; you confirm on the Steam Mobile Authenticator and accept. The skin lands in your inventory.",
+      },
+      {
+        question: "How long does it take to receive the skin?",
+        answer:
+          "Two factors: the skin may have a trade hold of up to 7 days (Valve's rule for recently acquired items), and our team sends trades during business hours. Status is visible in real-time on the dashboard: Pending → Sent → Delivered.",
+      },
+      {
+        question: "Where do I get my Steam Trade URL?",
+        answer:
+          "Logged into Steam, visit steamcommunity.com/id/YOUR_USER/tradeoffers/privacy, copy the full URL (format https://steamcommunity.com/tradeoffer/new/?partner=XXX&token=XXX) and paste into your profile or directly in My Wins.",
+      },
+    ],
+  },
+  {
+    title: "Refunds and cancellation",
+    items: [
+      {
+        question: "Can I cancel a purchase?",
+        answer:
+          "Purchases with AHC balance are confirmed instantly and don't support user-initiated cancellation. In specific cases (errors, duplicate charges, etc.), support can process a manual refund: AHC returns to your balance and the numbers are released for others.",
+      },
+      {
+        question: "What about the actual cash deposit?",
+        answer:
+          "Card deposits follow Stripe's policy. For billing issues, contact support and we'll evaluate case by case. Deposits already credited as AHC are not refundable to cash — they stay as platform balance.",
+      },
+    ],
+  },
+  {
+    title: "Security",
+    items: [
+      {
+        question: "Is my data safe?",
+        answer:
+          "Yes. Passwords are hashed with bcrypt, session tokens are signed JWTs, payments go through Stripe (we never store card data) and all communication is HTTPS. We follow LGPD best practices for personal data.",
+      },
+      {
+        question: "How do you protect against bots / abuse?",
+        answer:
+          "Optional CAPTCHA (Cloudflare Turnstile) on sign up/login, rate-limiting on payment routes, and multi-account detection per IP that alerts our team.",
+      },
+      {
+        question: "Do I need to be of legal age?",
+        answer:
+          "Yes, 18+. By signing up you declare you meet that requirement. Games of chance are prohibited for minors in Brazil.",
+      },
+    ],
+  },
+  {
+    title: "Support",
+    items: [
+      {
+        question: "How do I get in touch?",
+        answer:
+          "Open a ticket from the dashboard in Support — fastest path and recorded in your history. We also reply at suporte@ahirudrop.com.",
+      },
+      {
+        question: "What are your support hours?",
+        answer:
+          "Monday to Friday, 9am to 6pm (Brasília time). Outside those hours you can still open a ticket and we reply as soon as we're back.",
+      },
+    ],
+  },
+];
+
 export default function FaqPage() {
+  const { t, locale } = useTranslation();
+  const FAQ = locale === "en" ? FAQ_EN : FAQ_PT;
+
   return (
     <div className="mx-auto max-w-3xl px-6 py-16">
       {/* Header */}
       <div className="mb-12 text-center">
         <h1 className="text-3xl font-bold text-[var(--foreground)] sm:text-4xl">
-          Perguntas Frequentes
+          {t("faq.title")}
         </h1>
         <p className="mt-3 text-[var(--muted-foreground)]">
-          Tudo sobre rifas, AHC, cupons, entrega de skins e segurança.
+          {t("faq.subtitle")}
         </p>
       </div>
 
@@ -236,13 +420,13 @@ export default function FaqPage() {
       {/* Bottom CTA */}
       <div className="mt-12 text-center">
         <p className="text-[var(--muted-foreground)]">
-          Não encontrou o que procurava?
+          {t("faq.notFoundCopy")}
         </p>
         <Link
           href="/contact"
           className="mt-3 inline-flex items-center gap-2 text-primary-500 font-semibold hover:text-primary-400 transition-colors"
         >
-          Fale com nosso suporte
+          {t("faq.contactSupport")}
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
           </svg>

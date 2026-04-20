@@ -1,68 +1,30 @@
-import Link from "next/link";
+"use client";
 
-const STEPS = [
-  {
-    number: "01",
-    title: "Crie sua conta",
-    description:
-      "Cadastre-se em segundos usando e-mail e senha, ou entre direto com sua conta Steam. Você precisa ser maior de 18 anos.",
-    icon: UserPlusIcon,
-  },
-  {
-    number: "02",
-    title: "Deposite AhiruCoins (AHC)",
-    description:
-      "AHC é a moeda interna da plataforma: 1 BRL = 1 AHC. Deposite via cartão de crédito (Stripe), em BRL, USD, EUR ou GBP. Tem cupom? Aplica na hora e ganha AHC bônus.",
-    icon: CoinIcon,
-  },
-  {
-    number: "03",
-    title: "Escolha uma skin CS2",
-    description:
-      "Navegue pelas rifas ativas de skins de Counter-Strike 2 — AK-47, AWP, facas, luvas e mais. Veja raridade, wear, float e preço por cota.",
-    icon: SearchIcon,
-  },
-  {
-    number: "04",
-    title: "Compre seus números",
-    description:
-      "Selecione os números manualmente ou gera 5/10 aleatórios. A compra é instantânea: debita do seu saldo AHC e os números ficam seus na hora — sem janela de reserva, sem pagar duas vezes.",
-    icon: GridIcon,
-  },
-  {
-    number: "05",
-    title: "Aguarde o sorteio Provably Fair",
-    description:
-      "Usamos commit-reveal com hash de bloco do Bitcoin + server seed publicado antes da rifa. Qualquer pessoa pode verificar que o resultado não foi manipulado — cada rifa tem uma página pública de verificação com a fórmula completa.",
-    icon: ShieldIcon,
-  },
-  {
-    number: "06",
-    title: "Ganhou? Informe sua Steam Trade URL",
-    description:
-      "Se o seu número foi sorteado, acesse Minhas Vitórias no dashboard e cole sua Steam Trade URL. Um popup de celebração aparece na sua primeira visita após o sorteio.",
-    icon: TrophyIcon,
-  },
-  {
-    number: "07",
-    title: "Receba a skin na Steam",
-    description:
-      "Nossa equipe envia a trade offer direto pra sua conta Steam. Você aceita no cliente/app e a skin vai pro seu inventário. O status da entrega fica visível em tempo real no dashboard.",
-    icon: PackageIcon,
-  },
-];
+import Link from "next/link";
+import { useTranslation } from "@/i18n/provider";
 
 export default function AboutPage() {
+  const { t } = useTranslation();
+
+  const STEPS = [
+    { number: "01", title: t("about.step1.title"), description: t("about.step1.desc"), icon: UserPlusIcon },
+    { number: "02", title: t("about.step2.title"), description: t("about.step2.desc"), icon: CoinIcon },
+    { number: "03", title: t("about.step3.title"), description: t("about.step3.desc"), icon: SearchIcon },
+    { number: "04", title: t("about.step4.title"), description: t("about.step4.desc"), icon: GridIcon },
+    { number: "05", title: t("about.step5.title"), description: t("about.step5.desc"), icon: ShieldIcon },
+    { number: "06", title: t("about.step6.title"), description: t("about.step6.desc"), icon: TrophyIcon },
+    { number: "07", title: t("about.step7.title"), description: t("about.step7.desc"), icon: PackageIcon },
+  ];
+
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
       {/* Hero */}
       <div className="mb-16 text-center">
         <h1 className="text-3xl font-bold text-[var(--foreground)] sm:text-4xl">
-          Como funciona o <span className="text-gradient">AhiruDrop</span>
+          {t("about.heroTitle")} <span className="text-gradient">AhiruDrop</span>
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-[var(--muted-foreground)]">
-          Rifas de skins CS2 com sorteios 100% verificáveis via Bitcoin. Do cadastro ao
-          recebimento da skin, em 7 passos.
+          {t("about.heroSubtitle")}
         </p>
       </div>
 
@@ -131,27 +93,27 @@ export default function AboutPage() {
           <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
             <ShieldIcon />
           </div>
-          <h3 className="font-bold text-[var(--foreground)]">Provably Fair</h3>
+          <h3 className="font-bold text-[var(--foreground)]">{t("about.highlight.provablyFair.title")}</h3>
           <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-            Sorteios ancorados na blockchain do Bitcoin. Ninguém, nem o AhiruDrop, consegue prever ou alterar o resultado.
+            {t("about.highlight.provablyFair.desc")}
           </p>
         </div>
         <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6">
           <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
             <CoinIcon />
           </div>
-          <h3 className="font-bold text-[var(--foreground)]">AHC com bônus</h3>
+          <h3 className="font-bold text-[var(--foreground)]">{t("about.highlight.ahc.title")}</h3>
           <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-            Moeda interna 1:1 com BRL. Cupons dão bônus de AHC na hora do depósito. Saldo nunca expira.
+            {t("about.highlight.ahc.desc")}
           </p>
         </div>
         <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6">
           <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-500/10 text-primary-400">
             <PackageIcon />
           </div>
-          <h3 className="font-bold text-[var(--foreground)]">Entrega pela Steam</h3>
+          <h3 className="font-bold text-[var(--foreground)]">{t("about.highlight.delivery.title")}</h3>
           <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-            Ganhou? A skin vai direto pro seu inventário via trade offer oficial. Sem endereço, sem correios, sem espera.
+            {t("about.highlight.delivery.desc")}
           </p>
         </div>
       </div>
@@ -159,23 +121,23 @@ export default function AboutPage() {
       {/* CTA */}
       <div className="mt-20 flex flex-col items-center gap-6 rounded-2xl border border-[var(--border)] bg-gradient-to-br from-primary-950/50 to-surface-900/50 p-10 text-center">
         <h2 className="text-2xl font-bold text-[var(--foreground)]">
-          Pronto para tentar a sorte?
+          {t("about.ctaTitle")}
         </h2>
         <p className="max-w-md text-[var(--muted-foreground)]">
-          Explore as rifas ativas de skins CS2 e escolha seus números da sorte.
+          {t("about.ctaSubtitle")}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/raffles"
             className="inline-flex h-12 items-center justify-center rounded-lg bg-primary-600 px-8 text-base font-semibold text-white shadow-lg shadow-primary-600/25 transition-all hover:bg-primary-700"
           >
-            Ver rifas
+            {t("about.ctaRaffles")}
           </Link>
           <Link
             href="/faq"
             className="inline-flex h-12 items-center justify-center rounded-lg border border-[var(--border)] px-8 text-base font-semibold text-[var(--foreground)] transition-all hover:border-primary-600/40 hover:text-primary-500"
           >
-            Perguntas frequentes
+            {t("about.ctaFaq")}
           </Link>
         </div>
       </div>

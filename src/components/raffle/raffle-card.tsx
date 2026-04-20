@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RaffleCountdown } from "./raffle-countdown";
 import { getWearShortName, getWearColor } from "@/constants/cs2";
+import { useTranslation } from "@/i18n/provider";
 
 type RaffleStatus = "DRAFT" | "ACTIVE" | "PAUSED" | "CLOSED" | "DRAWN" | "CANCELLED";
 
@@ -32,16 +33,17 @@ interface RaffleCardProps {
   className?: string;
 }
 
-const statusConfig: Record<RaffleStatus, { label: string; variant: "default" | "accent" | "success" | "warning" | "danger" }> = {
-  DRAFT: { label: "Rascunho", variant: "default" },
-  ACTIVE: { label: "Ativa", variant: "success" },
-  PAUSED: { label: "Pausada", variant: "warning" },
-  CLOSED: { label: "Aguardando sorteio", variant: "warning" },
-  DRAWN: { label: "Sorteada", variant: "accent" },
-  CANCELLED: { label: "Cancelada", variant: "danger" },
-};
-
 export function RaffleCard({ raffle, className }: RaffleCardProps) {
+  const { t } = useTranslation();
+
+  const statusConfig: Record<RaffleStatus, { label: string; variant: "default" | "accent" | "success" | "warning" | "danger" }> = {
+    DRAFT: { label: "Draft", variant: "default" },
+    ACTIVE: { label: t("raffles.status.active"), variant: "success" },
+    PAUSED: { label: t("raffles.status.paused"), variant: "warning" },
+    CLOSED: { label: t("raffles.status.closed"), variant: "warning" },
+    DRAWN: { label: t("raffles.status.drawn"), variant: "accent" },
+    CANCELLED: { label: t("raffles.status.active"), variant: "danger" },
+  };
   const {
     title,
     slug,
@@ -158,7 +160,7 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
         )}
 
         <div className="flex items-center gap-1.5">
-          <span className="text-xs text-[var(--muted-foreground)]">por cota</span>
+          <span className="text-xs text-[var(--muted-foreground)]">{t("rafflesList.perTicket")}</span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/ahc-coin.png" alt="AHC" className="h-5 w-5 rounded-full" />
           <span className="text-lg font-bold text-accent-500 leading-none">{pricePerNumber}</span>
@@ -170,13 +172,13 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
           <Progress value={percentage} className="h-2" />
           <p className="text-xs text-[var(--muted-foreground)]">
             <span className="font-semibold text-[var(--foreground)]">{stats.paid}</span>
-            /{stats.total} vendidos
+            /{stats.total} {t("raffles.sold")}
           </p>
         </div>
 
         {/* Countdown */}
         {status === "ACTIVE" && scheduledDrawAt && (
-          <RaffleCountdown targetDate={scheduledDrawAt} label="Sorteio em:" compact />
+          <RaffleCountdown targetDate={scheduledDrawAt} label={t("rafflesList.drawIn")} compact />
         )}
 
         {/* CTA */}
@@ -186,7 +188,11 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
           className="mt-1 w-full"
           tabIndex={-1}
         >
-          {isDrawn ? "Ver Resultado" : isClosed ? "Aguardando sorteio" : "Participar"}
+          {isDrawn
+            ? t("raffles.status.drawn")
+            : isClosed
+            ? t("raffles.status.closed")
+            : t("rafflesList.participate")}
         </Button>
       </div>
     </Link>

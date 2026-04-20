@@ -1,14 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { Globe } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
-
-const quickLinks = [
-  { label: "Sobre", href: "/about" },
-  { label: "FAQ", href: "/faq" },
-  { label: "Termos", href: "/terms" },
-  { label: "Privacidade", href: "/privacy" },
-  { label: "Contato", href: "/contact" },
-];
+import { useTranslation } from "@/i18n/provider";
 
 function DiscordIcon({ className }: { className?: string }) {
   return (
@@ -24,22 +19,31 @@ function DiscordIcon({ className }: { className?: string }) {
 }
 
 export function PublicFooter() {
+  const { t } = useTranslation();
+  const quickLinks = [
+    { label: t("footer.aboutLink"), href: "/about" },
+    { label: t("footer.faqLink"), href: "/faq" },
+    { label: t("footer.termsLink"), href: "/terms" },
+    { label: t("footer.privacyLink"), href: "/privacy" },
+    { label: t("footer.contact"), href: "/contact" },
+  ];
+
   return (
     <footer className="bg-surface-950 text-surface-400 border-t border-surface-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-              <Logo size="md" />
+            <Logo size="md" />
             <p className="mt-4 text-sm text-surface-500 leading-relaxed max-w-xs">
-              Plataforma de rifas online com experiência premium, confiável e transparente.
+              {t("footer.description")}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
             <h3 className="text-sm font-semibold text-surface-200 uppercase tracking-wider mb-4">
-              Links
+              {t("footer.sectionLinks")}
             </h3>
             <ul className="space-y-2.5">
               {quickLinks.map((link) => (
@@ -58,7 +62,7 @@ export function PublicFooter() {
           {/* Social */}
           <div>
             <h3 className="text-sm font-semibold text-surface-200 uppercase tracking-wider mb-4">
-              Redes Sociais
+              {t("footer.sectionSocial")}
             </h3>
             <div className="flex items-center gap-3">
               <a
@@ -85,14 +89,14 @@ export function PublicFooter() {
           {/* Support */}
           <div>
             <h3 className="text-sm font-semibold text-surface-200 uppercase tracking-wider mb-4">
-              Suporte
+              {t("footer.sectionSupport")}
             </h3>
             <p className="text-sm text-surface-500">
-              Precisa de ajuda? Entre em contato pelo nosso{" "}
+              {t("footer.supportCopy")}{" "}
               <Link href="/contact" className="text-primary-400 hover:underline">
-                formulario
+                {t("footer.supportForm")}
               </Link>{" "}
-              ou Discord.
+              {t("footer.supportOr")}
             </p>
           </div>
         </div>
@@ -100,14 +104,14 @@ export function PublicFooter() {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-surface-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-surface-600">
-            &copy; 2024 AhiruDrop. Todos os direitos reservados.
+            {t("footer.copyright", { year: new Date().getFullYear() })}
           </p>
           <div className="flex items-center gap-4">
             <Link href="/terms" className="text-xs text-surface-600 hover:text-surface-400 transition-colors">
-              Termos de Uso
+              {t("footer.terms")}
             </Link>
             <Link href="/privacy" className="text-xs text-surface-600 hover:text-surface-400 transition-colors">
-              Politica de Privacidade
+              {t("footer.privacy")}
             </Link>
           </div>
         </div>

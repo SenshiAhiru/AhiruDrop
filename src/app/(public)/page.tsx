@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { RaffleCard } from "@/components/raffle/raffle-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "@/i18n/provider";
 
 /* ── Data ── */
 
@@ -22,29 +23,30 @@ type Raffle = {
   skinWeapon: string;
 };
 
-const STEPS = [
-  {
-    title: "Escolha sua skin",
-    description: "Navegue pelo catálogo e encontre a skin dos seus sonhos.",
-    icon: SearchIcon,
-  },
-  {
-    title: "Compre seus números",
-    description: "Selecione manualmente ou gere números aleatórios com facilidade.",
-    icon: CartIcon,
-  },
-  {
-    title: "Aguarde o sorteio",
-    description: "Acompanhe em tempo real e receba sua skin direto no inventário.",
-    icon: TrophyIcon,
-  },
-];
-
 /* ── Page ── */
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const [featuredRaffles, setFeaturedRaffles] = useState<Raffle[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const STEPS = [
+    {
+      title: t("home.step1Title"),
+      description: t("home.step1Desc"),
+      icon: SearchIcon,
+    },
+    {
+      title: t("home.step2Title"),
+      description: t("home.step2Desc"),
+      icon: CartIcon,
+    },
+    {
+      title: t("home.step3Title"),
+      description: t("home.step3Desc"),
+      icon: TrophyIcon,
+    },
+  ];
 
   useEffect(() => {
     async function fetchFeatured() {
@@ -99,12 +101,11 @@ export default function HomePage() {
 
         <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-8 px-6 py-28 text-center lg:py-40">
           <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            <span className="text-gradient">Skins raras ao seu alcance</span>
+            <span className="text-gradient">{t("home.hero.title")}</span>
           </h1>
 
           <p className="max-w-2xl text-lg text-surface-400 sm:text-xl">
-            Participe das melhores rifas de skins CS2. Armas, facas e luvas com
-            transparência total.
+            {t("home.hero.subtitle")}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -112,7 +113,7 @@ export default function HomePage() {
               href="/raffles"
               className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-primary-600 px-8 text-base font-semibold text-white shadow-lg shadow-primary-600/25 transition-all hover:bg-primary-700 hover:shadow-xl hover:shadow-primary-600/30"
             >
-              Ver Rifas
+              {t("home.hero.ctaRaffles")}
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>
@@ -121,7 +122,7 @@ export default function HomePage() {
               href="/about"
               className="inline-flex h-12 items-center justify-center rounded-lg border border-surface-700 px-8 text-base font-semibold text-surface-300 transition-all hover:border-surface-500 hover:text-white"
             >
-              Como Funciona
+              {t("home.hero.ctaHowItWorks")}
             </Link>
           </div>
         </div>
@@ -131,7 +132,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="mb-10 flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold text-[var(--foreground)]">
-            Rifas em Destaque
+            {t("home.featured.title")}
           </h2>
           <div className="mt-3 h-1 w-16 rounded-full bg-accent-500" />
         </div>
@@ -159,10 +160,10 @@ export default function HomePage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
             </svg>
             <p className="text-lg font-semibold text-[var(--foreground)]">
-              Nenhuma rifa disponível no momento.
+              {t("home.noRaffles")}
             </p>
             <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-              Volte em breve!
+              {t("home.comeBackSoon")}
             </p>
           </div>
         )}
@@ -172,7 +173,7 @@ export default function HomePage() {
             href="/raffles"
             className="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-primary-600/40 hover:text-primary-500"
           >
-            Ver todas as rifas
+            {t("home.viewAllRaffles")}
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>
@@ -185,10 +186,10 @@ export default function HomePage() {
         <div className="mx-auto max-w-5xl px-6 py-20">
           <div className="mb-12 flex flex-col items-center text-center">
             <h2 className="text-3xl font-bold text-[var(--foreground)]">
-              Como Funciona
+              {t("home.howItWorksTitle")}
             </h2>
             <p className="mt-3 max-w-lg text-[var(--muted-foreground)]">
-              Participar é simples, rápido e seguro.
+              {t("home.howItWorksSubtitle")}
             </p>
           </div>
 

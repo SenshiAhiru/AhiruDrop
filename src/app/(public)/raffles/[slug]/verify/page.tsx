@@ -15,6 +15,7 @@ import {
   ChevronDown,
   FileJson,
 } from "lucide-react";
+import { useTranslation } from "@/i18n/provider";
 
 type VerifyData = {
   raffleId: string;
@@ -69,6 +70,7 @@ async function hmacSha256Hex(keyHex: string, message: string): Promise<string> {
 }
 
 export default function VerifyPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const slug = params.slug as string;
 
@@ -87,7 +89,7 @@ export default function VerifyPage() {
         const res = await fetch(`/api/raffles/${slug}/verify`, { cache: "no-store" });
         const json = await res.json();
         if (!json.success) {
-          setFetchError(json.error || "Falha ao carregar dados");
+          setFetchError(json.error || t("verify.loadFailed"));
         } else {
           setData(json.data);
         }
@@ -98,6 +100,7 @@ export default function VerifyPage() {
       }
     }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   async function runVerification() {
@@ -205,7 +208,7 @@ export default function VerifyPage() {
         href={`/raffles/${slug}`}
         className="text-sm text-surface-400 hover:text-white transition-colors inline-block"
       >
-        ← Voltar para a rifa
+        ← {t("verify.backToRaffle")}
       </Link>
 
       {/* Hero */}
@@ -214,22 +217,20 @@ export default function VerifyPage() {
           <Shield className="h-8 w-8 text-primary-400" />
         </div>
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary-400 mb-2">
-          Algoritmo Provably Fair
+          {t("verify.algorithmLabel")}
         </p>
         <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
           {data.raffleTitle}
         </h1>
         <p className="text-sm text-surface-400 max-w-2xl mx-auto">
-          O AhiruDrop usa commit-reveal ancorado na blockchain do Bitcoin pra garantir
-          imparcialidade total. Ninguém — nem a plataforma — pode prever ou alterar o
-          número vencedor. Confira você mesmo.
+          {t("verify.heroCopy")}
         </p>
 
         <button
           onClick={() => setShowIntro(!showIntro)}
           className="mt-5 inline-flex items-center gap-2 rounded-lg border border-primary-500/30 bg-primary-500/10 px-4 py-2 text-sm font-semibold text-primary-300 hover:bg-primary-500/20 transition-colors"
         >
-          {showIntro ? "Ocultar explicação" : "Mostrar como funciona"}
+          {showIntro ? t("verify.hideExplanation") : t("verify.showExplanation")}
           <ChevronDown
             className={`h-4 w-4 transition-transform ${showIntro ? "rotate-180" : ""}`}
           />
@@ -293,7 +294,7 @@ export default function VerifyPage() {
         <header className="flex items-center justify-between gap-3 px-5 py-4 border-b border-surface-700 bg-surface-900/70">
           <div className="flex items-center gap-2">
             <FileJson className="h-5 w-5 text-accent-400" />
-            <h2 className="text-base font-semibold text-white">Dados do sorteio</h2>
+            <h2 className="text-base font-semibold text-white">{t("verify.drawData")}</h2>
           </div>
           <button
             onClick={copyJSON}
@@ -302,12 +303,12 @@ export default function VerifyPage() {
             {copiedJson ? (
               <>
                 <Check className="h-3.5 w-3.5" />
-                Copiado!
+                {t("verify.copied")}
               </>
             ) : (
               <>
                 <Copy className="h-3.5 w-3.5" />
-                Copiar JSON
+                {t("verify.copyJson")}
               </>
             )}
           </button>
@@ -315,24 +316,26 @@ export default function VerifyPage() {
 
         <div className="divide-y divide-surface-800">
           <DataRow
-            label="Public Hash"
-            sublabel="SHA-256(server_seed) — committed antes do sorteio"
+            label={t("verify.fieldPublicHashLabel")}
+            sublabel={t("verify.fieldPublicHashSub")}
             value={data.commit.serverSeedHash}
             onCopy={copy}
+            waitingLabel={t("verify.waitingDraw")}
           />
           <DataRow
-            label="Server Seed"
+            label={t("verify.fieldServerSeedLabel")}
             sublabel={
               data.reveal?.serverSeedRevealed
-                ? "Revelado após o sorteio"
-                : "Será revelado após o sorteio"
+                ? t("verify.fieldServerSeedSubRevealed")
+                : t("verify.fieldServerSeedSubWaiting")
             }
             value={data.reveal?.serverSeedRevealed ?? null}
             onCopy={copy}
+            waitingLabel={t("verify.waitingDraw")}
           />
           <DataRow
-            label="Block Hash (Bitcoin)"
-            sublabel="Hash do bloco BTC usado como entropia pública"
+            label={t("verify.fieldBlockHashLabel")}
+            sublabel={t("verify.fieldBlockHashSub")}
             value={data.reveal?.blockHash ?? null}
             onCopy={copy}
             link={
@@ -341,10 +344,11 @@ export default function VerifyPage() {
                 : undefined
             }
             linkLabel="mempool.space"
+            waitingLabel={t("verify.waitingDraw")}
           />
           <DataRow
-            label="Block Height"
-            sublabel="Altura do bloco Bitcoin"
+            label={t("verify.fieldBlockHeightLabel")}
+            sublabel={t("verify.fieldBlockHeightSub")}
             value={
               data.reveal?.blockHeight?.toString() ??
               data.commit.drawBlockHeight?.toString() ??
@@ -359,26 +363,30 @@ export default function VerifyPage() {
             }
             linkLabel="mempool.space"
             plain
+            waitingLabel={t("verify.waitingDraw")}
           />
           <DataRow
-            label="Raffle ID"
-            sublabel="Identificador único da rifa (nonce)"
+            label={t("verify.fieldRaffleIdLabel")}
+            sublabel={t("verify.fieldRaffleIdSub")}
             value={data.raffleId}
             onCopy={copy}
+            waitingLabel={t("verify.waitingDraw")}
           />
           <DataRow
-            label="Total de tickets pagos"
-            sublabel="Denominador no cálculo modular"
+            label={t("verify.fieldTotalLabel")}
+            sublabel={t("verify.fieldTotalSub")}
             value={data.totalPaidTickets.toString()}
             plain
+            waitingLabel={t("verify.waitingDraw")}
           />
           {data.reveal && (
             <DataRow
-              label="Winning Number"
-              sublabel="Resultado final do sorteio"
+              label={t("verify.fieldWinnerLabel")}
+              sublabel={t("verify.fieldWinnerSub")}
               value={data.reveal.winningNumber.toString()}
               highlight
               plain
+              waitingLabel={t("verify.waitingDraw")}
             />
           )}
         </div>
@@ -391,14 +399,14 @@ export default function VerifyPage() {
             <div className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary-400" />
               <h2 className="text-base font-semibold text-white">
-                Verificar no seu navegador
+                {t("verify.browserVerification")}
               </h2>
             </div>
           </header>
 
           <div className="p-5 space-y-4">
             <p className="text-sm text-surface-400">
-              O cálculo roda localmente via WebCrypto (nenhum dado vai pro servidor).
+              {t("verify.browserCopy")}
             </p>
 
             <button
@@ -413,17 +421,17 @@ export default function VerifyPage() {
               {verifying ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Verificando...
+                  {t("verify.verifying")}
                 </>
               ) : result && !result.error ? (
                 <>
                   <CheckCircle2 className="h-4 w-4" />
-                  Verificado
+                  {t("verify.verified")}
                 </>
               ) : (
                 <>
                   <Shield className="h-4 w-4" />
-                  Verificar agora
+                  {t("verify.verifyNow")}
                 </>
               )}
             </button>
@@ -439,16 +447,16 @@ export default function VerifyPage() {
                   <>
                     <CheckRow
                       ok={result.hashMatches === true}
-                      label="SHA-256(server_seed) === Public Hash"
+                      label={t("verify.checkSeed")}
                       detail={
                         result.hashMatches
-                          ? "O server seed não foi alterado desde a criação da rifa."
-                          : "ATENÇÃO: o seed não corresponde ao hash commitado."
+                          ? t("verify.checkSeedOk")
+                          : t("verify.checkSeedFail")
                       }
                     />
 
                     <div className="rounded-lg border border-surface-700 bg-surface-800/40 p-4 space-y-2 font-mono text-xs">
-                      <div className="text-surface-500">Cálculo independente:</div>
+                      <div className="text-surface-500">{t("verify.independentCalc")}</div>
                       <div className="text-surface-300 break-all">
                         HMAC-SHA256(server_seed, block_hash + &quot;:&quot; + raffle_id)
                       </div>
@@ -459,21 +467,21 @@ export default function VerifyPage() {
                         </span>
                       </div>
                       <div className="pt-2 text-white text-sm">
-                        Índice computado:{" "}
+                        {t("verify.computedIndex")}{" "}
                         <span className="text-accent-400 font-bold">
                           {result.computedIndex}
                         </span>
                         <span className="text-surface-500 text-xs">
                           {" "}
-                          (range: 0 a {data.totalPaidTickets - 1})
+                          {t("verify.rangeHint", { max: data.totalPaidTickets - 1 })}
                         </span>
                       </div>
                       <div className="text-surface-400 text-[11px] pt-1">
-                        O servidor mapeou esse índice para o número vencedor{" "}
+                        {t("verify.mappedTo")}{" "}
                         <strong className="text-accent-400">
                           #{data.reveal!.winningNumber}
                         </strong>{" "}
-                        na lista ordenada de tickets pagos.
+                        {t("verify.onPaidList")}
                       </div>
                     </div>
                   </>
@@ -490,29 +498,27 @@ export default function VerifyPage() {
           <header className="flex items-center gap-2 px-5 py-4 border-b border-surface-800 bg-surface-900/50">
             <ExternalLink className="h-5 w-5 text-surface-400" />
             <h3 className="text-base font-semibold text-white">
-              Verificação manual (independente)
+              {t("verify.externalTitle")}
             </h3>
           </header>
 
           <div className="p-5 space-y-6 text-sm">
             <p className="text-surface-400">
-              Não precisa confiar no botão acima. Abaixo está o passo-a-passo pra
-              recomputar em ferramentas de terceiros — cola os valores exatos, confere
-              que bate.
+              {t("verify.externalIntro")}
             </p>
 
             {/* Step 1 — SHA-256 commit check */}
             <ExternalStep
               number={1}
-              title="Confira o commit do seed"
-              description="Calcule o SHA-256 do server seed revelado. O resultado tem que ser igual ao Public Hash."
+              title={t("verify.stepCommitCheck")}
+              description={t("verify.stepCommitDesc")}
               toolName="emn178 SHA-256 online"
               toolUrl="https://emn178.github.io/online-tools/sha256.html"
               inputs={[
-                { label: "Cola no campo 'Input'", value: data.reveal!.serverSeedRevealed! },
+                { label: `${t("verify.inputPaste")} 'Input'`, value: data.reveal!.serverSeedRevealed! },
               ]}
               expected={{
-                label: "Output esperado",
+                label: t("verify.outputExpected"),
                 value: data.commit.serverSeedHash!,
               }}
               onCopy={copy}
@@ -521,8 +527,8 @@ export default function VerifyPage() {
             {/* Step 2 — HMAC */}
             <ExternalStep
               number={2}
-              title="Recompute o HMAC"
-              description="HMAC-SHA256 com o server seed como chave e 'block_hash:raffle_id' como mensagem."
+              title={t("verify.stepHmac")}
+              description={t("verify.stepHmacDesc")}
               toolName="devglan HMAC-SHA256"
               toolUrl="https://www.devglan.com/online-tools/hmac-sha256-online"
               inputs={[
@@ -536,8 +542,8 @@ export default function VerifyPage() {
                 },
               ]}
               expected={{
-                label: "Output esperado (começa com...)",
-                value: "— calcule e pegue os primeiros 16 caracteres hex",
+                label: t("verify.outputExpected"),
+                value: t("verify.outputCalcManual"),
                 noCopy: true,
               }}
               onCopy={copy}
@@ -549,14 +555,10 @@ export default function VerifyPage() {
                 <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 text-xs font-bold">
                   3
                 </span>
-                <h4 className="text-sm font-semibold text-white">Calcule o índice final</h4>
+                <h4 className="text-sm font-semibold text-white">{t("verify.stepMath")}</h4>
               </div>
               <p className="text-xs text-surface-400">
-                Pega os <strong>primeiros 16 caracteres hex</strong> do HMAC do passo 2,
-                converte pra número inteiro (base 16) e aplica{" "}
-                <code className="font-mono text-accent-400">mod {data.totalPaidTickets}</code>.
-                O resultado tem que ser o <strong>índice</strong> que aponta pro
-                ticket vencedor na lista ordenada.
+                {t("verify.stepMathDesc", { total: data.totalPaidTickets })}
               </p>
               <div className="rounded-md bg-surface-900/60 border border-surface-800 p-3 font-mono text-xs text-surface-300 space-y-1">
                 <div>// exemplo em JavaScript (console do browser)</div>
@@ -575,13 +577,13 @@ export default function VerifyPage() {
             {/* Step 4 — block check */}
             <ExternalStep
               number={4}
-              title="Confirme o bloco do Bitcoin"
-              description="Confere que o block hash realmente corresponde ao bloco na altura declarada (ninguém pode forjar um hash de bloco)."
+              title={t("verify.stepBlock")}
+              description={t("verify.stepBlockDesc")}
               toolName={`mempool.space/block/${data.reveal!.blockHeight}`}
               toolUrl={`https://mempool.space/block/${data.reveal!.blockHeight}`}
               inputs={[]}
               expected={{
-                label: "A página deve mostrar este hash como o do bloco",
+                label: t("verify.pageExpected"),
                 value: data.reveal!.blockHash!,
               }}
               onCopy={copy}
@@ -604,6 +606,7 @@ function DataRow({
   onCopy,
   link,
   linkLabel,
+  waitingLabel,
 }: {
   label: string;
   sublabel?: string;
@@ -613,6 +616,7 @@ function DataRow({
   onCopy?: (text: string) => void;
   link?: string;
   linkLabel?: string;
+  waitingLabel?: string;
 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-2 px-5 py-4 hover:bg-surface-900/40 transition-colors">
@@ -660,7 +664,7 @@ function DataRow({
             )}
           </>
         ) : (
-          <span className="text-xs text-surface-600 italic">Aguardando sorteio</span>
+          <span className="text-xs text-surface-600 italic">{waitingLabel ?? "Aguardando sorteio"}</span>
         )}
       </div>
     </div>

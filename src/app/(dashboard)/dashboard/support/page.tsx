@@ -239,7 +239,7 @@ export default function UserSupportPage() {
 
         <DialogFooter>
           <Button variant="outline" onClick={() => setNewOpen(false)} disabled={creating}>
-            Cancelar
+            {tr("common.cancel")}
           </Button>
           <Button onClick={handleCreate} disabled={creating}>
             {creating && <Loader2 className="h-4 w-4 animate-spin" />}

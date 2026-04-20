@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ShoppingCart, X, CheckCircle, Loader2, AlertCircle } from "lucide-react";
+import { useTranslation } from "@/i18n/provider";
 
 interface NumberInfo {
   number: number;
@@ -37,6 +38,7 @@ export function NumberSelector({
   canSelectMore,
   className,
 }: NumberSelectorProps) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [buyModal, setBuyModal] = useState(false);
   const [buying, setBuying] = useState(false);
@@ -129,11 +131,10 @@ export function NumberSelector({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-bold text-[var(--foreground)]">
-            Escolha seus números
+            {t("numbers.chooseYourNumbers")}
           </h3>
           <p className="text-sm text-[var(--muted-foreground)]">
-            <span className="font-semibold text-primary-500">{selectedNumbers.length}</span>
-            /{maxPerPurchase} selecionados
+            {t("numbers.selectedCount", { count: selectedNumbers.length, max: maxPerPurchase })}
           </p>
         </div>
 
@@ -144,7 +145,7 @@ export function NumberSelector({
             onClick={() => onSelectRandom(numbers, 5)}
             disabled={numbers.filter((n) => n.status === "AVAILABLE").length === 0}
           >
-            5 aleatórios
+            {t("numbers.random5")}
           </Button>
           <Button
             variant="outline"
@@ -152,11 +153,11 @@ export function NumberSelector({
             onClick={() => onSelectRandom(numbers, 10)}
             disabled={numbers.filter((n) => n.status === "AVAILABLE").length === 0}
           >
-            10 aleatórios
+            {t("numbers.random10")}
           </Button>
           {selectedNumbers.length > 0 && (
             <Button variant="ghost" size="sm" onClick={onClear}>
-              Limpar
+              {t("numbers.clear")}
             </Button>
           )}
         </div>
@@ -179,7 +180,7 @@ export function NumberSelector({
         </svg>
         <Input
           type="text"
-          placeholder="Buscar número..."
+          placeholder={t("numbers.searchNumber")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-10"
@@ -213,7 +214,7 @@ export function NumberSelector({
 
         {filteredNumbers.length === 0 && (
           <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
-            Nenhum número encontrado.
+            {t("numbers.noneFound")}
           </p>
         )}
       </div>
@@ -222,19 +223,19 @@ export function NumberSelector({
       <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--muted-foreground)]">
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-sm bg-surface-800/60" />
-          Disponível
+          {t("numbers.legendAvailable")}
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-sm bg-emerald-500/20 ring-1 ring-emerald-500/40" />
-          Vendido
+          {t("numbers.legendSold")}
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-sm bg-amber-500/15 ring-2 ring-amber-500/50" />
-          Meu número
+          {t("numbers.legendMine")}
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-sm bg-primary-500/30 ring-1 ring-primary-500/50" />
-          Selecionado
+          {t("numbers.legendSelected")}
         </span>
       </div>
 
@@ -243,7 +244,7 @@ export function NumberSelector({
         <div className="rounded-xl border border-surface-700 bg-surface-800/50 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-sm text-[var(--muted-foreground)]">
-              {selectedNumbers.length} {selectedNumbers.length === 1 ? "cota selecionada" : "cotas selecionadas"}
+              {selectedNumbers.length} {selectedNumbers.length === 1 ? t("numbers.quotaSingular") : t("numbers.quotaPlural")}
             </p>
             <div className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -258,7 +259,7 @@ export function NumberSelector({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/ahc-coin.png" alt="" className="h-5 w-5 rounded-full mr-2" />
-            Comprar com {total.toFixed(2)} AHC
+            {t("numbers.buyWith", { total: total.toFixed(2) })}
           </Button>
         </div>
       )}
@@ -282,28 +283,28 @@ export function NumberSelector({
                 <img src="/ahc-coin.png" alt="AHC" className="h-10 w-10 rounded-full" />
               </div>
 
-              <h3 className="text-lg font-bold text-white mb-1">Confirmar compra</h3>
-              <p className="text-sm text-surface-400 mb-5">Revise os detalhes antes de confirmar</p>
+              <h3 className="text-lg font-bold text-white mb-1">{t("numbers.confirmPurchase")}</h3>
+              <p className="text-sm text-surface-400 mb-5">{t("numbers.reviewBefore")}</p>
 
               {/* Details */}
               <div className="w-full rounded-xl border border-surface-700 bg-surface-800/50 p-4 mb-5 space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-surface-400">Cotas</span>
+                  <span className="text-surface-400">{t("numbers.quotas")}</span>
                   <span className="font-semibold text-white">{selectedNumbers.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-surface-400">Preço por cota</span>
+                  <span className="text-surface-400">{t("numbers.pricePerQuota")}</span>
                   <span className="font-semibold text-white">{pricePerNumber} AHC</span>
                 </div>
                 <div className="flex justify-between items-start gap-3">
-                  <span className="text-surface-400 flex-shrink-0">Números</span>
+                  <span className="text-surface-400 flex-shrink-0">{t("numbers.selectedNumbers")}</span>
                   <span className="font-mono text-xs text-surface-300 text-right break-all">
                     {selectedNumbers.sort((a, b) => a - b).join(", ")}
                   </span>
                 </div>
                 <hr className="border-surface-700" />
                 <div className="flex justify-between items-center">
-                  <span className="text-surface-400">Total</span>
+                  <span className="text-surface-400">{t("numbers.total")}</span>
                   <div className="flex items-center gap-1.5">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/ahc-coin.png" alt="" className="h-5 w-5 rounded-full" />
@@ -327,7 +328,7 @@ export function NumberSelector({
                   disabled={buying}
                   className="flex-1 rounded-lg border border-surface-700 px-4 py-2.5 text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800 transition-colors disabled:opacity-50"
                 >
-                  Cancelar
+                  {t("numbers.cancel")}
                 </button>
                 <button
                   onClick={handleConfirmPurchase}
@@ -337,12 +338,12 @@ export function NumberSelector({
                   {buying ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Processando...
+                      {t("numbers.processing")}
                     </>
                   ) : (
                     <>
                       <ShoppingCart className="h-4 w-4" />
-                      Confirmar
+                      {t("numbers.confirm")}
                     </>
                   )}
                 </button>
@@ -362,25 +363,25 @@ export function NumberSelector({
                 <CheckCircle className="h-9 w-9 text-emerald-400" />
               </div>
 
-              <h3 className="text-xl font-bold text-white mb-1">Compra confirmada!</h3>
+              <h3 className="text-xl font-bold text-white mb-1">{t("numbers.successTitle")}</h3>
               <p className="text-sm text-surface-400 mb-5">
-                Seus números foram reservados pra você. Boa sorte! 🍀
+                {t("numbers.successMessage")}
               </p>
 
               <div className="w-full rounded-xl border border-surface-700 bg-surface-800/50 p-4 mb-5 space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-surface-400">Cotas compradas</span>
+                  <span className="text-surface-400">{t("numbers.quotasPurchased")}</span>
                   <span className="font-semibold text-white">{successData.numbers.length}</span>
                 </div>
                 <div className="flex justify-between items-start gap-3">
-                  <span className="text-surface-400 flex-shrink-0">Números</span>
+                  <span className="text-surface-400 flex-shrink-0">{t("numbers.selectedNumbers")}</span>
                   <span className="font-mono text-xs text-surface-300 text-right break-all">
                     {successData.numbers.sort((a, b) => a - b).join(", ")}
                   </span>
                 </div>
                 <hr className="border-surface-700" />
                 <div className="flex justify-between items-center">
-                  <span className="text-surface-400">Total debitado</span>
+                  <span className="text-surface-400">{t("numbers.totalDebited")}</span>
                   <div className="flex items-center gap-1.5">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/ahc-coin.png" alt="" className="h-4 w-4 rounded-full" />
@@ -388,7 +389,7 @@ export function NumberSelector({
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-surface-400">Saldo atual</span>
+                  <span className="text-surface-400">{t("numbers.currentBalance")}</span>
                   <div className="flex items-center gap-1.5">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/ahc-coin.png" alt="" className="h-4 w-4 rounded-full" />
@@ -401,7 +402,7 @@ export function NumberSelector({
                 onClick={closeSuccess}
                 className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
               >
-                Fechar
+                {t("numbers.close")}
               </button>
             </div>
           </div>

@@ -10,6 +10,7 @@ import { TicketChat, type ChatMessage } from "@/components/support/ticket-chat";
 import { useToast } from "@/components/ui/toast";
 import { SUPPORT_CATEGORIES } from "@/constants/support";
 import { usePoll } from "@/hooks/use-poll";
+import { useTranslation } from "@/i18n/provider";
 
 type TicketDetail = {
   id: string;
@@ -36,6 +37,7 @@ const STATUS_VARIANT: Record<string, "default" | "warning" | "success" | "danger
 };
 
 export default function UserTicketDetailPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const ticketId = params.ticketId as string;
   const { data: session } = useSession();
@@ -95,7 +97,7 @@ export default function UserTicketDetailPage() {
     return (
       <div className="space-y-4 max-w-4xl">
         <Link href="/dashboard/support" className="inline-flex items-center gap-1 text-sm text-surface-400 hover:text-white">
-          <ArrowLeft className="h-4 w-4" /> Voltar
+          <ArrowLeft className="h-4 w-4" /> {t("common.back")}
         </Link>
         <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-400">
           {error || "Ticket não encontrado"}

@@ -178,11 +178,11 @@ export default function RafflesPage() {
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
-            Anterior
+            {t("pagination.previous")}
           </Button>
 
           <span className="px-4 text-sm text-[var(--muted-foreground)]">
-            Página {page} de {totalPages}
+            {t("pagination.pageOf", { page, pages: totalPages })}
           </span>
 
           <Button
@@ -191,7 +191,7 @@ export default function RafflesPage() {
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
           >
-            Proxima
+            {t("pagination.next")}
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
             </svg>

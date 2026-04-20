@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { NumberSelector } from "@/components/raffle/number-selector";
 import { formatCurrency, calculatePercentage } from "@/lib/utils";
 import { getWearShortName, getWearColor, getRarityColor } from "@/constants/cs2";
+import { useTranslation } from "@/i18n/provider";
 
 interface RaffleStats {
   available: number;
@@ -89,6 +90,7 @@ function useCountdown(targetDate: string | null) {
 }
 
 export default function RaffleDetailPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const slug = params.slug as string;
 
@@ -230,10 +232,10 @@ export default function RaffleDetailPage() {
             />
           </svg>
           <h2 className="text-xl font-bold text-[var(--foreground)]">
-            Rifa não encontrada
+            {t("raffleDetail.notFound")}
           </h2>
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            A rifa que você procura não existe ou foi removida.
+            {t("raffleDetail.notFoundDesc")}
           </p>
           <Link href="/raffles">
             <Button variant="outline" className="mt-6">
@@ -250,7 +252,7 @@ export default function RaffleDetailPage() {
                   d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
                 />
               </svg>
-              Voltar para rifas
+              {t("raffleDetail.backToRaffles")}
             </Button>
           </Link>
         </div>
@@ -280,10 +282,10 @@ export default function RaffleDetailPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
               </svg>
               <span className="font-bold text-amber-400 uppercase tracking-wider text-[11px]">
-                Preview Admin
+                {t("raffleDetail.previewBadge")}
               </span>
               <span className="hidden sm:inline text-amber-200/90 text-xs">
-                Esta rifa está <strong>{statusInfo?.label ?? raffle.status}</strong> e não aparece no site público.
+                {t("raffleDetail.previewCopy", { status: statusInfo?.label ?? raffle.status })}
               </span>
               <span className="sm:hidden text-amber-200/90 text-xs font-semibold">
                 {statusInfo?.label ?? raffle.status}
@@ -293,7 +295,7 @@ export default function RaffleDetailPage() {
               href={`/admin/raffles/${raffle.id}`}
               className="rounded-lg bg-amber-500/20 border border-amber-500/40 px-3 py-1 text-xs font-semibold text-amber-300 hover:bg-amber-500/30 transition-colors"
             >
-              ← Voltar para edição
+              ← {t("raffleDetail.backToEdit")}
             </Link>
           </div>
         </div>
@@ -311,7 +313,7 @@ export default function RaffleDetailPage() {
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
             </svg>
-            Voltar para rifas
+            {t("raffleDetail.backToRaffles")}
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
@@ -341,7 +343,7 @@ export default function RaffleDetailPage() {
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
                   </svg>
-                  Preço de mercado: {formatCurrency(raffle.skinMarketPrice)}
+                  {t("raffleDetail.marketPrice")} {formatCurrency(raffle.skinMarketPrice)}
                 </div>
               )}
             </div>
@@ -410,10 +412,10 @@ export default function RaffleDetailPage() {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-surface-400">Ganhador</p>
+                      <p className="text-xs text-surface-400">{t("results.winner")}</p>
                       <p className="text-lg font-bold text-white truncate">{winnerInfo.name}</p>
                       <p className="text-xs text-accent-400/80 mt-0.5">
-                        Número #{winnerInfo.winningNumber} · {new Date(winnerInfo.drawnAt).toLocaleDateString("pt-BR")}
+                        {t("raffleDetail.winnerNumber", { num: winnerInfo.winningNumber })} · {new Date(winnerInfo.drawnAt).toLocaleDateString("pt-BR")}
                       </p>
                     </div>
                   </div>
@@ -424,14 +426,14 @@ export default function RaffleDetailPage() {
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
-                    Ver prova do sorteio (Provably Fair)
+                    {t("raffleDetail.viewProof")}
                   </a>
                 </div>
               )}
 
               {/* Price */}
               <div className="rounded-xl border border-accent-500/20 bg-accent-500/5 p-5">
-                <p className="text-sm text-[var(--muted-foreground)]">Preço por cota</p>
+                <p className="text-sm text-[var(--muted-foreground)]">{t("numbers.pricePerQuota")}</p>
                 <div className="flex items-center gap-2.5 mt-1">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/ahc-coin.png" alt="AHC" className="h-8 w-8 rounded-full" />
@@ -480,7 +482,7 @@ export default function RaffleDetailPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                   </svg>
                   <div>
-                    <p className="text-xs text-[var(--muted-foreground)]">Sorteio em</p>
+                    <p className="text-xs text-[var(--muted-foreground)]">{t("rafflesList.drawIn")}</p>
                     <p className="text-lg font-bold font-mono text-accent-400">{countdown}</p>
                   </div>
                 </div>
@@ -489,7 +491,7 @@ export default function RaffleDetailPage() {
               {/* Description */}
               {raffle.description && (
                 <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
-                  <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">Descrição</h3>
+                  <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">{t("raffleDetail.description")}</h3>
                   <p className="text-sm text-[var(--muted-foreground)] whitespace-pre-wrap leading-relaxed">
                     {raffle.description}
                   </p>
@@ -505,7 +507,7 @@ export default function RaffleDetailPage() {
                   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
               >
-                Participar
+                {t("raffleDetail.participate")}
               </Button>
             </div>
           </div>

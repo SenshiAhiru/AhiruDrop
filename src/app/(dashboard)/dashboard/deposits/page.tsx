@@ -196,10 +196,10 @@ export default function DepositsHistoryPage() {
             onClick={() => setPage((p) => p - 1)}
           >
             <ChevronLeft className="h-4 w-4" />
-            Anterior
+            {t("pagination.previous")}
           </Button>
           <p className="text-xs text-surface-500">
-            Página {page} de {pages}
+            {t("pagination.pageOf", { page, pages })}
           </p>
           <Button
             variant="outline"
@@ -207,7 +207,7 @@ export default function DepositsHistoryPage() {
             disabled={page === pages}
             onClick={() => setPage((p) => p + 1)}
           >
-            Próxima
+            {t("pagination.next")}
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

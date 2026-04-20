@@ -326,7 +326,7 @@ export default function WinningsPage() {
 
         <DialogFooter>
           <Button variant="outline" onClick={() => setTradeOpen(false)} disabled={tradeSending}>
-            Cancelar
+            {t("common.cancel")}
           </Button>
           <Button onClick={submitTrade} disabled={tradeSending} variant="accent">
             {tradeSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRightLeft className="h-4 w-4" />}

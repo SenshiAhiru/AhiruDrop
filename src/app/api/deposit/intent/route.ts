@@ -3,6 +3,7 @@ import { successResponse, errorResponse, handleApiError, requireAuth } from "@/l
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
 import { couponService } from "@/services/coupon.service";
+import { fxService } from "@/services/fx.service";
 import { applyRateLimitWithId } from "@/lib/rate-limit";
 import Stripe from "stripe";
 
@@ -40,10 +41,12 @@ export async function POST(req: NextRequest) {
     if (limited) return limited;
 
     const { amount, currency, couponCode } = await req.json();
-    const ahcAmount = Number(amount);
+    const ahcAmount = Math.floor(Number(amount));
 
     if (!ahcAmount || ahcAmount < 1) return errorResponse("Mínimo: 1 AHC", 400);
     if (ahcAmount > 10000) return errorResponse("Máximo: 10.000 AHC", 400);
+
+    const chosenCurrency = currency === "USD" ? "USD" : "BRL";
 
     // Validate coupon if provided (bonus AHC credited on webhook)
     let couponId: string | null = null;
@@ -67,16 +70,32 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const currencyCode = (currency || "BRL").toLowerCase();
-    const stripeAmount = Math.round(ahcAmount * 100);
+    // Quote: convert AHC amount to payable currency using live FX (BRL only)
+    const quote = await fxService.quote(ahcAmount, chosenCurrency);
+
+    // Stripe amount in smallest unit (cents)
+    const stripeAmount = Math.round(quote.payAmount * 100);
+
+    if (stripeAmount < 50) {
+      // Stripe minimum is typically $0.50 / R$2.00
+      return errorResponse(
+        `Valor muito baixo pra cobrar. Mínimo ≈ ${chosenCurrency === "USD" ? "$0.50" : "R$ 2,00"}.`,
+        400
+      );
+    }
 
     const stripeClient = await getStripeClient();
 
     const metadata: Record<string, string> = {
       userId: session.user.id,
       ahcAmount: String(ahcAmount),
-      currency: currencyCode.toUpperCase(),
+      currency: chosenCurrency,
+      usdEquivalent: quote.usdAmount.toFixed(4),
     };
+    if (quote.fxRate !== null) {
+      metadata.fxUsdBrl = quote.fxRate.toFixed(4);
+      metadata.fxSource = quote.fxSource;
+    }
     if (couponId && bonusAhc > 0 && normalizedCouponCode) {
       metadata.couponId = couponId;
       metadata.couponCode = normalizedCouponCode;
@@ -85,7 +104,7 @@ export async function POST(req: NextRequest) {
 
     const paymentIntent = await stripeClient.paymentIntents.create({
       amount: stripeAmount,
-      currency: currencyCode,
+      currency: chosenCurrency.toLowerCase(),
       metadata,
       automatic_payment_methods: { enabled: true },
     });
@@ -96,8 +115,8 @@ export async function POST(req: NextRequest) {
         data: {
           userId: session.user.id,
           paymentIntentId: paymentIntent.id,
-          currency: currencyCode.toUpperCase(),
-          amountPaid: ahcAmount, // 1:1 for now (BRL). Multi-FX later.
+          currency: chosenCurrency,
+          amountPaid: quote.payAmount,
           ahcBase: ahcAmount,
           ahcBonus: bonusAhc,
           ahcTotal: ahcAmount + bonusAhc,
@@ -128,6 +147,11 @@ export async function POST(req: NextRequest) {
       clientSecret: paymentIntent.client_secret,
       publishableKey,
       bonusAhc,
+      ahcAmount,
+      ahcTotal: ahcAmount + bonusAhc,
+      payAmount: quote.payAmount,
+      currency: chosenCurrency,
+      fxRate: quote.fxRate,
     });
   } catch (error) {
     console.error("Payment Intent error:", error);

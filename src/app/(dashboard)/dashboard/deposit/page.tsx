@@ -13,11 +13,14 @@ import { useToast } from "@/components/ui/toast";
 const CURRENCIES = [
   { code: "BRL", symbol: "R$", flag: "🇧🇷", name: "Real" },
   { code: "USD", symbol: "$", flag: "🇺🇸", name: "Dólar" },
-  { code: "EUR", symbol: "€", flag: "🇪🇺", name: "Euro" },
-  { code: "GBP", symbol: "£", flag: "🇬🇧", name: "Libra" },
-];
+] as const;
+
+type CurrencyCode = (typeof CURRENCIES)[number]["code"];
 
 const PRESETS_AHC = [10, 25, 50, 100, 250, 500];
+
+// Internal platform rate (must match backend fxService): 1 AHC = $1 USD
+const USD_PER_AHC = 1;
 
 // ─── Payment Form (inside Elements) ───
 function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () => void }) {
@@ -109,9 +112,13 @@ function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () 
 export default function DepositPage() {
   const { addToast } = useToast();
   const [balance, setBalance] = useState<number | null>(null);
-  const [currency, setCurrency] = useState("BRL");
+  const [currency, setCurrency] = useState<CurrencyCode>("BRL");
   const [ahcAmount, setAhcAmount] = useState("");
   const [loading, setLoading] = useState(true);
+
+  // FX state for live preview (BRL only needs it)
+  const [usdToBrl, setUsdToBrl] = useState<number | null>(null);
+  const [fxLoading, setFxLoading] = useState(false);
 
   // Payment state
   const [stripePromise, setStripePromise] = useState<Promise<StripeType | null> | null>(null);
@@ -141,8 +148,42 @@ export default function DepositPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const numAhc = parseFloat(ahcAmount) || 0;
+  // Load FX rate (BRL only needs it). Refresh every 2 min.
+  useEffect(() => {
+    let cancelled = false;
+    async function loadFx() {
+      setFxLoading(true);
+      try {
+        const res = await fetch("/api/fx/rates", { cache: "no-store" });
+        const json = await res.json();
+        if (!cancelled && json.success) {
+          setUsdToBrl(Number(json.data.usdToBrl));
+        }
+      } catch {
+        // ignore — preview will show a placeholder
+      } finally {
+        if (!cancelled) setFxLoading(false);
+      }
+    }
+    loadFx();
+    const id = setInterval(loadFx, 120_000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, []);
+
+  const numAhc = Math.floor(parseFloat(ahcAmount) || 0);
   const currencyInfo = CURRENCIES.find((c) => c.code === currency)!;
+
+  // Compute the live price the user will pay
+  const usdAmount = numAhc * USD_PER_AHC;
+  const payAmount =
+    currency === "USD"
+      ? usdAmount
+      : usdToBrl !== null
+      ? usdAmount * usdToBrl
+      : null;
 
   // If the amount changes after a coupon was applied, drop the coupon (needs revalidation
   // because minOrderAmount/discount may differ at the new amount).
@@ -317,7 +358,13 @@ export default function DepositPage() {
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-xs text-surface-500">1 {currencyInfo.code} = 1 AHC (taxa fixa)</p>
+              <p className="mt-2 text-xs text-surface-500">
+                {currency === "USD"
+                  ? "1 AHC = $1 USD (taxa fixa)"
+                  : usdToBrl !== null
+                  ? `1 AHC = $1 USD ≈ R$ ${(USD_PER_AHC * usdToBrl).toFixed(2)} · câmbio ao vivo`
+                  : "1 AHC = $1 USD · câmbio ao vivo"}
+              </p>
             </CardContent>
           </Card>
 
@@ -328,24 +375,37 @@ export default function DepositPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
-                {PRESETS_AHC.map((preset) => (
-                  <button
-                    key={preset}
-                    onClick={() => setAhcAmount(String(preset))}
-                    className={`flex flex-col items-center gap-1 rounded-xl border-2 p-3 transition-all ${
-                      ahcAmount === String(preset)
-                        ? "border-accent-500 bg-accent-500/10"
-                        : "border-surface-700 hover:border-surface-500"
-                    }`}
-                  >
-                    <div className="flex items-center gap-1">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/ahc-coin.png" alt="" className="h-4 w-4 rounded-full" />
-                      <span className="text-lg font-bold text-accent-400">{preset}</span>
-                    </div>
-                    <span className="text-[10px] text-surface-500">{currencyInfo.symbol} {preset.toFixed(2)}</span>
-                  </button>
-                ))}
+                {PRESETS_AHC.map((preset) => {
+                  const presetUsd = preset * USD_PER_AHC;
+                  const presetPrice =
+                    currency === "USD"
+                      ? presetUsd
+                      : usdToBrl !== null
+                      ? presetUsd * usdToBrl
+                      : null;
+                  return (
+                    <button
+                      key={preset}
+                      onClick={() => setAhcAmount(String(preset))}
+                      className={`flex flex-col items-center gap-1 rounded-xl border-2 p-3 transition-all ${
+                        ahcAmount === String(preset)
+                          ? "border-accent-500 bg-accent-500/10"
+                          : "border-surface-700 hover:border-surface-500"
+                      }`}
+                    >
+                      <div className="flex items-center gap-1">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/ahc-coin.png" alt="" className="h-4 w-4 rounded-full" />
+                        <span className="text-lg font-bold text-accent-400">{preset}</span>
+                      </div>
+                      <span className="text-[10px] text-surface-500">
+                        {presetPrice !== null
+                          ? `${currencyInfo.symbol} ${presetPrice.toFixed(2)}`
+                          : "—"}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
 
               <div className="relative">
@@ -380,9 +440,19 @@ export default function DepositPage() {
                     <span className="text-surface-400">Você recebe</span>
                     <span className="font-bold text-accent-400">{totalAhcReceived.toFixed(2)} AHC</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-start">
                     <span className="text-surface-400">Você paga</span>
-                    <span className="font-semibold text-white">{currencyInfo.flag} {currencyInfo.symbol} {numAhc.toFixed(2)}</span>
+                    <div className="text-right">
+                      <div className="font-semibold text-white">
+                        {currencyInfo.flag} {currencyInfo.symbol}{" "}
+                        {payAmount !== null ? payAmount.toFixed(2) : fxLoading ? "…" : "—"}
+                      </div>
+                      {currency === "BRL" && usdToBrl !== null && (
+                        <div className="text-[10px] text-surface-500 mt-0.5">
+                          ≈ ${usdAmount.toFixed(2)} USD · taxa 1 USD = R$ {usdToBrl.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <hr className="border-surface-700" />
                   <div className="flex justify-between">
@@ -480,7 +550,8 @@ export default function DepositPage() {
                   {bonusAhc > 0 && (
                     <span className="text-emerald-400"> (+{bonusAhc.toFixed(2)} bônus)</span>
                   )}{" "}
-                  • {currencyInfo.flag} {currencyInfo.symbol} {numAhc.toFixed(2)}
+                  • {currencyInfo.flag} {currencyInfo.symbol}{" "}
+                  {payAmount !== null ? payAmount.toFixed(2) : "—"}
                 </CardDescription>
               </div>
               <button

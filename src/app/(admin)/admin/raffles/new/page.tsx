@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SkinSearchInput } from "@/components/admin/skin-search-input";
 import { WearSelector } from "@/components/admin/wear-selector";
+import { PricingCalculator } from "@/components/admin/pricing-calculator";
 import type { SkinSelection } from "@/types/cs2.types";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
@@ -341,6 +342,14 @@ export default function NewRafflePage() {
                     <p className="mt-1 text-xs text-red-400">{errors.description}</p>
                   )}
                 </div>
+
+                {/* Pricing calculator */}
+                <PricingCalculator
+                  onApply={({ pricePerNumber, totalNumbers }) => {
+                    updateField("pricePerNumber", pricePerNumber.toFixed(2));
+                    updateField("totalNumbers", String(totalNumbers));
+                  }}
+                />
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>

@@ -344,6 +344,14 @@ export const en: Record<MessageKey, string> = {
   "myWins.empty": "You haven't won any raffle yet.",
   "myWins.emptyHint": "Good luck next time!",
   "myWins.browseActive": "View active raffles",
+
+  // Countdown
+  "countdown.expired": "Ended",
+  "countdown.endsIn": "Ends in:",
+  "countdown.days": "days",
+  "countdown.hours": "hours",
+  "countdown.minutes": "min",
+  "countdown.seconds": "sec",
   "myWins.youWon": "YOU WON!",
   "myWins.winningNumber": "Winning number",
   "myWins.drawnAt": "Drawn on",

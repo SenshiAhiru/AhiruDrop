@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useCountdown } from "@/hooks/use-countdown";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/i18n/provider";
 
 interface RaffleCountdownProps {
   targetDate: string | Date;
@@ -40,16 +41,18 @@ function TimeBox({ value, unit, compact }: TimeBoxProps) {
 
 export function RaffleCountdown({
   targetDate,
-  label = "Encerra em:",
+  label,
   compact = false,
   className,
 }: RaffleCountdownProps) {
+  const { t } = useTranslation();
   const { days, hours, minutes, seconds, isExpired } = useCountdown(targetDate);
+  const labelText = label ?? t("countdown.endsIn");
 
   if (isExpired) {
     return (
       <Badge variant="danger" className={cn("text-xs", className)}>
-        Encerrada
+        {t("countdown.expired")}
       </Badge>
     );
   }
@@ -70,7 +73,7 @@ export function RaffleCountdown({
             d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
           />
         </svg>
-        <span>{label}</span>
+        <span>{labelText}</span>
         <span className="font-mono font-semibold text-[var(--foreground)]">
           {days !== "00" && <><TimeBox value={days} unit="d" compact />d </>}
           <TimeBox value={hours} unit="h" compact />:
@@ -83,15 +86,15 @@ export function RaffleCountdown({
 
   return (
     <div className={cn("space-y-2", className)}>
-      <p className="text-sm font-medium text-[var(--muted-foreground)]">{label}</p>
+      <p className="text-sm font-medium text-[var(--muted-foreground)]">{labelText}</p>
       <div className="flex items-center gap-2">
-        <TimeBox value={days} unit="dias" />
+        <TimeBox value={days} unit={t("countdown.days")} />
         <span className="text-xl font-bold text-[var(--muted-foreground)] self-start mt-3">:</span>
-        <TimeBox value={hours} unit="horas" />
+        <TimeBox value={hours} unit={t("countdown.hours")} />
         <span className="text-xl font-bold text-[var(--muted-foreground)] self-start mt-3">:</span>
-        <TimeBox value={minutes} unit="min" />
+        <TimeBox value={minutes} unit={t("countdown.minutes")} />
         <span className="text-xl font-bold text-[var(--muted-foreground)] self-start mt-3">:</span>
-        <TimeBox value={seconds} unit="seg" />
+        <TimeBox value={seconds} unit={t("countdown.seconds")} />
       </div>
     </div>
   );

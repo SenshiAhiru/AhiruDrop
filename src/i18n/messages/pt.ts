@@ -367,6 +367,14 @@ export const pt = {
   "myWins.empty": "Você ainda não ganhou nenhuma rifa.",
   "myWins.emptyHint": "Boa sorte na próxima!",
   "myWins.browseActive": "Ver rifas ativas",
+
+  // ─── Countdown ─────────────────────────────────────────
+  "countdown.expired": "Encerrada",
+  "countdown.endsIn": "Encerra em:",
+  "countdown.days": "dias",
+  "countdown.hours": "horas",
+  "countdown.minutes": "min",
+  "countdown.seconds": "seg",
   "myWins.youWon": "VOCÊ GANHOU!",
   "myWins.winningNumber": "Número sorteado",
   "myWins.drawnAt": "Sorteado em",

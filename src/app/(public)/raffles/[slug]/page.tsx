@@ -45,11 +45,11 @@ const statusMap: Record<
   string,
   { label: string; variant: "success" | "warning" | "accent" | "danger" | "outline" }
 > = {
-  ACTIVE: { label: "Ativa", variant: "success" },
-  PAUSED: { label: "Pausada", variant: "warning" },
-  DRAWN: { label: "Sorteada", variant: "accent" },
-  CLOSED: { label: "Encerrada", variant: "outline" },
-  CANCELLED: { label: "Cancelada", variant: "danger" },
+  ACTIVE: { label: "ACTIVE_KEY", variant: "success" },
+  PAUSED: { label: "PAUSED_KEY", variant: "warning" },
+  DRAWN: { label: "DRAWN_KEY", variant: "accent" },
+  CLOSED: { label: "CLOSED_KEY", variant: "outline" },
+  CANCELLED: { label: "CANCELLED_KEY", variant: "danger" },
 };
 
 function useCountdown(targetDate: string | null) {
@@ -263,7 +263,22 @@ export default function RaffleDetailPage() {
   const imageSrc = raffle.skinImage || raffle.featuredImage || "/placeholder-skin.png";
   const rarityColor = raffle.skinRarityColor || getRarityColor(raffle.skinRarity || "");
   const paidPercentage = calculatePercentage(raffle.stats.paid, raffle.totalNumbers);
-  const statusInfo = statusMap[raffle.status];
+  const statusKey =
+    raffle.status === "ACTIVE"
+      ? "raffles.status.active"
+      : raffle.status === "PAUSED"
+      ? "raffles.status.paused"
+      : raffle.status === "DRAWN"
+      ? "raffles.status.drawn"
+      : raffle.status === "CLOSED"
+      ? "raffles.status.closed"
+      : raffle.status === "CANCELLED"
+      ? "raffles.status.closed"
+      : null;
+  const rawStatusInfo = statusMap[raffle.status];
+  const statusInfo = rawStatusInfo
+    ? { ...rawStatusInfo, label: statusKey ? t(statusKey) : rawStatusInfo.label }
+    : rawStatusInfo;
 
   // Non-public statuses: show preview banner on top
   const isPreview =

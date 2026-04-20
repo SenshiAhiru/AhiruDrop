@@ -12,34 +12,37 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
 import { UserMenu } from "@/components/shared/user-menu";
 import { AhcBalance } from "@/components/shared/ahc-balance";
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { useTheme } from "@/components/providers/theme-provider";
-
-const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "Rifas", href: "/raffles" },
-  { label: "Ganhadores", href: "/winners" },
-  { label: "Minhas Vitórias", href: "/dashboard/winnings", auth: true },
-  { label: "Como Funciona", href: "/about" },
-  { label: "FAQ", href: "/faq" },
-];
+import { useTranslation } from "@/i18n/provider";
 
 export function PublicHeader() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const navLinks = [
+    { label: t("nav.home"), href: "/" },
+    { label: t("nav.raffles"), href: "/raffles" },
+    { label: t("nav.winners"), href: "/winners" },
+    { label: t("nav.myWins"), href: "/dashboard/winnings", auth: true },
+    { label: t("nav.howItWorks"), href: "/about" },
+    { label: t("nav.faq"), href: "/faq" },
+  ];
 
   const isAdmin =
     (session?.user as any)?.role === "ADMIN" ||
     (session?.user as any)?.role === "SUPER_ADMIN";
 
   const accountLinks = [
-    { label: "Minha Conta", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Meus Pedidos", href: "/dashboard/orders", icon: ShoppingCart },
-    { label: "Minhas Vitórias", href: "/dashboard/winnings", icon: Trophy },
-    { label: "Suporte", href: "/dashboard/support", icon: MessageSquare },
-    { label: "Perfil", href: "/dashboard/profile", icon: User },
-    { label: "Notificações", href: "/dashboard/notifications", icon: Bell },
+    { label: t("dashboard.myAccount"), href: "/dashboard", icon: LayoutDashboard },
+    { label: t("dashboard.myOrders"), href: "/dashboard/orders", icon: ShoppingCart },
+    { label: t("dashboard.myWins"), href: "/dashboard/winnings", icon: Trophy },
+    { label: t("dashboard.support"), href: "/dashboard/support", icon: MessageSquare },
+    { label: t("dashboard.profile"), href: "/dashboard/profile", icon: User },
+    { label: t("dashboard.notifications"), href: "/dashboard/notifications", icon: Bell },
   ];
 
   return (
@@ -73,6 +76,7 @@ export function PublicHeader() {
             </nav>
 
             <div className="flex items-center gap-2">
+              <LanguageSwitcher />
               <button
                 onClick={() => toggleTheme()}
                 className="p-2 rounded-lg text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"

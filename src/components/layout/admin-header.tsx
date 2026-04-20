@@ -4,6 +4,7 @@ import { Menu } from "lucide-react";
 import { UserMenu } from "@/components/shared/user-menu";
 import { AhcBalance } from "@/components/shared/ahc-balance";
 import { NotificationBell } from "@/components/shared/notification-bell";
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
 
 interface AdminHeaderProps {
   title?: string;
@@ -26,6 +27,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
         )}
       </div>
       <div className="flex items-center gap-2">
+        <LanguageSwitcher compact />
         <AhcBalance />
         <NotificationBell href="/admin/notifications" />
         <UserMenu />

@@ -240,36 +240,27 @@ export default function VerifyPage() {
       {/* Explanation (collapsible) */}
       {showIntro && (
         <div className="rounded-xl border border-surface-700 bg-surface-900/50 p-6 text-sm text-surface-300 space-y-4">
-          <p>
-            Nossa fórmula é aberta e qualquer pessoa pode recomputar. Você vai precisar
-            dos valores abaixo:
-          </p>
+          <p>{t("verify.formulaIntro")}</p>
           <ul className="space-y-2 pl-5 list-disc marker:text-primary-400">
             <li>
-              <strong className="text-white">Server Seed:</strong> string aleatória
-              gerada pelo servidor antes da rifa começar. O hash SHA-256 dele é
-              publicado na hora da criação — o seed original só é revelado depois do
-              sorteio, provando que não foi alterado.
+              <strong className="text-white">Server Seed:</strong> {t("verify.serverSeedItem")}
             </li>
             <li>
-              <strong className="text-white">Block Hash (Bitcoin):</strong> hash do
-              bloco do Bitcoin na altura pré-definida. Impossível de prever ou
-              manipular (a rede Bitcoin gera uns 144 blocos/dia de forma distribuída).
+              <strong className="text-white">Block Hash (Bitcoin):</strong> {t("verify.blockHashItem")}
             </li>
             <li>
-              <strong className="text-white">Raffle ID:</strong> identificador único
-              desta rifa, usado como nonce.
+              <strong className="text-white">Raffle ID:</strong> {t("verify.raffleIdItem")}
             </li>
           </ul>
           <div className="rounded-lg border border-surface-700 bg-surface-800/40 p-4 space-y-3 font-mono text-xs">
             <div>
-              <span className="text-surface-500">// Passo 1 — prova do seed:</span>
+              <span className="text-surface-500">{t("verify.codeStep1")}</span>
               <br />
               <span className="text-emerald-400">SHA-256</span>(server_seed) ={" "}
               <span className="text-amber-300">server_seed_hash</span>
             </div>
             <div>
-              <span className="text-surface-500">// Passo 2 — escolha do vencedor:</span>
+              <span className="text-surface-500">{t("verify.codeStep2")}</span>
               <br />
               h ={" "}
               <span className="text-emerald-400">HMAC-SHA256</span>(server_seed, block_hash + &quot;:&quot; + raffle_id)
@@ -280,12 +271,7 @@ export default function VerifyPage() {
               <span className="text-amber-300">winning_number</span> = ticket_pagos_ordenados[idx]
             </div>
           </div>
-          <p className="text-xs text-surface-400">
-            Basta aplicar a fórmula nos valores abaixo usando qualquer ferramenta
-            SHA-256/HMAC (ex: biblioteca crypto do Node, Python, ou ferramentas
-            online). O botão &ldquo;Verificar agora&rdquo; faz isso localmente no seu
-            navegador com WebCrypto.
-          </p>
+          <p className="text-xs text-surface-400">{t("verify.formulaHint")}</p>
         </div>
       )}
 

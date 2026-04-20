@@ -148,7 +148,7 @@ export default function NotificationsPage() {
                 {t("notifications.empty")}
               </h3>
               <p className="text-sm text-surface-400 max-w-xs">
-                Você ainda não tem notificações. Elas aparecerão aqui quando houver novidades.
+                {t("notifications.emptyCopy")}
               </p>
             </div>
           </CardContent>

@@ -142,7 +142,7 @@ export default function RegisterPage() {
               <Input
                 id="name"
                 type="text"
-                placeholder="Seu nome"
+                placeholder={t("auth.register.namePlaceholder")}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="pl-10"
@@ -161,7 +161,7 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="seu@email.com"
+                placeholder={t("auth.register.emailPlaceholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10"
@@ -180,7 +180,7 @@ export default function RegisterPage() {
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Crie uma senha forte"
+                placeholder={t("auth.register.passwordPlaceholder")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10 pr-10"
@@ -228,7 +228,7 @@ export default function RegisterPage() {
               <Input
                 id="confirmPassword"
                 type={showConfirm ? "text" : "password"}
-                placeholder="Confirme sua senha"
+                placeholder={t("auth.register.confirmPasswordPlaceholder")}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="pl-10 pr-10"

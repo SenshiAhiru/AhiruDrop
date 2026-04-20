@@ -14,8 +14,10 @@ import {
   Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n/provider";
 
 export function UserMenu() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
 
@@ -71,7 +73,7 @@ export function UserMenu() {
               className="flex items-center gap-3 px-4 py-2 text-sm text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
             >
               <Home className="h-4 w-4" />
-              Início
+              {t("userMenu.home")}
             </Link>
 
             <Link
@@ -80,7 +82,7 @@ export function UserMenu() {
               className="flex items-center gap-3 px-4 py-2 text-sm text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
             >
               <LayoutDashboard className="h-4 w-4" />
-              Minha Conta
+              {t("userMenu.myAccount")}
             </Link>
 
             <Link
@@ -89,7 +91,7 @@ export function UserMenu() {
               className="flex items-center gap-3 px-4 py-2 text-sm text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
             >
               <ShoppingCart className="h-4 w-4" />
-              Meus Pedidos
+              {t("userMenu.myOrders")}
             </Link>
 
             <Link
@@ -98,7 +100,7 @@ export function UserMenu() {
               className="flex items-center gap-3 px-4 py-2 text-sm text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
             >
               <User className="h-4 w-4" />
-              Perfil
+              {t("userMenu.profile")}
             </Link>
 
             <Link
@@ -107,7 +109,7 @@ export function UserMenu() {
               className="flex items-center gap-3 px-4 py-2 text-sm text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
             >
               <Bell className="h-4 w-4" />
-              Notificações
+              {t("userMenu.notifications")}
             </Link>
 
             {isAdmin && (
@@ -119,7 +121,7 @@ export function UserMenu() {
                   className="flex items-center gap-3 px-4 py-2 text-sm text-accent-500 hover:bg-surface-800 transition-colors"
                 >
                   <Shield className="h-4 w-4" />
-                  Painel Admin
+                  {t("userMenu.adminPanel")}
                 </Link>
               </>
             )}
@@ -131,7 +133,7 @@ export function UserMenu() {
               className="flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-surface-800 transition-colors"
             >
               <LogOut className="h-4 w-4" />
-              Sair
+              {t("userMenu.logout")}
             </Link>
           </div>
         </>

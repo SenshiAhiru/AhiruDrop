@@ -282,7 +282,7 @@ export default function ProfilePage() {
               </div>
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-[var(--foreground)]">
-                  Email
+                  {t("profile.email")}
                 </label>
                 <Input
                   id="email"
@@ -293,7 +293,7 @@ export default function ProfilePage() {
               </div>
               <div className="space-y-2">
                 <label htmlFor="phone" className="text-sm font-medium text-[var(--foreground)]">
-                  Telefone
+                  {t("profile.phone")}
                 </label>
                 <Input
                   id="phone"
@@ -335,7 +335,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <CardTitle className="text-base">{t("profile.steamLink")}</CardTitle>
-              <CardDescription>Vincule sua conta Steam para receber skins</CardDescription>
+              <CardDescription>{t("profile.steamSubtitle")}</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -350,12 +350,12 @@ export default function ProfilePage() {
               <div className="flex items-center gap-3">
                 <CheckCircle className="h-5 w-5 text-success" />
                 <div>
-                  <p className="text-sm font-medium text-[var(--foreground)]">Steam vinculada</p>
-                  <p className="text-xs text-[var(--muted-foreground)]">Steam ID: {steamName}</p>
+                  <p className="text-sm font-medium text-[var(--foreground)]">{t("profile.steamLinked")}</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">{t("profile.steamId")} {steamName}</p>
                 </div>
               </div>
               <a href={`https://steamcommunity.com/profiles/${steamName}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300 transition-colors">
-                Ver perfil <ExternalLink className="h-3 w-3" />
+                {t("profile.viewProfile")} <ExternalLink className="h-3 w-3" />
               </a>
             </div>
           ) : (
@@ -381,7 +381,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <CardTitle className="text-base">{t("profile.changePassword")}</CardTitle>
-              <CardDescription>Atualize sua senha de acesso</CardDescription>
+              <CardDescription>{t("profile.changePasswordSub")}</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -389,7 +389,7 @@ export default function ProfilePage() {
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="currentPassword" className="text-sm font-medium text-[var(--foreground)]">
-                Senha atual
+                {t("profile.currentPassword")}
               </label>
               <div className="relative">
                 <Input
@@ -397,7 +397,7 @@ export default function ProfilePage() {
                   type={showCurrentPassword ? "text" : "password"}
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Digite sua senha atual"
+                  placeholder={t("profile.currentPasswordPlaceholder")}
                   required
                   className="pr-10"
                   autoComplete="current-password"
@@ -415,7 +415,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label htmlFor="newPassword" className="text-sm font-medium text-[var(--foreground)]">
-                  Nova senha
+                  {t("profile.newPassword")}
                 </label>
                 <div className="relative">
                   <Input
@@ -423,7 +423,7 @@ export default function ProfilePage() {
                     type={showNewPassword ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Nova senha"
+                    placeholder={t("profile.newPasswordPlaceholder")}
                     required
                     minLength={6}
                     className="pr-10"
@@ -440,14 +440,14 @@ export default function ProfilePage() {
               </div>
               <div className="space-y-2">
                 <label htmlFor="confirmNewPassword" className="text-sm font-medium text-[var(--foreground)]">
-                  Confirmar nova senha
+                  {t("profile.confirmNewPassword")}
                 </label>
                 <Input
                   id="confirmNewPassword"
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirme a nova senha"
+                  placeholder={t("profile.confirmNewPasswordPlaceholder")}
                   required
                   autoComplete="new-password"
                 />

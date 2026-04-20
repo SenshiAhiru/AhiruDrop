@@ -130,7 +130,7 @@ export default function UserSupportPage() {
             <MessageSquare className="h-10 w-10 mx-auto text-surface-600 mb-3" />
             <p className="text-surface-400 mb-4">{tr("supportList.empty")}</p>
             <Button onClick={() => setNewOpen(true)}>
-              <Plus className="h-4 w-4" /> Abrir primeiro ticket
+              <Plus className="h-4 w-4" /> {tr("supportList.openFirstTicket")}
             </Button>
           </CardContent>
         </Card>

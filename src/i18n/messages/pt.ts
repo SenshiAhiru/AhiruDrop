@@ -286,6 +286,33 @@ export const pt = {
   "auth.login.passwordPlaceholder": "••••••••",
   "auth.login.submitting": "Entrando...",
   "auth.register.subtitle": "Crie sua conta em segundos",
+  "auth.register.namePlaceholder": "Seu nome",
+  "auth.register.emailPlaceholder": "seu@email.com",
+  "auth.register.passwordPlaceholder": "Crie uma senha forte",
+  "auth.register.confirmPasswordPlaceholder": "Confirme sua senha",
+
+  // ─── Terms page ─────────────────────────────────────────
+  "terms.title": "Termos de Uso",
+  "terms.lastUpdated": "Última atualização: {date}",
+  "terms.s1Title": "1. Aceitação dos Termos",
+  "terms.s1Body": "Ao acessar e utilizar a plataforma AhiruDrop, você concorda com estes Termos de Uso em sua totalidade. Caso não concorde com qualquer cláusula, não utilize nossos serviços. O uso continuado da plataforma constitui aceitação de eventuais atualizações destes termos.",
+  "terms.s2Title": "2. Cadastro",
+  "terms.s2Body": "Para participar das rifas, é necessário criar uma conta fornecendo informações verdadeiras e completas. Você é responsável por manter a confidencialidade de suas credenciais de acesso. É obrigatório ser maior de 18 anos para se cadastrar e participar. Contas com informações falsas podem ser suspensas ou encerradas.",
+  "terms.s3Title": "3. Rifas e Participação",
+  "terms.s3Body": "Cada rifa possui regras próprias, incluindo quantidade de números, valor por número, data de sorteio e prêmio oferecido. Ao adquirir números em uma rifa, você aceita as regras específicas daquela rifa. A participação é pessoal e intransferível. A plataforma reserva o direito de cancelar rifas que não atinjam o número mínimo de participantes, realizando o reembolso integral dos valores pagos.",
+  "terms.s4Title": "4. Pagamentos",
+  "terms.s4Body": "Os pagamentos são processados por meio de provedores de pagamento terceirizados. A confirmação do pagamento vincula os números selecionados à sua conta. Uma vez confirmado, o pagamento não é passível de reembolso, exceto em caso de cancelamento da rifa pela plataforma. Eventuais taxas bancárias são de responsabilidade do participante.",
+  "terms.s5Title": "5. Sorteios",
+  "terms.s5Body": "Os sorteios são realizados de forma automática e transparente, utilizando algoritmo verificável publicamente. Os resultados são definitivos e não passíveis de contestação. A plataforma não se responsabiliza por instabilidades técnicas pontuais que possam afetar o momento exato do sorteio, desde que não interfiram no resultado.",
+  "terms.s6Title": "6. Prêmios",
+  "terms.s6Body": "Os prêmios ganhos em rifas devem ser reivindicados pelo vencedor no prazo estabelecido para cada sorteio. Prêmios físicos serão enviados para o endereço cadastrado pelo usuário. Prêmios digitais serão entregues na conta do usuário. A plataforma não se responsabiliza por endereços incorretos ou indisponibilidade do usuário para receber o prêmio.",
+  "terms.s7Title": "7. Limitações",
+  "terms.s7Body": "A plataforma é disponibilizada \"como está\", sem garantias de disponibilidade ininterrupta. Reservamos o direito de suspender temporariamente o serviço para manutenção. Não nos responsabilizamos por perdas decorrentes de falhas técnicas, desde que envidemos esforços razoáveis para mitigá-las.",
+  "terms.s8Title": "8. Modificações",
+  "terms.s8Body": "Estes Termos podem ser modificados a qualquer momento. As alterações entram em vigor imediatamente após a publicação. É sua responsabilidade revisar periodicamente os termos.",
+
+  // ─── Privacy page ───────────────────────────────────────
+  "privacy.title": "Política de Privacidade",
   "auth.register.submitting": "Criando conta...",
   "auth.register.acceptTerms": "Li e aceito os",
   "auth.register.termsLink": "Termos de Uso",
@@ -367,6 +394,64 @@ export const pt = {
   "supportList.subtitle": "Seus tickets de atendimento",
   "supportList.newTicket": "Novo ticket",
   "supportList.empty": "Nenhum ticket aberto.",
+
+  // ─── User menu dropdown ─────────────────────────────────
+  "userMenu.home": "Início",
+  "userMenu.myAccount": "Minha Conta",
+  "userMenu.myOrders": "Meus Pedidos",
+  "userMenu.profile": "Perfil",
+  "userMenu.notifications": "Notificações",
+  "userMenu.adminPanel": "Painel Admin",
+  "userMenu.logout": "Sair",
+
+  // ─── Dashboard overview extra ───────────────────────────
+  "dashboardHome.rafflesJoined": "Rifas Participando",
+  "dashboardHome.ordersPlaced": "Pedidos Realizados",
+  "dashboardHome.pendingPayments": "Pagamentos Pendentes",
+  "dashboardHome.recentOrders": "Pedidos Recentes",
+  "dashboardHome.noOrdersYet": "Você ainda não fez nenhum pedido",
+  "dashboardHome.drawLabel": "Sorteio: {date}",
+  "dashboardHome.soldPercent": "{percent}% vendido",
+
+  // ─── Raffle detail extras ───────────────────────────────
+  "raffleDetail.raffleProgress": "Progresso da rifa",
+  "raffleDetail.quotasSold": "{sold} de {total} cotas vendidas",
+  "raffleDetail.quotasAvailable": "{n} disponíveis",
+  "raffleDetail.provablyFair": "Provably Fair",
+  "raffleDetail.provablyFairSub": "Sorteio verificável via Bitcoin · clique para conferir",
+  "raffleDetail.drawInShort": "Sorteio em:",
+  "raffleDetail.raffleDefault": "Concorra a um(a) {title} no CS2!",
+
+  // ─── Verify page extras ─────────────────────────────────
+  "verify.formulaIntro": "Nossa fórmula é aberta e qualquer pessoa pode recomputar. Você vai precisar dos valores abaixo:",
+  "verify.serverSeedItem": "string aleatória gerada pelo servidor antes da rifa começar. O hash SHA-256 dele é publicado na hora da criação — o seed original só é revelado depois do sorteio, provando que não foi alterado.",
+  "verify.blockHashItem": "hash do bloco do Bitcoin na altura pré-definida. Impossível de prever ou manipular (a rede Bitcoin gera uns 144 blocos/dia de forma distribuída).",
+  "verify.raffleIdItem": "identificador único desta rifa, usado como nonce.",
+  "verify.codeStep1": "// Passo 1 — prova do seed:",
+  "verify.codeStep2": "// Passo 2 — escolha do vencedor:",
+  "verify.formulaHint": "Basta aplicar a fórmula nos valores abaixo usando qualquer ferramenta SHA-256/HMAC (ex: biblioteca crypto do Node, Python, ou ferramentas online). O botão \"Verificar agora\" faz isso localmente no seu navegador com WebCrypto.",
+
+  // ─── Profile extras ─────────────────────────────────────
+  "profile.phone": "Telefone",
+  "profile.email": "E-mail",
+  "profile.steamSubtitle": "Vincule sua conta Steam para receber skins",
+  "profile.steamLinked": "Steam vinculada",
+  "profile.steamId": "Steam ID:",
+  "profile.viewProfile": "Ver perfil",
+  "profile.steamLink_cta": "Vincular Steam",
+  "profile.changePasswordSub": "Atualize sua senha de acesso",
+  "profile.currentPassword": "Senha atual",
+  "profile.currentPasswordPlaceholder": "Digite sua senha atual",
+  "profile.newPassword": "Nova senha",
+  "profile.newPasswordPlaceholder": "Nova senha",
+  "profile.confirmNewPassword": "Confirmar nova senha",
+  "profile.confirmNewPasswordPlaceholder": "Confirme a nova senha",
+
+  // ─── Notifications empty state ──────────────────────────
+  "notifications.emptyCopy": "Você ainda não tem notificações. Elas aparecerão aqui quando houver novidades.",
+
+  // ─── Support extras ─────────────────────────────────────
+  "supportList.openFirstTicket": "Abrir primeiro ticket",
 
   // ─── Pagination ─────────────────────────────────────────
   "pagination.previous": "Anterior",

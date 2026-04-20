@@ -93,21 +93,21 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatsCard
           icon={<Ticket className="h-5 w-5" />}
-          label="Rifas Participando"
+          label={t("dashboardHome.rafflesJoined")}
           value={stats.activeRaffles}
           color="text-primary-400"
           bgColor="bg-primary-500/10"
         />
         <StatsCard
           icon={<ShoppingCart className="h-5 w-5" />}
-          label="Pedidos Realizados"
+          label={t("dashboardHome.ordersPlaced")}
           value={stats.totalOrders}
           color="text-accent-400"
           bgColor="bg-accent-500/10"
         />
         <StatsCard
           icon={<Clock className="h-5 w-5" />}
-          label="Pagamentos Pendentes"
+          label={t("dashboardHome.pendingPayments")}
           value={stats.pendingPayments}
           color="text-warning"
           bgColor="bg-warning/10"
@@ -118,7 +118,7 @@ export default function DashboardPage() {
         {/* Recent Orders */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-base">Pedidos Recentes</CardTitle>
+            <CardTitle className="text-base">{t("dashboardHome.recentOrders")}</CardTitle>
             <Link
               href="/dashboard/orders"
               className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300 transition-colors"
@@ -158,7 +158,7 @@ export default function DashboardPage() {
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <Package className="h-8 w-8 text-[var(--muted-foreground)] mb-2" />
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Você ainda não fez nenhum pedido
+                  {t("dashboardHome.noOrdersYet")}
                 </p>
               </div>
             )}
@@ -200,14 +200,14 @@ export default function DashboardPage() {
                           <p className="text-sm font-medium text-[var(--foreground)] truncate">{raffle.name}</p>
                           {raffle.drawDate && (
                             <p className="text-xs text-[var(--muted-foreground)]">
-                              Sorteio: {new Date(raffle.drawDate).toLocaleDateString("pt-BR")}
+                              {t("dashboardHome.drawLabel", { date: new Date(raffle.drawDate).toLocaleDateString("pt-BR") })}
                             </p>
                           )}
                         </div>
                       </div>
                       <div className="space-y-1">
                         <div className="flex justify-between text-xs text-[var(--muted-foreground)]">
-                          <span>{progress}% vendido</span>
+                          <span>{t("dashboardHome.soldPercent", { percent: progress })}</span>
                           <span>{raffle.soldNumbers}/{raffle.totalNumbers}</span>
                         </div>
                         <div className="h-1.5 w-full rounded-full bg-surface-800 overflow-hidden">

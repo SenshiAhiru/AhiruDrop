@@ -17,6 +17,7 @@ import {
 import { User, Mail, Lock, Eye, EyeOff, Check, X } from "lucide-react";
 import { validatePasswordStrength, PASSWORD_MIN_LENGTH } from "@/lib/password-policy";
 import { TurnstileWidget } from "@/components/shared/turnstile-widget";
+import { useTranslation } from "@/i18n/provider";
 
 const TURNSTILE_ENABLED = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 
@@ -29,6 +30,7 @@ const SCORE_CONFIG: Record<number, { color: string; width: string; text: string 
 };
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -113,10 +115,10 @@ export default function RegisterPage() {
     <Card className="border-surface-800/50 bg-surface-900/80 backdrop-blur-sm">
       <CardHeader className="text-center space-y-2">
         <CardTitle className="text-2xl font-bold text-[var(--foreground)]">
-          Criar conta
+          {t("auth.register.title")}
         </CardTitle>
         <CardDescription>
-          Crie sua conta para participar das melhores rifas
+          {t("auth.register.subtitle")}
         </CardDescription>
       </CardHeader>
 
@@ -133,7 +135,7 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium text-[var(--foreground)]">
-              Nome completo
+              {t("auth.register.name")}
             </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
@@ -152,7 +154,7 @@ export default function RegisterPage() {
 
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium text-[var(--foreground)]">
-              Email
+              {t("auth.register.email")}
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
@@ -171,7 +173,7 @@ export default function RegisterPage() {
 
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium text-[var(--foreground)]">
-              Senha
+              {t("auth.register.password")}
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
@@ -219,7 +221,7 @@ export default function RegisterPage() {
 
           <div className="space-y-2">
             <label htmlFor="confirmPassword" className="text-sm font-medium text-[var(--foreground)]">
-              Confirmar senha
+              {t("auth.register.confirmPassword")}
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
@@ -255,13 +257,13 @@ export default function RegisterPage() {
               className="mt-1 h-4 w-4 rounded border-surface-700 bg-surface-800 text-primary-600 focus:ring-primary-500 focus:ring-offset-0 cursor-pointer"
             />
             <label htmlFor="terms" className="text-sm text-[var(--muted-foreground)] cursor-pointer">
-              Concordo com os{" "}
+              {t("auth.register.acceptTerms")}{" "}
               <Link href="/terms" className="text-primary-400 hover:text-primary-300 underline">
-                Termos de Uso
+                {t("auth.register.termsLink")}
               </Link>{" "}
-              e{" "}
+              {t("auth.register.and")}{" "}
               <Link href="/privacy" className="text-primary-400 hover:text-primary-300 underline">
-                Política de Privacidade
+                {t("auth.register.privacyLink")}
               </Link>
             </label>
           </div>
@@ -279,16 +281,16 @@ export default function RegisterPage() {
             isLoading={isLoading}
             disabled={!acceptTerms || (TURNSTILE_ENABLED && !turnstileToken)}
           >
-            Criar conta
+            {isLoading ? t("auth.register.submitting") : t("auth.register.submit")}
           </Button>
         </form>
       </CardContent>
 
       <CardFooter className="justify-center">
         <p className="text-sm text-[var(--muted-foreground)]">
-          Já tem conta?{" "}
+          {t("auth.register.alreadyHaveAccount")}{" "}
           <Link href="/login" className="text-primary-400 hover:text-primary-300 font-medium transition-colors">
-            Entrar
+            {t("auth.register.signIn")}
           </Link>
         </p>
       </CardFooter>

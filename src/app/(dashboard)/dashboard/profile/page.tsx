@@ -14,8 +14,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { User, Lock, Eye, EyeOff, Save, Link2, CheckCircle, ExternalLink } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useTranslation } from "@/i18n/provider";
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
 
   const [name, setName] = useState(session?.user?.name || "");
@@ -197,9 +199,9 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Meu Perfil</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("profile.title")}</h1>
         <p className="text-[var(--muted-foreground)] mt-1">
-          Gerencie suas informações pessoais e segurança
+          {t("profile.subtitle")}
         </p>
       </div>
 
@@ -238,8 +240,8 @@ export default function ProfilePage() {
               <User className="h-5 w-5 text-primary-400" />
             </div>
             <div>
-              <CardTitle className="text-base">Informações Pessoais</CardTitle>
-              <CardDescription>Atualize seus dados de perfil</CardDescription>
+              <CardTitle className="text-base">{t("profile.accountInfo")}</CardTitle>
+              <CardDescription>{t("profile.subtitle")}</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -268,7 +270,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label htmlFor="name" className="text-sm font-medium text-[var(--foreground)]">
-                  Nome completo
+                  {t("profile.displayName")}
                 </label>
                 <Input
                   id="name"
@@ -316,7 +318,7 @@ export default function ProfilePage() {
 
             <Button type="submit" isLoading={isSavingProfile}>
               <Save className="h-4 w-4 mr-2" />
-              Salvar alterações
+              {t("profile.saveChanges")}
             </Button>
           </form>
         </CardContent>
@@ -332,7 +334,7 @@ export default function ProfilePage() {
               </svg>
             </div>
             <div>
-              <CardTitle className="text-base">Conta Steam</CardTitle>
+              <CardTitle className="text-base">{t("profile.steamLink")}</CardTitle>
               <CardDescription>Vincule sua conta Steam para receber skins</CardDescription>
             </div>
           </div>
@@ -378,7 +380,7 @@ export default function ProfilePage() {
               <Lock className="h-5 w-5 text-accent-400" />
             </div>
             <div>
-              <CardTitle className="text-base">Alterar Senha</CardTitle>
+              <CardTitle className="text-base">{t("profile.changePassword")}</CardTitle>
               <CardDescription>Atualize sua senha de acesso</CardDescription>
             </div>
           </div>
@@ -466,7 +468,7 @@ export default function ProfilePage() {
 
             <Button type="submit" variant="accent" isLoading={isSavingPassword}>
               <Lock className="h-4 w-4 mr-2" />
-              Alterar senha
+              {t("profile.changePassword")}
             </Button>
           </form>
         </CardContent>

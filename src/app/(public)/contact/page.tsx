@@ -11,8 +11,10 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { LogIn, MessageSquare, Loader2 } from "lucide-react";
 import { SUPPORT_CATEGORIES } from "@/constants/support";
+import { useTranslation } from "@/i18n/provider";
 
 export default function ContactPage() {
+  const { t } = useTranslation();
   const { addToast } = useToast();
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -64,10 +66,10 @@ export default function ContactPage() {
     <div className="mx-auto max-w-5xl px-6 py-16">
       <div className="mb-12 text-center">
         <h1 className="text-3xl font-bold text-[var(--foreground)] sm:text-4xl">
-          Contato & Suporte
+          {t("contact.title")}
         </h1>
         <p className="mt-3 text-[var(--muted-foreground)]">
-          Tem alguma dúvida ou precisa de ajuda? Estamos aqui para você.
+          {t("contact.subtitle")}
         </p>
       </div>
 
@@ -128,7 +130,7 @@ export default function ContactPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[var(--foreground)]">Assunto</label>
+                <label className="text-sm font-medium text-[var(--foreground)]">{t("contact.subject")}</label>
                 <Input
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
@@ -139,7 +141,7 @@ export default function ContactPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[var(--foreground)]">Mensagem</label>
+                <label className="text-sm font-medium text-[var(--foreground)]">{t("contact.message")}</label>
                 <Textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
@@ -152,7 +154,7 @@ export default function ContactPage() {
               </div>
 
               <Button type="submit" size="lg" isLoading={loading} className="w-full sm:w-auto">
-                Enviar Mensagem
+                {loading ? t("contact.sending") : t("contact.submit")}
               </Button>
             </form>
           )}

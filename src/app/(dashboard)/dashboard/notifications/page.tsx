@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { usePoll } from "@/hooks/use-poll";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n/provider";
 
 type NotificationItem = {
   id: string;
@@ -62,6 +63,7 @@ function timeAgo(iso: string): string {
 }
 
 export default function NotificationsPage() {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [markingAll, setMarkingAll] = useState(false);
@@ -116,7 +118,7 @@ export default function NotificationsPage() {
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">Notificações</h1>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("notifications.title")}</h1>
           <p className="text-[var(--muted-foreground)] mt-1">
             {unreadCount > 0
               ? `${unreadCount} não lida${unreadCount > 1 ? "s" : ""}`
@@ -126,7 +128,7 @@ export default function NotificationsPage() {
         {unreadCount > 0 && (
           <Button variant="outline" size="sm" onClick={markAllRead} disabled={markingAll}>
             {markingAll ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCheck className="h-4 w-4" />}
-            Marcar todas como lidas
+            {t("notifications.markAllRead")}
           </Button>
         )}
       </div>
@@ -143,7 +145,7 @@ export default function NotificationsPage() {
                 <BellOff className="h-8 w-8 text-surface-500" />
               </div>
               <h3 className="text-lg font-semibold text-[var(--foreground)]">
-                Nenhuma notificação
+                {t("notifications.empty")}
               </h3>
               <p className="text-sm text-surface-400 max-w-xs">
                 Você ainda não tem notificações. Elas aparecerão aqui quando houver novidades.

@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Ticket, ShoppingCart, Clock, ArrowRight, Trophy, Package } from "lucide-react";
+import { useTranslation } from "@/i18n/provider";
 
 const statusConfig = {
   pending: { label: "Pendente", variant: "warning" as const },
@@ -20,6 +21,7 @@ const statusConfig = {
 };
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
 
   if (status === "loading") {
@@ -80,10 +82,10 @@ export default function DashboardPage() {
       {/* Welcome */}
       <div>
         <h1 className="text-2xl font-bold text-[var(--foreground)]">
-          Olá, {firstName}!
+          {t("dashboardHome.hello", { name: firstName })}
         </h1>
         <p className="text-[var(--muted-foreground)] mt-1">
-          Acompanhe suas rifas e pedidos
+          {t("dashboardHome.subtitle")}
         </p>
       </div>
 
@@ -121,7 +123,7 @@ export default function DashboardPage() {
               href="/dashboard/orders"
               className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300 transition-colors"
             >
-              Ver todos <ArrowRight className="h-3 w-3" />
+              {t("dashboardHome.viewAll")} <ArrowRight className="h-3 w-3" />
             </Link>
           </CardHeader>
           <CardContent>
@@ -166,12 +168,12 @@ export default function DashboardPage() {
         {/* Active Raffles */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-base">Rifas Ativas</CardTitle>
+            <CardTitle className="text-base">{t("dashboardHome.activeRaffles")}</CardTitle>
             <Link
               href="/raffles"
               className="flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300 transition-colors"
             >
-              Explorar <ArrowRight className="h-3 w-3" />
+              {t("dashboardHome.viewAll")} <ArrowRight className="h-3 w-3" />
             </Link>
           </CardHeader>
           <CardContent>

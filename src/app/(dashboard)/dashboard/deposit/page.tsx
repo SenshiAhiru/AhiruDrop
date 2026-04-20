@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle, Loader2, Tag, X, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
+import { useTranslation } from "@/i18n/provider";
 
 const CURRENCIES = [
   { code: "BRL", symbol: "R$", flag: "🇧🇷", name: "Real" },
@@ -24,6 +25,7 @@ const USD_PER_AHC = 1;
 
 // ─── Payment Form (inside Elements) ───
 function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () => void }) {
+  const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
   const [paying, setPaying] = useState(false);
@@ -95,12 +97,12 @@ function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () 
       )}
       <Button type="submit" className="w-full" size="lg" disabled={!stripe || paying}>
         {paying ? (
-          <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Processando...</>
+          <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> {t("deposit.processing")}</>
         ) : (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/ahc-coin.png" alt="" className="h-5 w-5 rounded-full mr-2" />
-            Pagar e receber {totalAhc.toFixed(2)} AHC
+            {t("deposit.payAndReceive", { total: totalAhc.toFixed(2) })}
           </>
         )}
       </Button>
@@ -110,6 +112,7 @@ function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () 
 
 // ─── Main Page ───
 export default function DepositPage() {
+  const { t } = useTranslation();
   const { addToast } = useToast();
   const [balance, setBalance] = useState<number | null>(null);
   const [currency, setCurrency] = useState<CurrencyCode>("BRL");
@@ -199,7 +202,7 @@ export default function DepositPage() {
     const code = couponInput.trim().toUpperCase();
     if (!code) return;
     if (numAhc < 1) {
-      setCouponError("Defina a quantidade de AHC antes");
+      setCouponError(t("deposit.couponDefineAmountFirst"));
       return;
     }
     setValidatingCoupon(true);
@@ -282,8 +285,8 @@ export default function DepositPage() {
         <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/10">
           <CheckCircle className="h-10 w-10 text-emerald-400" />
         </div>
-        <h1 className="text-2xl font-bold text-white mb-2">Depósito realizado!</h1>
-        <p className="text-surface-400 mb-4">Seu saldo foi creditado com sucesso.</p>
+        <h1 className="text-2xl font-bold text-white mb-2">{t("deposit.successTitle")}</h1>
+        <p className="text-surface-400 mb-4">{t("deposit.successSubtitle")}</p>
         <div className="flex items-center gap-2 mb-8">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/ahc-coin.png" alt="AHC" className="h-8 w-8 rounded-full" />
@@ -294,13 +297,13 @@ export default function DepositPage() {
             href="/dashboard/deposit"
             className="rounded-lg border border-surface-700 px-6 py-2.5 text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
           >
-            Depositar mais
+            {t("deposit.depositMore")}
           </a>
           <a
             href="/raffles"
             className="rounded-lg bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
           >
-            Ver rifas
+            {t("deposit.viewRaffles")}
           </a>
         </div>
       </div>
@@ -310,8 +313,8 @@ export default function DepositPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Adicionar AhiruCoins</h1>
-        <p className="text-[var(--muted-foreground)] mt-1">Compre AHC para participar das rifas de skins CS2</p>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("deposit.title")}</h1>
+        <p className="text-[var(--muted-foreground)] mt-1">{t("deposit.subtitle")}</p>
       </div>
 
       {/* Balance */}
@@ -321,7 +324,7 @@ export default function DepositPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/ahc-coin.png" alt="AHC" className="h-12 w-12 rounded-full" />
             <div>
-              <p className="text-sm text-[var(--muted-foreground)]">Seu saldo</p>
+              <p className="text-sm text-[var(--muted-foreground)]">{t("balance.yourBalance")}</p>
               {loading ? (
                 <Skeleton className="h-8 w-24" />
               ) : (
@@ -339,7 +342,7 @@ export default function DepositPage() {
           {/* Currency */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Moeda de pagamento</CardTitle>
+              <CardTitle className="text-base">{t("deposit.currency")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex gap-2 flex-wrap">
@@ -371,7 +374,7 @@ export default function DepositPage() {
           {/* Amount */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Quantidade de AHC</CardTitle>
+              <CardTitle className="text-base">{t("deposit.amount")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
@@ -415,7 +418,7 @@ export default function DepositPage() {
                   step={1}
                   value={ahcAmount}
                   onChange={(e) => setAhcAmount(e.target.value)}
-                  placeholder="Quantidade personalizada"
+                  placeholder={t("deposit.amountCustom")}
                   className="pr-16"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-bold text-accent-500">AHC</span>
@@ -424,24 +427,24 @@ export default function DepositPage() {
               {numAhc > 0 && (
                 <div className="rounded-xl border border-surface-700 bg-surface-800/50 p-4 space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-surface-400">AHC base</span>
+                    <span className="text-surface-400">{t("deposit.baseAhc")}</span>
                     <span className="font-semibold text-white">{numAhc} AHC</span>
                   </div>
                   {bonusAhc > 0 && (
                     <div className="flex justify-between">
                       <span className="text-emerald-400 flex items-center gap-1">
                         <Sparkles className="h-3.5 w-3.5" />
-                        Bônus cupom {couponApplied?.code}
+                        {t("deposit.couponBonus")} {couponApplied?.code}
                       </span>
                       <span className="font-semibold text-emerald-400">+{bonusAhc.toFixed(2)} AHC</span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-surface-400">Você recebe</span>
+                    <span className="text-surface-400">{t("deposit.youReceive")}</span>
                     <span className="font-bold text-accent-400">{totalAhcReceived.toFixed(2)} AHC</span>
                   </div>
                   <div className="flex justify-between items-start">
-                    <span className="text-surface-400">Você paga</span>
+                    <span className="text-surface-400">{t("deposit.youPay")}</span>
                     <div className="text-right">
                       <div className="font-semibold text-white">
                         {currencyInfo.flag} {currencyInfo.symbol}{" "}
@@ -456,7 +459,7 @@ export default function DepositPage() {
                   </div>
                   <hr className="border-surface-700" />
                   <div className="flex justify-between">
-                    <span className="text-surface-400">Saldo após depósito</span>
+                    <span className="text-surface-400">{t("deposit.balanceAfter")}</span>
                     <span className="font-bold text-accent-400">{((balance || 0) + totalAhcReceived).toFixed(2)} AHC</span>
                   </div>
                 </div>
@@ -466,7 +469,7 @@ export default function DepositPage() {
               <div className="rounded-xl border border-surface-700 bg-surface-800/30 p-3 space-y-2">
                 <label className="flex items-center gap-1.5 text-xs font-semibold text-surface-300">
                   <Tag className="h-3.5 w-3.5 text-accent-400" />
-                  Cupom de bônus (opcional)
+                  {t("deposit.couponLabel")}
                 </label>
 
                 {couponApplied ? (
@@ -495,7 +498,7 @@ export default function DepositPage() {
                       <Input
                         value={couponInput}
                         onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                        placeholder="Digite o código"
+                        placeholder={t("deposit.couponPlaceholder")}
                         disabled={validatingCoupon || numAhc < 1}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
@@ -511,7 +514,7 @@ export default function DepositPage() {
                         onClick={handleApplyCoupon}
                         disabled={validatingCoupon || !couponInput.trim() || numAhc < 1}
                       >
-                        {validatingCoupon ? <Loader2 className="h-4 w-4 animate-spin" /> : "Aplicar"}
+                        {validatingCoupon ? <Loader2 className="h-4 w-4 animate-spin" /> : t("deposit.couponApply")}
                       </Button>
                     </div>
                     {couponError && (
@@ -528,13 +531,13 @@ export default function DepositPage() {
                 onClick={handleStartPayment}
               >
                 {creating ? (
-                  <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Preparando...</>
+                  <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> {t("deposit.preparingPayment")}</>
                 ) : (
-                  `Continuar para pagamento`
+                  t("deposit.continueToPayment")
                 )}
               </Button>
 
-              <p className="text-center text-xs text-surface-500">Pagamento seguro via Stripe</p>
+              <p className="text-center text-xs text-surface-500">{t("deposit.securePayment")}</p>
             </CardContent>
           </Card>
         </>
@@ -544,7 +547,7 @@ export default function DepositPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-base">Pagamento</CardTitle>
+                <CardTitle className="text-base">{t("deposit.paymentTitle")}</CardTitle>
                 <CardDescription>
                   {totalAhcReceived.toFixed(2)} AHC
                   {bonusAhc > 0 && (
@@ -558,7 +561,7 @@ export default function DepositPage() {
                 onClick={() => { setShowPayment(false); setClientSecret(null); }}
                 className="text-sm text-surface-400 hover:text-white transition-colors"
               >
-                ← Voltar
+                ← {t("common.back")}
               </button>
             </div>
           </CardHeader>

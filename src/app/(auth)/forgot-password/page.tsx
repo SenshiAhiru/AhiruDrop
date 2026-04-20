@@ -13,8 +13,10 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
+import { useTranslation } from "@/i18n/provider";
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -77,7 +79,7 @@ export default function ForgotPasswordPage() {
             className="flex items-center gap-2 text-sm text-primary-400 hover:text-primary-300 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Voltar ao login
+            {t("auth.forgot.backToLogin")}
           </Link>
         </CardFooter>
       </Card>
@@ -88,10 +90,10 @@ export default function ForgotPasswordPage() {
     <Card className="border-surface-800/50 bg-surface-900/80 backdrop-blur-sm">
       <CardHeader className="text-center space-y-2">
         <CardTitle className="text-2xl font-bold text-[var(--foreground)]">
-          Recuperar senha
+          {t("auth.forgot.title")}
         </CardTitle>
         <CardDescription>
-          Digite seu email e enviaremos um link para redefinir sua senha
+          {t("auth.forgot.subtitle")}
         </CardDescription>
       </CardHeader>
 
@@ -108,7 +110,7 @@ export default function ForgotPasswordPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium text-[var(--foreground)]">
-              Email
+              {t("auth.login.email")}
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
@@ -126,7 +128,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-            Enviar link de recuperação
+            {t("auth.forgot.submit")}
           </Button>
         </form>
       </CardContent>
@@ -137,7 +139,7 @@ export default function ForgotPasswordPage() {
           className="flex items-center gap-2 text-sm text-primary-400 hover:text-primary-300 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Voltar ao login
+          {t("auth.forgot.backToLogin")}
         </Link>
       </CardFooter>
     </Card>

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingCart, ChevronLeft, ChevronRight, Package } from "lucide-react";
+import { useTranslation } from "@/i18n/provider";
 
 type OrderStatus = "pending" | "confirmed" | "cancelled";
 type StatusFilter = "all" | OrderStatus;
@@ -21,22 +22,21 @@ const allOrders: {
   date: string;
 }[] = [];
 
-const statusConfig = {
-  pending: { label: "Pendente", variant: "warning" as const },
-  confirmed: { label: "Confirmado", variant: "success" as const },
-  cancelled: { label: "Cancelado", variant: "danger" as const },
-};
-
-const tabs: { key: StatusFilter; label: string }[] = [
-  { key: "all", label: "Todos" },
-  { key: "pending", label: "Pendentes" },
-  { key: "confirmed", label: "Confirmados" },
-  { key: "cancelled", label: "Cancelados" },
-];
-
 const PAGE_SIZE = 6;
 
 export default function OrdersPage() {
+  const { t } = useTranslation();
+  const statusConfig = {
+    pending: { label: t("myOrders.statusPending"), variant: "warning" as const },
+    confirmed: { label: t("myOrders.statusConfirmed"), variant: "success" as const },
+    cancelled: { label: t("myOrders.statusCancelled"), variant: "danger" as const },
+  };
+  const tabs: { key: StatusFilter; label: string }[] = [
+    { key: "all", label: t("myOrders.statusAll") },
+    { key: "pending", label: t("myOrders.statusPending") },
+    { key: "confirmed", label: t("myOrders.statusConfirmed") },
+    { key: "cancelled", label: t("myOrders.statusCancelled") },
+  ];
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [page, setPage] = useState(1);
   const [isLoading] = useState(false);
@@ -61,9 +61,9 @@ export default function OrdersPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Meus Pedidos</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("myOrders.title")}</h1>
         <p className="text-[var(--muted-foreground)] mt-1">
-          Gerencie todos os seus pedidos de rifas
+          {t("myOrders.subtitle")}
         </p>
       </div>
 
@@ -107,15 +107,12 @@ export default function OrdersPage() {
                 <Package className="h-8 w-8 text-[var(--muted-foreground)]" />
               </div>
               <h3 className="text-lg font-semibold text-[var(--foreground)]">
-                Nenhum pedido encontrado
+                {t("myOrders.empty")}
               </h3>
-              <p className="text-sm text-[var(--muted-foreground)] max-w-xs">
-                Você ainda não fez nenhum pedido. Participe de uma rifa!
-              </p>
               <Link href="/raffles">
                 <Button variant="default" className="mt-2">
                   <ShoppingCart className="h-4 w-4 mr-2" />
-                  Ver rifas
+                  {t("myOrders.browseRaffles")}
                 </Button>
               </Link>
             </div>

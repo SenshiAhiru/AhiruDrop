@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Wallet, Sparkles, ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
+import { useTranslation } from "@/i18n/provider";
 
 type Deposit = {
   id: string;
@@ -28,11 +29,7 @@ const STATUS_VARIANT: Record<string, "warning" | "success" | "danger"> = {
   FAILED: "danger",
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  PENDING: "Pendente",
-  COMPLETED: "Confirmado",
-  FAILED: "Falhou",
-};
+// Status labels resolved inside component via t()
 
 const CURRENCY_SYMBOL: Record<string, string> = {
   BRL: "R$",
@@ -42,6 +39,12 @@ const CURRENCY_SYMBOL: Record<string, string> = {
 };
 
 export default function DepositsHistoryPage() {
+  const { t } = useTranslation();
+  const STATUS_LABEL: Record<string, string> = {
+    PENDING: t("myDeposits.statusPending"),
+    COMPLETED: t("myDeposits.statusCompleted"),
+    FAILED: t("myDeposits.statusFailed"),
+  };
   const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -81,9 +84,9 @@ export default function DepositsHistoryPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Meus depósitos</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("myDeposits.title")}</h1>
         <p className="text-[var(--muted-foreground)] mt-1">
-          Histórico de AHC adicionados à sua conta
+          {t("myDeposits.subtitle")}
         </p>
       </div>
 
@@ -91,19 +94,19 @@ export default function DepositsHistoryPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-surface-500 uppercase tracking-wider mb-1">Total pago</p>
+            <p className="text-xs text-surface-500 uppercase tracking-wider mb-1">{t("myDeposits.totalPaid")}</p>
             <p className="text-2xl font-bold text-white">R$ {totalDeposited.toFixed(2)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-surface-500 uppercase tracking-wider mb-1">AHC recebido</p>
+            <p className="text-xs text-surface-500 uppercase tracking-wider mb-1">{t("myDeposits.ahcReceived")}</p>
             <p className="text-2xl font-bold text-accent-400">{totalAhcReceived.toFixed(2)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-surface-500 uppercase tracking-wider mb-1">Bônus de cupons</p>
+            <p className="text-xs text-surface-500 uppercase tracking-wider mb-1">{t("myDeposits.couponBonus")}</p>
             <p className="text-2xl font-bold text-emerald-400">+{totalBonus.toFixed(2)}</p>
           </CardContent>
         </Card>
@@ -121,11 +124,11 @@ export default function DepositsHistoryPage() {
           ) : deposits.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
               <Wallet className="h-10 w-10 text-surface-600 mb-3" />
-              <p className="text-surface-400 mb-4">Nenhum depósito realizado ainda</p>
+              <p className="text-surface-400 mb-4">{t("myDeposits.empty")}</p>
               <Link href="/dashboard/deposit">
                 <Button>
                   <ArrowUpRight className="h-4 w-4 mr-2" />
-                  Fazer primeiro depósito
+                  {t("myDeposits.firstDeposit")}
                 </Button>
               </Link>
             </div>
@@ -158,13 +161,13 @@ export default function DepositsHistoryPage() {
 
                     <div className="flex items-center justify-between sm:gap-6 sm:text-right">
                       <div>
-                        <p className="text-xs text-surface-500">Pago</p>
+                        <p className="text-xs text-surface-500">{t("myDeposits.paid")}</p>
                         <p className="font-semibold text-white">
                           {symbol} {d.amountPaid.toFixed(2)}
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-surface-500">AHC recebido</p>
+                        <p className="text-xs text-surface-500">{t("myDeposits.received")}</p>
                         <p className="font-bold text-accent-400">
                           {d.ahcTotal.toFixed(2)}
                           {d.ahcBonus > 0 && (

@@ -17,22 +17,24 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
+import { useTranslation } from "@/i18n/provider";
+import type { MessageKey } from "@/i18n/types";
 
 interface NavItem {
-  label: string;
+  labelKey: MessageKey;
   href: string;
   icon: LucideIcon;
 }
 
 const navItems: NavItem[] = [
-  { label: "Visão Geral", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Depositar AHC", href: "/dashboard/deposit", icon: Coins },
-  { label: "Meus Depósitos", href: "/dashboard/deposits", icon: Wallet },
-  { label: "Meus Pedidos", href: "/dashboard/orders", icon: ShoppingCart },
-  { label: "Minhas Vitórias", href: "/dashboard/winnings", icon: Trophy },
-  { label: "Suporte", href: "/dashboard/support", icon: MessageSquare },
-  { label: "Perfil", href: "/dashboard/profile", icon: User },
-  { label: "Notificações", href: "/dashboard/notifications", icon: Bell },
+  { labelKey: "dashboard.overview", href: "/dashboard", icon: LayoutDashboard },
+  { labelKey: "dashboard.depositAhc", href: "/dashboard/deposit", icon: Coins },
+  { labelKey: "dashboard.myDeposits", href: "/dashboard/deposits", icon: Wallet },
+  { labelKey: "dashboard.myOrders", href: "/dashboard/orders", icon: ShoppingCart },
+  { labelKey: "dashboard.myWins", href: "/dashboard/winnings", icon: Trophy },
+  { labelKey: "dashboard.support", href: "/dashboard/support", icon: MessageSquare },
+  { labelKey: "dashboard.profile", href: "/dashboard/profile", icon: User },
+  { labelKey: "dashboard.notifications", href: "/dashboard/notifications", icon: Bell },
 ];
 
 interface DashboardSidebarProps {
@@ -40,6 +42,7 @@ interface DashboardSidebarProps {
 }
 
 export function DashboardSidebar({ className }: DashboardSidebarProps) {
+  const { t } = useTranslation();
   const pathname = usePathname();
 
   return (
@@ -79,7 +82,7 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
                     <span className="absolute right-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-primary-500 rounded-l" />
                   )}
                   <Icon className="h-5 w-5 shrink-0" />
-                  {item.label}
+                  {t(item.labelKey)}
                 </Link>
               </li>
             );
@@ -94,14 +97,14 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
         >
           <ArrowLeft className="h-5 w-5 shrink-0" />
-          Voltar ao site
+          {t("nav.backToSite")}
         </Link>
         <a
           href="/api/auth/signout"
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-danger hover:bg-[var(--muted)] transition-colors"
         >
           <LogOut className="h-5 w-5 shrink-0" />
-          Sair
+          {t("nav.logout")}
         </a>
       </div>
     </aside>

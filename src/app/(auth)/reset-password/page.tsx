@@ -14,8 +14,10 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Lock, Eye, EyeOff, ArrowLeft, CheckCircle } from "lucide-react";
+import { useTranslation } from "@/i18n/provider";
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -121,10 +123,10 @@ export default function ResetPasswordPage() {
     <Card className="border-surface-800/50 bg-surface-900/80 backdrop-blur-sm">
       <CardHeader className="text-center space-y-2">
         <CardTitle className="text-2xl font-bold text-[var(--foreground)]">
-          Redefinir senha
+          {t("auth.reset.title")}
         </CardTitle>
         <CardDescription>
-          Digite sua nova senha abaixo
+          {t("auth.reset.subtitle")}
         </CardDescription>
       </CardHeader>
 
@@ -141,7 +143,7 @@ export default function ResetPasswordPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium text-[var(--foreground)]">
-              Nova senha
+              {t("auth.login.password")}
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
@@ -196,7 +198,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-            Redefinir senha
+            {t("auth.reset.submit")}
           </Button>
         </form>
       </CardContent>
@@ -207,7 +209,7 @@ export default function ResetPasswordPage() {
           className="flex items-center gap-2 text-sm text-primary-400 hover:text-primary-300 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Voltar ao login
+          {t("auth.forgot.backToLogin")}
         </Link>
       </CardFooter>
     </Card>

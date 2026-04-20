@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/i18n/provider";
 
 type TradeInfo = {
   id: string;
@@ -60,6 +61,7 @@ const TRADE_STATUS_VARIANT: Record<string, "warning" | "default" | "success" | "
 const TRADE_URL_REGEX = /^https:\/\/steamcommunity\.com\/tradeoffer\/new\/\?partner=\d+&token=[\w-]+$/;
 
 export default function WinningsPage() {
+  const { t } = useTranslation();
   const { addToast } = useToast();
   const [items, setItems] = useState<WinningItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -143,10 +145,10 @@ export default function WinningsPage() {
       <div>
         <div className="flex items-center gap-3 mb-1">
           <Trophy className="h-6 w-6 text-accent-400" />
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">Minhas Vitórias</h1>
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("myWins.title")}</h1>
         </div>
         <p className="text-sm text-[var(--muted-foreground)]">
-          Rifas que você ganhou. Clique em uma para ver a prova do sorteio.
+          {t("myWins.subtitle")}
         </p>
       </div>
 
@@ -159,7 +161,7 @@ export default function WinningsPage() {
       ) : items.length === 0 ? (
         <div className="rounded-xl border border-surface-700 bg-surface-900/50 p-10 text-center">
           <Trophy className="h-10 w-10 mx-auto text-surface-600 mb-3" />
-          <p className="text-surface-400 mb-1">Você ainda não ganhou nenhuma rifa.</p>
+          <p className="text-surface-400 mb-1">{t("myWins.empty")}</p>
           <p className="text-xs text-surface-500 mb-4">Boa sorte na próxima!</p>
           <Link href="/raffles" className="inline-block rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700">
             Ver rifas ativas
@@ -190,7 +192,7 @@ export default function WinningsPage() {
                       <Trophy className="h-16 w-16 text-surface-700" />
                     )}
                     <div className="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-accent-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-                      <Trophy className="h-3 w-3" /> Você ganhou!
+                      <Trophy className="h-3 w-3" /> {t("myWins.youWon")}
                     </div>
                   </div>
 
@@ -217,11 +219,11 @@ export default function WinningsPage() {
 
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div className="rounded-lg border border-surface-700 bg-surface-800/60 p-3">
-                        <p className="text-[10px] text-surface-500 uppercase">Número sorteado</p>
+                        <p className="text-[10px] text-surface-500 uppercase">{t("myWins.winningNumber")}</p>
                         <p className="text-xl font-mono font-bold text-accent-400">#{item.numberWon}</p>
                       </div>
                       <div className="rounded-lg border border-surface-700 bg-surface-800/60 p-3">
-                        <p className="text-[10px] text-surface-500 uppercase">Sorteado em</p>
+                        <p className="text-[10px] text-surface-500 uppercase">{t("myWins.drawnAt")}</p>
                         <p className="text-sm font-semibold text-white">
                           {new Date(item.drawnAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}
                         </p>
@@ -262,11 +264,11 @@ export default function WinningsPage() {
 
                     <div className="flex gap-2 pt-1">
                       <Link href={`/raffles/${r.slug}`} className="flex-1 text-center rounded-lg border border-surface-700 bg-surface-800/60 px-3 py-2 text-xs font-semibold text-surface-300 hover:bg-surface-800">
-                        Ver rifa
+                        {t("myWins.viewRaffle")}
                       </Link>
                       <Link href={`/raffles/${r.slug}/verify`} className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20">
                         <Shield className="h-3.5 w-3.5" />
-                        Prova do sorteio
+                        {t("myWins.viewProof")}
                       </Link>
                     </div>
                   </div>

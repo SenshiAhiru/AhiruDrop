@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 import { SUPPORT_CATEGORIES } from "@/constants/support";
+import { useTranslation } from "@/i18n/provider";
 
 type TicketListItem = {
   id: string;
@@ -42,6 +43,7 @@ const STATUS_META: Record<
 };
 
 export default function UserSupportPage() {
+  const { t: tr } = useTranslation();
   const { addToast } = useToast();
   const [tickets, setTickets] = useState<TicketListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -107,14 +109,14 @@ export default function UserSupportPage() {
         <div>
           <div className="flex items-center gap-2">
             <MessageSquare className="h-6 w-6 text-primary-400" />
-            <h1 className="text-2xl font-bold text-[var(--foreground)]">Suporte</h1>
+            <h1 className="text-2xl font-bold text-[var(--foreground)]">{tr("supportList.title")}</h1>
           </div>
           <p className="text-sm text-[var(--muted-foreground)] mt-1">
-            Abra um ticket e converse diretamente com nossa equipe.
+            {tr("supportList.subtitle")}
           </p>
         </div>
         <Button onClick={() => setNewOpen(true)}>
-          <Plus className="h-4 w-4" /> Novo ticket
+          <Plus className="h-4 w-4" /> {tr("supportList.newTicket")}
         </Button>
       </div>
 
@@ -126,7 +128,7 @@ export default function UserSupportPage() {
         <Card>
           <CardContent className="py-16 text-center">
             <MessageSquare className="h-10 w-10 mx-auto text-surface-600 mb-3" />
-            <p className="text-surface-400 mb-4">Você ainda não abriu nenhum ticket.</p>
+            <p className="text-surface-400 mb-4">{tr("supportList.empty")}</p>
             <Button onClick={() => setNewOpen(true)}>
               <Plus className="h-4 w-4" /> Abrir primeiro ticket
             </Button>

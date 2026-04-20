@@ -15,8 +15,10 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { useTranslation } from "@/i18n/provider";
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
@@ -56,10 +58,10 @@ export default function LoginPage() {
     <Card className="border-surface-800/50 bg-surface-900/80 backdrop-blur-sm">
       <CardHeader className="text-center space-y-2">
         <CardTitle className="text-2xl font-bold text-[var(--foreground)]">
-          Entrar na sua conta
+          {t("auth.login.title")}
         </CardTitle>
         <CardDescription>
-          Acesse sua conta para gerenciar suas rifas
+          {t("auth.login.subtitle")}
         </CardDescription>
       </CardHeader>
 
@@ -76,14 +78,14 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium text-[var(--foreground)]">
-              Email
+              {t("auth.login.email")}
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
               <Input
                 id="email"
                 type="email"
-                placeholder="seu@email.com"
+                placeholder={t("auth.login.emailPlaceholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10"
@@ -96,13 +98,13 @@ export default function LoginPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label htmlFor="password" className="text-sm font-medium text-[var(--foreground)]">
-                Senha
+                {t("auth.login.password")}
               </label>
               <Link
                 href="/forgot-password"
                 className="text-xs text-primary-400 hover:text-primary-300 transition-colors"
               >
-                Esqueceu a senha?
+                {t("auth.login.forgotPassword")}
               </Link>
             </div>
             <div className="relative">
@@ -110,7 +112,7 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Sua senha"
+                placeholder={t("auth.login.passwordPlaceholder")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10 pr-10"
@@ -128,7 +130,7 @@ export default function LoginPage() {
           </div>
 
           <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-            Entrar
+            {isLoading ? t("auth.login.submitting") : t("auth.login.submit")}
           </Button>
         </form>
 
@@ -136,9 +138,9 @@ export default function LoginPage() {
 
       <CardFooter className="justify-center">
         <p className="text-sm text-[var(--muted-foreground)]">
-          Não tem conta?{" "}
+          {t("auth.login.noAccount")}{" "}
           <Link href="/register" className="text-primary-400 hover:text-primary-300 font-medium transition-colors">
-            Cadastre-se
+            {t("auth.login.signUp")}
           </Link>
         </p>
       </CardFooter>

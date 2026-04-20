@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Trophy, Shield, Loader2, ExternalLink } from "lucide-react";
+import { useTranslation } from "@/i18n/provider";
 
 type WinnerItem = {
   id: string;
@@ -25,6 +26,7 @@ type WinnerItem = {
 };
 
 export default function WinnersPage() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<WinnerItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,9 +59,9 @@ export default function WinnersPage() {
             <Trophy className="h-6 w-6 text-accent-400" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">Hall da Fama</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">{t("winners.title")}</h1>
             <p className="text-sm text-surface-400">
-              Todos os sorteios realizados — verificáveis por Provably Fair
+              {t("winners.subtitle")}
             </p>
           </div>
         </div>
@@ -80,7 +82,7 @@ export default function WinnersPage() {
       {!loading && !error && items.length === 0 && (
         <div className="rounded-xl border border-surface-700 bg-surface-900/50 p-10 text-center">
           <Trophy className="h-10 w-10 mx-auto text-surface-600 mb-3" />
-          <p className="text-surface-400">Nenhuma rifa foi sorteada ainda.</p>
+          <p className="text-surface-400">{t("winners.empty")}</p>
           <Link
             href="/raffles"
             className="inline-block mt-4 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"

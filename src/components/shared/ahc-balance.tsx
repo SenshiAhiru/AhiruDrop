@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { usePoll } from "@/hooks/use-poll";
+import { useTranslation } from "@/i18n/provider";
 
 export function AhcBalance({ className }: { className?: string }) {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [balance, setBalance] = useState<number | null>(null);
 
@@ -36,7 +38,7 @@ export function AhcBalance({ className }: { className?: string }) {
         "flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent-500/10 border border-accent-500/20 hover:bg-accent-500/20 transition-colors",
         className
       )}
-      title="Adicionar AhiruCoins"
+      title={t("deposit.title")}
     >
       {/* AHC icon */}
       {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -14,7 +14,11 @@
       "Bash(curl -s -o /dev/null -w \"webhooks/stripe: %{http_code}\\\\n\" https://ahirudrop.vercel.app/api/webhooks/stripe -X POST -d 'test')",
       "Bash(curl -s -o /dev/null -w \"user/balance: %{http_code}\\\\n\" https://ahirudrop.vercel.app/api/user/balance)",
       "Bash(node .reset-runner.mjs reset)",
-      "Bash(node .reset-runner.mjs precheck)"
+      "Bash(node .reset-runner.mjs precheck)",
+      "Bash(xargs grep *)",
+      "Read(//c/temp/**)",
+      "Read(//tmp/**)",
+      "Bash(tee /tmp/tsc.log)"
     ]
   }
 }

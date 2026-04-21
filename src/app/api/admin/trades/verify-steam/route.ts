@@ -3,6 +3,7 @@ import { successResponse, errorResponse, handleApiError, requireAdmin } from "@/
 import { prisma } from "@/lib/prisma";
 import { notificationService } from "@/services/notification.service";
 import { auditService } from "@/services/audit.service";
+import { devLog } from "@/lib/logger";
 
 /**
  * Steam trade offer states (from Valve API):
@@ -62,22 +63,22 @@ export async function POST(req: NextRequest) {
     // If no offer ID saved, try to auto-detect from sent offers
     if (!offerId) {
       const partnerId = extractPartnerId(trade.steamTradeUrl);
-      console.log("[verify-steam] auto-detect: partnerId =", partnerId);
+      devLog("[verify-steam] auto-detect: partnerId =", partnerId);
 
       if (partnerId) {
         try {
           // Fetch ALL sent offers (no time filter to be safe)
           const listUrl = `https://api.steampowered.com/IEconService/GetTradeOffers/v1/?key=${apiKey}&get_sent_offers=1&active_only=0&historical_cutoff=${Math.floor(Date.now() / 1000) - 86400 * 30}`;
           const listRes = await fetch(listUrl, { cache: "no-store" });
-          console.log("[verify-steam] GetTradeOffers status:", listRes.status);
+          devLog("[verify-steam] GetTradeOffers status:", listRes.status);
 
           if (listRes.ok) {
             const listJson = await listRes.json();
             const offers = listJson?.response?.trade_offers_sent ?? [];
-            console.log("[verify-steam] found", offers.length, "sent offers");
+            devLog("[verify-steam] found", offers.length, "sent offers");
 
             if (offers.length > 0) {
-              console.log("[verify-steam] first offer sample:", JSON.stringify({
+              devLog("[verify-steam] first offer sample:", JSON.stringify({
                 tradeofferid: offers[0].tradeofferid,
                 accountid_other: offers[0].accountid_other,
                 trade_offer_state: offers[0].trade_offer_state,
@@ -91,14 +92,14 @@ export async function POST(req: NextRequest) {
 
             if (match) {
               offerId = String(match.tradeofferid);
-              console.log("[verify-steam] matched offer:", offerId, "state:", match.trade_offer_state);
+              devLog("[verify-steam] matched offer:", offerId, "state:", match.trade_offer_state);
               // Save it for future checks
               await prisma.tradeRequest.update({
                 where: { id: tradeId },
                 data: { steamTradeOfferId: offerId },
               });
             } else {
-              console.log("[verify-steam] no match found for partnerId", partnerId);
+              devLog("[verify-steam] no match found for partnerId", partnerId);
               // Return debug info so admin can see what's happening
               return errorResponse(
                 `Não encontrei trade pra partner ${partnerId}. ${offers.length} offer(s) enviadas encontradas. Tente informar o Trade Offer ID manualmente.`,

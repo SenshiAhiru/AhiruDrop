@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import crypto from "crypto";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { successResponse, errorResponse, handleApiError } from "@/lib/api-utils";
@@ -34,23 +33,10 @@ export async function POST(req: NextRequest) {
     });
 
     if (user) {
-      // Generate reset token
-      const resetToken = crypto.randomBytes(32).toString("hex");
-      const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-
-      // For now, log the token (email integration will come later)
-      console.log(`[RESET TOKEN] User: ${email}, Token: ${resetToken}, Expires: ${resetTokenExpiry.toISOString()}`);
-
-      // TODO: Store token in database and send email
-      // await prisma.passwordResetToken.create({
-      //   data: {
-      //     token: resetToken,
-      //     userId: user.id,
-      //     expiresAt: resetTokenExpiry,
-      //   },
-      // });
-      //
-      // await sendResetEmail(email, resetToken);
+      // TODO: Implement token persistence + email delivery.
+      // For now, do nothing — we return a generic success below to avoid
+      // email enumeration. The previous implementation logged the token in
+      // plain text, which was a security risk if logs were exposed.
     }
 
     // Always return success to prevent email enumeration

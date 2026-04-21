@@ -1,6 +1,9 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/empty-state";
+import { useTranslation } from "@/i18n/provider";
 
 interface RaffleGridProps {
   children: React.ReactNode;
@@ -27,9 +30,11 @@ function RaffleCardSkeleton() {
 export function RaffleGrid({
   children,
   loading = false,
-  emptyMessage = "Nenhuma rifa encontrada.",
+  emptyMessage,
   className,
 }: RaffleGridProps) {
+  const { t } = useTranslation();
+  const finalEmptyMessage = emptyMessage ?? t("rafflesList.noResults");
   if (loading) {
     return (
       <div
@@ -66,8 +71,8 @@ export function RaffleGrid({
             />
           </svg>
         }
-        title="Nenhuma rifa disponível"
-        description={emptyMessage}
+        title={t("home.noRaffles")}
+        description={finalEmptyMessage}
       />
     );
   }

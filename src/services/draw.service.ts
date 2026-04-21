@@ -10,6 +10,7 @@ import {
   getCurrentBtcHeight,
   hashSeed,
 } from "@/lib/provably-fair";
+import { devLog } from "@/lib/logger";
 
 export const drawService = {
   async executeDraw(raffleId: string, adminId: string) {
@@ -39,7 +40,7 @@ export const drawService = {
     let drawMethod = "crypto";
 
     if (hasCommit) {
-      console.log("[drawService] Provably fair path; raffleId=", raffleId);
+      devLog("[drawService] Provably fair path; raffleId=", raffleId);
       // Reveal the committed seed
       try {
         serverSeedRevealed = decrypt(raffleAny.serverSeedEncrypted);
@@ -59,16 +60,16 @@ export const drawService = {
 
       // Determine beacon block height
       blockHeight = raffleAny.drawBlockHeight ?? null;
-      console.log("[drawService] drawBlockHeight from raffle:", blockHeight);
+      devLog("[drawService] drawBlockHeight from raffle:", blockHeight);
 
       if (!blockHeight) {
         // Backfill: pick the current tip now as the beacon
         blockHeight = await getCurrentBtcHeight();
-        console.log("[drawService] backfilled blockHeight with tip:", blockHeight);
+        devLog("[drawService] backfilled blockHeight with tip:", blockHeight);
       } else {
         // Ensure block is mined — if target height > current tip, refuse
         const tip = await getCurrentBtcHeight();
-        console.log("[drawService] current BTC tip:", tip);
+        devLog("[drawService] current BTC tip:", tip);
         if (blockHeight > tip) {
           const blocksAway = blockHeight - tip;
           const minutesAway = blocksAway * 10;
@@ -79,7 +80,7 @@ export const drawService = {
       }
 
       blockHash = await getBtcBlockHashAtHeight(blockHeight);
-      console.log("[drawService] blockHash:", blockHash);
+      devLog("[drawService] blockHash:", blockHash);
 
       winningIndex = computeWinningIndex(
         serverSeedRevealed,

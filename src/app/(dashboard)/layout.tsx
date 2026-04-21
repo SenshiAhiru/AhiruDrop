@@ -13,19 +13,21 @@ import {
   Trophy,
   MessageSquare,
 } from "lucide-react";
-
-const mobileNavItems = [
-  { label: "Visão Geral", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Depositar AHC", href: "/dashboard/deposit", icon: Coins },
-  { label: "Meus Pedidos", href: "/dashboard/orders", icon: ShoppingCart },
-  { label: "Minhas Vitórias", href: "/dashboard/winnings", icon: Trophy },
-  { label: "Suporte", href: "/dashboard/support", icon: MessageSquare },
-  { label: "Perfil", href: "/dashboard/profile", icon: User },
-  { label: "Notificações", href: "/dashboard/notifications", icon: Bell },
-];
+import { useTranslation } from "@/i18n/provider";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const mobileNavItems = [
+    { label: t("dashboard.overview"), href: "/dashboard", icon: LayoutDashboard },
+    { label: t("dashboard.depositAhc"), href: "/dashboard/deposit", icon: Coins },
+    { label: t("dashboard.myOrders"), href: "/dashboard/orders", icon: ShoppingCart },
+    { label: t("dashboard.myWins"), href: "/dashboard/winnings", icon: Trophy },
+    { label: t("dashboard.support"), href: "/dashboard/support", icon: MessageSquare },
+    { label: t("dashboard.profile"), href: "/dashboard/profile", icon: User },
+    { label: t("dashboard.notifications"), href: "/dashboard/notifications", icon: Bell },
+  ];
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -37,7 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           items={mobileNavItems}
-          title="Dashboard"
+          title={t("nav.dashboard")}
         />
 
         {/* Main content */}

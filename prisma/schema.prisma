@@ -306,6 +306,18 @@ model Coupon {
   @@map("coupons")
 }
 
+model DailyReward {
+  id        String   @id @default(cuid())
+  userId    String
+  day       Int      // 1..7
+  ahcReward Decimal  @db.Decimal(10, 2)
+  claimedAt DateTime @default(now())
+
+  @@unique([userId, day])
+  @@index([userId])
+  @@map("daily_rewards")
+}
+
 model Deposit {
   id                String    @id @default(cuid())
   userId            String

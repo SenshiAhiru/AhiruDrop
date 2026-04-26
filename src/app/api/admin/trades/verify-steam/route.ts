@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { notificationService } from "@/services/notification.service";
 import { auditService } from "@/services/audit.service";
 import { devLog } from "@/lib/logger";
+import { fetchWithRetry } from "@/lib/fetch-with-retry";
 
 /**
  * Steam trade offer states (from Valve API):
@@ -80,7 +81,11 @@ export async function POST(req: NextRequest) {
         try {
           // Fetch ALL sent offers (no time filter to be safe)
           const listUrl = `https://api.steampowered.com/IEconService/GetTradeOffers/v1/?key=${apiKey}&get_sent_offers=1&active_only=0&historical_cutoff=${Math.floor(Date.now() / 1000) - 86400 * 30}`;
-          const listRes = await fetch(listUrl, { cache: "no-store" });
+          const listRes = await fetchWithRetry(
+            listUrl,
+            { cache: "no-store" },
+            { attempts: 3, baseDelayMs: 400, timeoutMs: 8000, label: "Steam GetTradeOffers" }
+          );
           devLog("[verify-steam] GetTradeOffers status:", listRes.status);
 
           if (listRes.ok) {
@@ -133,7 +138,11 @@ export async function POST(req: NextRequest) {
 
     // Query Steam Web API for this specific offer
     const steamUrl = `https://api.steampowered.com/IEconService/GetTradeOffer/v1/?key=${apiKey}&tradeofferid=${offerId}`;
-    const steamRes = await fetch(steamUrl, { cache: "no-store" });
+    const steamRes = await fetchWithRetry(
+      steamUrl,
+      { cache: "no-store" },
+      { attempts: 3, baseDelayMs: 400, timeoutMs: 8000, label: "Steam GetTradeOffer" }
+    );
 
     if (!steamRes.ok) {
       return errorResponse(`Steam API retornou ${steamRes.status}`, 502);

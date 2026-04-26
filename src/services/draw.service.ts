@@ -20,6 +20,24 @@ export const drawService = {
       throw new Error("A rifa precisa estar fechada para realizar o sorteio");
     }
 
+    // Concurrency lock: claim the raffle by transitioning CLOSED → DRAWN
+    // pre-emptively. updateMany with the CLOSED filter wins exactly once;
+    // a second admin clicking "Sortear" simultaneously sees affected=0 and
+    // bails before duplicate winners can be created. We rollback the status
+    // to CLOSED if the actual draw work below throws.
+    const claim = await prisma.raffle.updateMany({
+      where: { id: raffleId, status: "CLOSED" },
+      data: { status: "DRAWN" },
+    });
+    if (claim.count === 0) {
+      throw new Error(
+        "Sorteio já em andamento ou concluído por outro administrador."
+      );
+    }
+
+    let drawSucceeded = false;
+    try {
+
     // Only PAID numbers are eligible
     const all = await raffleNumberRepository.findByRaffle(raffleId);
     const eligible = all.filter((n) => n.status === "PAID");
@@ -28,9 +46,8 @@ export const drawService = {
     }
 
     // Provably fair path — requires commit made at creation
-    const raffleAny = raffle as any;
     const hasCommit = Boolean(
-      raffleAny.serverSeedHash && raffleAny.serverSeedEncrypted
+      raffle.serverSeedHash && raffle.serverSeedEncrypted
     );
 
     let winningIndex: number;
@@ -43,7 +60,7 @@ export const drawService = {
       devLog("[drawService] Provably fair path; raffleId=", raffleId);
       // Reveal the committed seed
       try {
-        serverSeedRevealed = decrypt(raffleAny.serverSeedEncrypted);
+        serverSeedRevealed = decrypt(raffle.serverSeedEncrypted!);
       } catch (err) {
         console.error("[drawService] decrypt failed:", err);
         throw new Error(
@@ -52,14 +69,14 @@ export const drawService = {
       }
 
       // Sanity check — hash must match what was committed
-      if (hashSeed(serverSeedRevealed) !== raffleAny.serverSeedHash) {
+      if (hashSeed(serverSeedRevealed) !== raffle.serverSeedHash) {
         throw new Error(
           "Falha de integridade: o seed decifrado não corresponde ao hash commitado"
         );
       }
 
       // Determine beacon block height
-      blockHeight = raffleAny.drawBlockHeight ?? null;
+      blockHeight = raffle.drawBlockHeight ?? null;
       devLog("[drawService] drawBlockHeight from raffle:", blockHeight);
 
       // SECURITY: refuse to draw a provably-fair raffle without a committed
@@ -118,7 +135,7 @@ export const drawService = {
         ...(serverSeedRevealed && { serverSeedRevealed }),
         ...(blockHash && { blockHash }),
         ...(blockHeight && { blockHeight }),
-      } as any,
+      },
     });
 
     // Find winner (user who owns this number)
@@ -152,25 +169,38 @@ export const drawService = {
       }
     }
 
-    await raffleRepository.update(raffleId, { status: "DRAWN" });
+      // Status was already pre-claimed to DRAWN above. Mark success so
+      // the catch block below doesn't rollback.
+      drawSucceeded = true;
 
-    return {
-      draw,
-      winningNumber: winningNumberRecord.number,
-      resultHash,
-      seed: seedForAudit,
-      timestamp,
-      provablyFair: hasCommit
-        ? {
-            serverSeedHash: raffleAny.serverSeedHash,
-            serverSeedRevealed,
-            blockHash,
-            blockHeight,
-            winningIndex,
-            totalEligible: eligible.length,
-          }
-        : null,
-    };
+      return {
+        draw,
+        winningNumber: winningNumberRecord.number,
+        resultHash,
+        seed: seedForAudit,
+        timestamp,
+        provablyFair: hasCommit
+          ? {
+              serverSeedHash: raffle.serverSeedHash,
+              serverSeedRevealed,
+              blockHash,
+              blockHeight,
+              winningIndex,
+              totalEligible: eligible.length,
+            }
+          : null,
+      };
+    } finally {
+      // If the draw work failed mid-way, release the CLOSED → DRAWN claim
+      // so a retry is possible. (Without this, a transient error would
+      // strand the raffle in DRAWN with no actual draw record.)
+      if (!drawSucceeded) {
+        await prisma.raffle.updateMany({
+          where: { id: raffleId, status: "DRAWN" },
+          data: { status: "CLOSED" },
+        });
+      }
+    }
   },
 
   async getResult(raffleId: string) {

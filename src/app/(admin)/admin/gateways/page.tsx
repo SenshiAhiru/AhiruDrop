@@ -48,22 +48,8 @@ const initialGateways: GatewayConfig[] = [
     ],
     webhookPath: "stripe",
   },
-  {
-    id: "mercadopago",
-    name: "Mercado Pago",
-    displayName: "Mercado Pago",
-    isActive: false,
-    isDefault: false,
-    sandbox: false,
-    borderColor: "border-l-accent-500",
-    iconColor: "bg-accent-500",
-    credentials: [
-      { key: "access_token", label: "Access Token", value: "" },
-      { key: "public_key", label: "Public Key", value: "" },
-      { key: "webhook_secret", label: "Webhook Secret", value: "" },
-    ],
-    webhookPath: "mercadopago",
-  },
+  // Mercado Pago row was removed when the dead adapter code was deleted.
+  // Re-add here when you actually integrate MP again.
 ];
 
 const appUrl = typeof window !== "undefined" ? window.location.origin : "https://ahirudrop.vercel.app";

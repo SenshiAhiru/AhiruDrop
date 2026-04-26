@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
 import { notificationService } from "@/services/notification.service";
+import { log, warn, error as logError } from "@/lib/logger";
 import Stripe from "stripe";
 
 const BIG_DEPOSIT_THRESHOLD_AHC = 500;
@@ -44,13 +45,13 @@ export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature");
 
   if (!signature) {
-    console.error("Stripe webhook: missing signature header");
+    logError("Stripe webhook: missing signature header");
     return NextResponse.json({ error: "Missing signature" }, { status: 400 });
   }
 
   const secrets = await getWebhookSecrets();
   if (secrets.length === 0) {
-    console.error("Stripe webhook: no webhook secrets configured");
+    logError("Stripe webhook: no webhook secrets configured");
     return NextResponse.json({ error: "Webhook not configured" }, { status: 503 });
   }
 
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (!event) {
-    console.error("Stripe webhook: signature failed all configured secrets");
+    logError("Stripe webhook: signature failed all configured secrets");
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -83,7 +84,7 @@ export async function POST(req: NextRequest) {
     const couponCode = obj.metadata?.couponCode as string | undefined;
 
     if (!userId || !ahcAmount) {
-      console.error("Missing metadata in Stripe event:", obj.id);
+      logError("Missing metadata in Stripe event:", obj.id);
       return NextResponse.json({ error: "Missing metadata" }, { status: 400 });
     }
 
@@ -102,7 +103,7 @@ export async function POST(req: NextRequest) {
         data: { status: "COMPLETED", completedAt: new Date() },
       });
       if (claim.count === 0) {
-        console.log(`Webhook: PI ${obj.id} already credited — skipping`);
+        log(`Webhook: PI ${obj.id} already credited — skipping`);
         return NextResponse.json({ received: true, skipped: "already_credited" });
       }
 
@@ -124,7 +125,7 @@ export async function POST(req: NextRequest) {
             const { couponService } = await import("@/services/coupon.service");
             const inc = await couponService.incrementUseAtomic(couponId);
             if (!inc.ok) {
-              console.warn(
+              warn(
                 `[stripe webhook] coupon ${couponId} exhausted before this credit ` +
                 `could be counted (race). Bonus already paid; redemption row skipped.`
               );
@@ -141,11 +142,11 @@ export async function POST(req: NextRequest) {
             }
           }
         } catch (err) {
-          console.error("Failed to record coupon usage:", err);
+          logError("Failed to record coupon usage:", err);
         }
       }
 
-      console.log(
+      log(
         `Webhook: Credited ${totalCredit} AHC (base ${ahcAmount}${
           bonusAhc > 0 ? ` + bonus ${bonusAhc} via ${couponCode}` : ""
         }) to user ${userId}`
@@ -160,11 +161,11 @@ export async function POST(req: NextRequest) {
             totalCredit
           );
         } catch (err) {
-          console.error("Failed to notify admins of big deposit:", err);
+          logError("Failed to notify admins of big deposit:", err);
         }
       }
     } catch (error) {
-      console.error("Failed to credit AHC:", error);
+      logError("Failed to credit AHC:", error);
       return NextResponse.json({ error: "Failed to credit" }, { status: 500 });
     }
   }

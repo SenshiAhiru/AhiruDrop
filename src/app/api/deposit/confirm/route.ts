@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { successResponse, errorResponse, handleApiError, requireAuth } from "@/lib/api-utils";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
+import { log, warn, error as logError } from "@/lib/logger";
 import Stripe from "stripe";
 
 /**
@@ -94,7 +95,7 @@ export async function POST(req: NextRequest) {
               AND ("maxUses" IS NULL OR "currentUses" < "maxUses")
           `;
           if (affected !== 1) {
-            console.warn(
+            warn(
               `[deposit/confirm] coupon ${couponId} exhausted before increment — ` +
               `bonus already paid, redemption row skipped.`
             );
@@ -122,7 +123,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    console.log(
+    log(
       `Deposit confirm: credited ${totalCredit} AHC to user ${session.user.id} (PI: ${paymentIntentId})`
     );
 
@@ -133,7 +134,7 @@ export async function POST(req: NextRequest) {
       balance: Number(updated.balance),
     });
   } catch (error) {
-    console.error("Deposit confirm error:", error);
+    logError("Deposit confirm error:", error);
     return handleApiError(error);
   }
 }

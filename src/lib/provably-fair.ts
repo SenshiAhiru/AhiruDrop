@@ -59,35 +59,92 @@ export function computeWinningIndex(
   return Number(bigNum % BigInt(totalTickets));
 }
 
-/** Current Bitcoin blockchain tip height from mempool.space */
-export async function getCurrentBtcHeight(): Promise<number> {
-  const res = await fetch("https://mempool.space/api/blocks/tip/height", {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error("Failed to fetch Bitcoin tip height");
-  const text = (await res.text()).trim();
-  const height = Number(text);
-  if (!Number.isFinite(height) || height <= 0) {
-    throw new Error(`Invalid height response: ${text}`);
+// Multiple independent Bitcoin block explorers. We try them in order
+// and only fail if all of them fail — one provider going down (or rate-
+// limiting us) shouldn't break the draw service.
+type BtcProvider = {
+  name: string;
+  tipHeight: () => Promise<number>;
+  blockHashAtHeight: (h: number) => Promise<string>;
+};
+
+const BTC_PROVIDERS: BtcProvider[] = [
+  {
+    name: "mempool.space",
+    tipHeight: async () => {
+      const res = await fetch("https://mempool.space/api/blocks/tip/height", {
+        cache: "no-store",
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) throw new Error(`mempool.space tip ${res.status}`);
+      return Number((await res.text()).trim());
+    },
+    blockHashAtHeight: async (h) => {
+      const res = await fetch(`https://mempool.space/api/block-height/${h}`, {
+        cache: "no-store",
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) throw new Error(`mempool.space block ${h}: ${res.status}`);
+      return (await res.text()).trim();
+    },
+  },
+  {
+    name: "blockstream.info",
+    tipHeight: async () => {
+      const res = await fetch("https://blockstream.info/api/blocks/tip/height", {
+        cache: "no-store",
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) throw new Error(`blockstream tip ${res.status}`);
+      return Number((await res.text()).trim());
+    },
+    blockHashAtHeight: async (h) => {
+      const res = await fetch(`https://blockstream.info/api/block-height/${h}`, {
+        cache: "no-store",
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) throw new Error(`blockstream block ${h}: ${res.status}`);
+      return (await res.text()).trim();
+    },
+  },
+];
+
+async function tryProviders<T>(
+  op: (p: BtcProvider) => Promise<T>,
+  validate: (v: T) => boolean,
+  errorLabel: string
+): Promise<T> {
+  const errors: string[] = [];
+  for (const p of BTC_PROVIDERS) {
+    try {
+      const v = await op(p);
+      if (validate(v)) return v;
+      errors.push(`${p.name}: invalid response`);
+    } catch (err) {
+      errors.push(
+        `${p.name}: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
   }
-  return height;
+  throw new Error(`${errorLabel} — all providers failed: ${errors.join("; ")}`);
 }
 
-/** Block hash at a specific height from mempool.space */
+/** Current Bitcoin blockchain tip height (with provider fallback). */
+export async function getCurrentBtcHeight(): Promise<number> {
+  return tryProviders(
+    (p) => p.tipHeight(),
+    (h) => Number.isFinite(h) && h > 0,
+    "Failed to fetch Bitcoin tip height"
+  );
+}
+
+/** Block hash at a specific height (with provider fallback). */
 export async function getBtcBlockHashAtHeight(height: number): Promise<string> {
-  const res = await fetch(`https://mempool.space/api/block-height/${height}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    throw new Error(
-      `Block ${height} not yet mined or API unavailable (HTTP ${res.status})`
-    );
-  }
-  const hash = (await res.text()).trim();
-  if (!/^[0-9a-f]{64}$/i.test(hash)) {
-    throw new Error(`Invalid block hash returned: ${hash}`);
-  }
-  return hash;
+  return tryProviders(
+    (p) => p.blockHashAtHeight(height),
+    (hash) => /^[0-9a-f]{64}$/i.test(hash),
+    `Failed to fetch block ${height}`
+  );
 }
 
 /** Default lead: ~2 blocks (~20min) in the future from the current tip */

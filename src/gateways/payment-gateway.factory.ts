@@ -1,14 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
 import type { PaymentGatewayAdapter } from "./payment-gateway.interface";
-import { MercadoPagoAdapter } from "./mercadopago.adapter";
 import { StripeAdapter } from "./stripe.adapter";
 import { PushinPayAdapter } from "./pushinpay.adapter";
 
 type AdapterConstructor = new (config: Record<string, string>, sandbox: boolean) => PaymentGatewayAdapter;
 
+// MercadoPago adapter was removed (was untested dead code with `any` types).
+// To re-add: implement a fresh adapter that conforms to PaymentGatewayAdapter
+// and register it here. The MP webhook route was removed alongside.
 const adapterRegistry: Record<string, AdapterConstructor> = {
-  mercadopago: MercadoPagoAdapter,
   stripe: StripeAdapter,
   pushinpay: PushinPayAdapter,
 };

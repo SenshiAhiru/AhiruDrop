@@ -26,6 +26,26 @@ export async function POST(req: NextRequest) {
       return errorResponse("Não é possível aplicar ação em lote a si mesmo", 400);
     }
 
+    // Role changes (promote/demote) require SUPER_ADMIN. Regular ADMINs
+    // cannot grant or revoke admin privileges in bulk.
+    if ((action === "promote" || action === "demote") && session.user.role !== "SUPER_ADMIN") {
+      return errorResponse("Apenas SUPER_ADMIN pode alterar papel de usuários.", 403);
+    }
+
+    // Demotion can never include a SUPER_ADMIN target — those must be
+    // demoted individually with the safety checks in /api/admin/users PATCH.
+    if (action === "demote") {
+      const supers = await prisma.user.count({
+        where: { id: { in: filteredIds }, role: "SUPER_ADMIN" },
+      });
+      if (supers > 0) {
+        return errorResponse(
+          "Não é possível rebaixar SUPER_ADMINs em lote — use a edição individual.",
+          400
+        );
+      }
+    }
+
     let result;
     switch (action) {
       case "block":

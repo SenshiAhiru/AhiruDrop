@@ -18,24 +18,11 @@ function SteamCompleteInner() {
 
     async function completeSteamLogin() {
       try {
-        const res = await fetch("/api/auth/steam/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token }),
-        });
-
-        const json = await res.json();
-        if (!json.success || !json.data) {
-          setStatus("Erro ao verificar login Steam");
-          setTimeout(() => (window.location.href = "/login"), 2000);
-          return;
-        }
-
-        const { email } = json.data;
-
+        // Single sign-in call using the steam token directly. The Credentials
+        // provider validates the token in the SteamLoginToken table, marks
+        // it consumed, and issues a NextAuth session.
         const result = await signIn("credentials", {
-          email,
-          password: `steam_auto_${token}`,
+          steamToken: token,
           redirect: false,
         });
 
@@ -43,8 +30,8 @@ function SteamCompleteInner() {
           setStatus("Login realizado! Redirecionando...");
           window.location.href = "/dashboard";
         } else {
-          setStatus("Redirecionando...");
-          window.location.href = "/dashboard";
+          setStatus("Token inválido ou expirado. Tente entrar novamente.");
+          setTimeout(() => (window.location.href = "/login"), 2000);
         }
       } catch {
         setStatus("Erro na conexão. Redirecionando...");

@@ -483,6 +483,19 @@ model SupportMessage {
   @@map("support_messages")
 }
 
+model SteamLoginToken {
+  id         String    @id @default(cuid())
+  token      String    @unique
+  userId     String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("steam_login_tokens")
+}
+
 model SystemSetting {
   id        String   @id @default(cuid())
   key       String   @unique

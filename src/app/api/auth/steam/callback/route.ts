@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySteamLogin, getSteamProfile } from "@/lib/steam-provider";
 import { prisma } from "@/lib/prisma";
-import { signIn } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+
+const STEAM_TOKEN_TTL_MS = 60 * 1000; // 60s window for /auth/steam-complete
 
 export async function GET(req: NextRequest) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ahirudrop.vercel.app";
@@ -65,27 +66,24 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Update avatar and name from Steam on each login
+    // Refresh avatar from Steam each login (lightweight, expected by users).
+    // Name is left untouched after first creation so users who renamed in
+    // their profile don't have changes silently overwritten on next login.
     await prisma.user.update({
       where: { id: user.id },
-      data: {
-        avatarUrl: profile.avatarfull,
-        name: profile.personaname,
-      },
+      data: { avatarUrl: profile.avatarfull },
     });
 
-    // Sign in the user using NextAuth credentials
-    // We redirect to a special page that auto-signs in
+    // Issue a one-shot login token (60s TTL) that the steam-complete page
+    // will exchange for a NextAuth session via signIn("credentials", { steamToken }).
+    // Stored in its own table — NOT in SystemSetting — so admins can't forge
+    // it through the settings PATCH endpoint.
     const token = crypto.randomBytes(32).toString("hex");
-
-    // Store temporary token for auto-login
-    await prisma.systemSetting.upsert({
-      where: { key: `steam_token:${token}` },
-      update: { value: user.id },
-      create: {
-        key: `steam_token:${token}`,
-        value: user.id,
-        type: "string",
+    await prisma.steamLoginToken.create({
+      data: {
+        token,
+        userId: user.id,
+        expiresAt: new Date(Date.now() + STEAM_TOKEN_TTL_MS),
       },
     });
 

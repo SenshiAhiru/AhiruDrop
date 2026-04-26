@@ -78,6 +78,38 @@ export async function PATCH(req: NextRequest) {
     }
 
     const { prisma } = await import("@/lib/prisma");
+
+    // ── Authorization guards on role / isActive changes ─────────────
+    const requestedRole = result.data.role;
+    const requestedActive = result.data.isActive;
+
+    // Reject self-modification of role/active flag — admins can't elevate
+    // themselves, demote themselves, or lock themselves out.
+    if ((requestedRole !== undefined || requestedActive === false) && userId === session.user.id) {
+      return errorResponse("Você não pode alterar seu próprio papel ou status.", 403);
+    }
+
+    // Role change is restricted: only SUPER_ADMIN may grant/revoke admin
+    // privileges. Regular ADMINs cannot promote users (including themselves).
+    if (requestedRole !== undefined) {
+      if (session.user.role !== "SUPER_ADMIN") {
+        return errorResponse("Apenas SUPER_ADMIN pode alterar papel de usuário.", 403);
+      }
+
+      // Block demoting the last SUPER_ADMIN — the system must always have at
+      // least one super admin.
+      const target = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: true },
+      });
+      if (target?.role === "SUPER_ADMIN" && requestedRole !== "SUPER_ADMIN") {
+        const superAdminCount = await prisma.user.count({ where: { role: "SUPER_ADMIN" } });
+        if (superAdminCount <= 1) {
+          return errorResponse("Não é possível remover o último SUPER_ADMIN.", 403);
+        }
+      }
+    }
+
     const updated = await prisma.user.update({
       where: { id: userId },
       data: result.data as any,

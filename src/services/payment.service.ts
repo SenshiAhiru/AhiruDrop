@@ -99,21 +99,34 @@ export const paymentService = {
       throw new Error(`Pagamento não encontrado: ${result.externalId}`);
     }
 
-    // Update payment status
+    // Idempotency guard: gateway webhooks are retried frequently. Only act on
+    // genuine status TRANSITIONS. If we already saw the same status, just log
+    // the event and return — don't re-fire confirmations / notifications.
+    const previousStatus = payment.status;
+    const isTransition = previousStatus !== result.status;
+
+    // Always log the webhook event (audit trail of every callback we receive).
+    await paymentRepository.createLog(payment.id, "WEBHOOK_RECEIVED", {
+      gateway: gatewayName,
+      status: result.status,
+      previousStatus,
+      duplicate: !isTransition,
+      raw: result.raw,
+    });
+
+    if (!isTransition) {
+      // No-op: same status as before. Common with gateway retry storms.
+      return payment;
+    }
+
+    // Persist the new status
     await paymentRepository.updateStatus(payment.id, {
       status: result.status,
       paidAt: result.paidAt,
       gatewayResponse: result.raw,
     });
 
-    // Log the webhook event
-    await paymentRepository.createLog(payment.id, "WEBHOOK_RECEIVED", {
-      gateway: gatewayName,
-      status: result.status,
-      raw: result.raw,
-    });
-
-    if (result.status === "APPROVED") {
+    if (result.status === "APPROVED" && previousStatus !== "APPROVED") {
       // Update order to CONFIRMED
       await orderRepository.updateStatus(payment.orderId, "CONFIRMED");
 
@@ -132,17 +145,19 @@ export const paymentService = {
         payment.orderId
       );
 
-      // Audit log
+      // Audit log — actor is the system (null) since this is gateway-driven.
+      // We still capture which user owns the order for traceability.
       await auditService.log(
         payment.order.userId,
         "PAYMENT_APPROVED",
         "payment",
         payment.id,
-        { orderId: payment.orderId, amount: Number(payment.amount) }
+        { orderId: payment.orderId, amount: Number(payment.amount), gateway: gatewayName }
       );
     } else if (
-      result.status === "REJECTED" ||
-      result.status === "EXPIRED"
+      (result.status === "REJECTED" || result.status === "EXPIRED") &&
+      previousStatus !== "REJECTED" &&
+      previousStatus !== "EXPIRED"
     ) {
       // Release numbers
       await raffleNumberRepository.releaseByOrder(payment.orderId);

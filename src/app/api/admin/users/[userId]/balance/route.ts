@@ -33,13 +33,18 @@ export async function POST(
     if (amount === 0) return errorResponse("Valor deve ser diferente de zero", 422);
 
     const result = await prisma.$transaction(async (tx) => {
-      const user = await tx.user.findUnique({
-        where: { id: userId },
-        select: { balance: true },
-      });
-      if (!user) throw new Error("Usuário não encontrado");
+      // Lock the row before computing the new balance — `FOR UPDATE` prevents
+      // the lost-update anomaly when two admins adjust the same balance
+      // concurrently in READ COMMITTED isolation.
+      const rows = await tx.$queryRaw<{ balance: string }[]>`
+        SELECT "balance"::text AS balance
+        FROM "users"
+        WHERE "id" = ${userId}
+        FOR UPDATE
+      `;
+      if (rows.length === 0) throw new Error("Usuário não encontrado");
 
-      const current = Number(user.balance);
+      const current = Number(rows[0].balance);
       const next = current + amount;
 
       if (next < 0) {
@@ -48,9 +53,11 @@ export async function POST(
         );
       }
 
+      // Atomic increment via Prisma — combined with the FOR UPDATE lock above,
+      // this is fully serialized within the transaction.
       const updated = await tx.user.update({
         where: { id: userId },
-        data: { balance: next },
+        data: { balance: { increment: amount } },
         select: { balance: true },
       });
 

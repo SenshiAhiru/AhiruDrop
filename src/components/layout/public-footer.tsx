@@ -24,6 +24,7 @@ export function PublicFooter() {
     { label: t("footer.aboutLink"), href: "/about" },
     { label: t("footer.faqLink"), href: "/faq" },
     { label: t("footer.termsLink"), href: "/terms" },
+    { label: t("footer.privacyLink"), href: "/privacy" },
     { label: t("footer.contact"), href: "/contact" },
   ];
 
@@ -108,6 +109,9 @@ export function PublicFooter() {
           <div className="flex items-center gap-4">
             <Link href="/terms" className="text-xs text-surface-600 hover:text-surface-400 transition-colors">
               {t("footer.terms")}
+            </Link>
+            <Link href="/privacy" className="text-xs text-surface-600 hover:text-surface-400 transition-colors">
+              {t("footer.privacy")}
             </Link>
           </div>
         </div>

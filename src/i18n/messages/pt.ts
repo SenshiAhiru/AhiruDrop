@@ -313,6 +313,38 @@ export const pt = {
 
   // ─── Privacy page ───────────────────────────────────────
   "privacy.title": "Política de Privacidade",
+  "privacy.lastUpdated": "Última atualização: {date}",
+  "privacy.intro": "Esta política descreve como o AhiruDrop coleta, utiliza, armazena e compartilha seus dados pessoais, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei 13.709/2018). Ao usar a plataforma, você concorda com as práticas aqui descritas.",
+
+  "privacy.s1Title": "1. Controlador dos dados",
+  "privacy.s1Body": "O AhiruDrop é o controlador dos dados pessoais coletados nesta plataforma. Para exercer qualquer direito previsto na LGPD ou tirar dúvidas sobre privacidade, entre em contato pelo e-mail suporte@ahirudrop.com ou pelo formulário de Contato.",
+
+  "privacy.s2Title": "2. Dados que coletamos",
+  "privacy.s2Body": "Coletamos somente o necessário pra operar a plataforma: (a) cadastro — nome, e-mail, telefone (opcional), CPF (opcional, pra rifas que exigem), senha hasheada com bcrypt; (b) Steam — Steam ID, nome de exibição e foto de perfil quando você vincula sua conta; (c) Steam Trade URL — quando você ganha uma rifa e precisa receber a skin; (d) pagamento — processado integralmente pelo Stripe; nunca armazenamos dados de cartão; (e) navegação — endereço IP, identificador de sessão (cookie) e logs de acesso pra prevenção de fraude e segurança.",
+
+  "privacy.s3Title": "3. Para que usamos seus dados",
+  "privacy.s3Body": "Os dados são usados pra: criar e autenticar sua conta; processar depósitos e creditar AHC; permitir compra de números em rifas; realizar sorteios provably fair; enviar skins ganhas via Steam Trade; emitir notificações in-app sobre o andamento das suas rifas; prevenir fraude e abuso (rate limiting, detecção de múltiplas contas); cumprir obrigações legais e fiscais.",
+
+  "privacy.s4Title": "4. Compartilhamento com terceiros",
+  "privacy.s4Body": "Não vendemos seus dados. Compartilhamos apenas com prestadores estritamente necessários: Stripe (processamento de pagamentos), Vercel (hospedagem), Supabase (banco de dados), Steam/Valve (autenticação e entrega de skins) e Cloudflare (CAPTCHA opcional). Cada um desses parceiros tem políticas próprias de proteção de dados que recomendamos consultar.",
+
+  "privacy.s5Title": "5. Cookies e tecnologias similares",
+  "privacy.s5Body": "Usamos cookies essenciais pra manter sua sessão logada (cookie de sessão NextAuth) e pra lembrar suas preferências (idioma, tema, moeda). Não usamos cookies de rastreamento publicitário. Você pode bloquear cookies no navegador, mas isso pode impedir o funcionamento de partes da plataforma (como permanecer logado).",
+
+  "privacy.s6Title": "6. Retenção dos dados",
+  "privacy.s6Body": "Mantemos seus dados enquanto sua conta estiver ativa. Após exclusão da conta, dados financeiros e fiscais (depósitos, pedidos, sorteios) são retidos por 5 anos pra cumprir exigências da Receita Federal. Logs de auditoria são mantidos por até 12 meses. Dados de cadastro são removidos imediatamente após sua solicitação, salvo quando lei exigir retenção.",
+
+  "privacy.s7Title": "7. Seus direitos (Art. 18 da LGPD)",
+  "privacy.s7Body": "Você tem direito a: confirmar a existência de tratamento; acessar seus dados; corrigir dados incompletos ou desatualizados; anonimizar, bloquear ou eliminar dados desnecessários; solicitar a portabilidade; eliminar dados tratados com base no consentimento; ser informado sobre compartilhamento; revogar o consentimento. Para exercer qualquer direito, abra um ticket no Suporte ou envie e-mail pra suporte@ahirudrop.com — respondemos em até 15 dias úteis.",
+
+  "privacy.s8Title": "8. Segurança",
+  "privacy.s8Body": "Aplicamos medidas técnicas e administrativas pra proteger seus dados: senhas hasheadas com bcrypt, tokens de sessão JWT assinados, comunicação 100% HTTPS, criptografia AES-256-GCM em credenciais sensíveis, rate limiting nas rotas críticas e logs de auditoria de ações administrativas. Apesar dos esforços, nenhum sistema é 100% imune — em caso de incidente envolvendo dados pessoais, comunicaremos os afetados e a ANPD conforme a legislação.",
+
+  "privacy.s9Title": "9. Idade mínima",
+  "privacy.s9Body": "A plataforma é restrita a maiores de 18 anos. Não coletamos intencionalmente dados de menores. Se você é responsável legal e identificou que um menor criou conta sem autorização, entre em contato e excluiremos imediatamente.",
+
+  "privacy.s10Title": "10. Alterações nesta política",
+  "privacy.s10Body": "Podemos atualizar esta política a qualquer momento. A versão vigente é sempre a publicada nesta página, com a data de \"Última atualização\" no topo. Mudanças relevantes serão comunicadas por e-mail e/ou notificação in-app.",
   "auth.register.submitting": "Criando conta...",
   "auth.register.acceptTerms": "Li e aceito os",
   "auth.register.termsLink": "Termos de Uso",

@@ -462,6 +462,38 @@ export const en: Record<MessageKey, string> = {
 
   // Privacy page
   "privacy.title": "Privacy Policy",
+  "privacy.lastUpdated": "Last updated: {date}",
+  "privacy.intro": "This policy describes how AhiruDrop collects, uses, stores and shares your personal data, in compliance with Brazil's General Data Protection Law (LGPD — Law 13.709/2018). By using the platform, you agree to the practices described here.",
+
+  "privacy.s1Title": "1. Data controller",
+  "privacy.s1Body": "AhiruDrop is the controller of personal data collected on this platform. To exercise any LGPD right or ask privacy questions, contact us at suporte@ahirudrop.com or via the Contact form.",
+
+  "privacy.s2Title": "2. Data we collect",
+  "privacy.s2Body": "We collect only what is needed to operate the platform: (a) account — name, email, optional phone, optional CPF (when a raffle requires it), bcrypt-hashed password; (b) Steam — Steam ID, display name and avatar when you link your account; (c) Steam Trade URL — when you win a raffle and need to receive the skin; (d) payment — processed end-to-end by Stripe; we never store card data; (e) usage — IP address, session identifier (cookie) and access logs for fraud prevention and security.",
+
+  "privacy.s3Title": "3. How we use your data",
+  "privacy.s3Body": "Data is used to: create and authenticate your account; process deposits and credit AHC; allow purchase of raffle numbers; run provably-fair draws; deliver won skins via Steam Trade; send in-app notifications about your raffles; prevent fraud and abuse (rate limiting, multi-account detection); and comply with legal and tax obligations.",
+
+  "privacy.s4Title": "4. Sharing with third parties",
+  "privacy.s4Body": "We do not sell your data. We share only with strictly necessary providers: Stripe (payment processing), Vercel (hosting), Supabase (database), Steam/Valve (authentication and skin delivery) and Cloudflare (optional CAPTCHA). Each of these partners has its own privacy policy which we recommend reviewing.",
+
+  "privacy.s5Title": "5. Cookies and similar technologies",
+  "privacy.s5Body": "We use essential cookies to keep your session logged in (NextAuth session cookie) and to remember your preferences (language, theme, currency). We do not use ad-tracking cookies. You can block cookies in your browser, but parts of the platform (like staying logged in) may stop working.",
+
+  "privacy.s6Title": "6. Data retention",
+  "privacy.s6Body": "We keep your data while your account is active. After account deletion, financial and tax data (deposits, orders, draws) are retained for 5 years to meet Brazilian Federal Revenue requirements. Audit logs are kept for up to 12 months. Profile data is removed immediately upon your request, except where law requires retention.",
+
+  "privacy.s7Title": "7. Your rights (LGPD Art. 18)",
+  "privacy.s7Body": "You have the right to: confirm whether your data is being processed; access your data; correct incomplete or outdated data; anonymize, block or delete unnecessary data; request portability; delete data processed under consent; be informed about sharing; revoke consent. To exercise any right, open a Support ticket or email suporte@ahirudrop.com — we respond within 15 business days.",
+
+  "privacy.s8Title": "8. Security",
+  "privacy.s8Body": "We apply technical and administrative measures to protect your data: bcrypt-hashed passwords, signed JWT session tokens, 100% HTTPS communication, AES-256-GCM encryption on sensitive credentials, rate limiting on critical routes and audit logs of administrative actions. Despite our efforts, no system is 100% immune — in the event of an incident involving personal data, we will notify those affected and the ANPD as required by law.",
+
+  "privacy.s9Title": "9. Minimum age",
+  "privacy.s9Body": "The platform is restricted to users aged 18 and over. We do not intentionally collect data from minors. If you are a legal guardian and identify that a minor created an account without authorization, contact us and we will delete it immediately.",
+
+  "privacy.s10Title": "10. Changes to this policy",
+  "privacy.s10Body": "We may update this policy at any time. The current version is always the one published on this page, with the \"Last updated\" date at the top. Material changes will be communicated by email and/or in-app notification.",
 
   // Pagination
   "pagination.previous": "Previous",

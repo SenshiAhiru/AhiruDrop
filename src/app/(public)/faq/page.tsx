@@ -35,12 +35,12 @@ const FAQ_PT: FaqSection[] = [
       {
         question: "O que é AhiruCoin (AHC)?",
         answer:
-          "AHC é a moeda interna do AhiruDrop. A taxa é fixa: 1 BRL = 1 AHC. Você deposita reais, recebe AHC no saldo e usa AHC pra comprar números em qualquer rifa. O saldo não expira.",
+          "AHC é a moeda interna do AhiruDrop, pegada ao dólar com taxa fixa: 1 AHC = $1 USD. Quando você deposita em reais, o sistema converte usando o câmbio ao vivo (USD→BRL atualizado em tempo real). Você usa AHC pra comprar números em qualquer rifa. O saldo não expira.",
       },
       {
         question: "Como faço um depósito?",
         answer:
-          "No dashboard, vai em Depositar AHC. Escolhe a moeda (BRL, USD, EUR ou GBP), a quantidade de AHC e paga via cartão de crédito pelo Stripe — o pagamento é processado em segundos. O saldo é creditado automaticamente assim que o cartão é aprovado.",
+          "No dashboard, vai em Depositar AHC. Escolhe a moeda (BRL ou USD), a quantidade de AHC e paga via cartão de crédito pelo Stripe — o pagamento é processado em segundos. O saldo é creditado automaticamente assim que o cartão é aprovado.",
       },
       {
         question: "Quais formas de pagamento são aceitas?",
@@ -60,7 +60,7 @@ const FAQ_PT: FaqSection[] = [
       {
         question: "Como funciona o cupom?",
         answer:
-          "Cupons são aplicados no momento do depósito e dão AHC bônus em cima do valor pago. Você paga o valor cheio em reais, e recebe AHC extra. Exemplo: depósito de R$ 100 com cupom LUPECK de 10% = você paga R$ 100 e recebe 110 AHC (100 base + 10 de bônus).",
+          "Cupons são aplicados no momento do depósito e dão AHC bônus em cima do valor pago. Você paga o valor cheio na moeda escolhida e recebe AHC extra além do que comprou. Exemplo: depósito de 100 AHC ($100 USD) com cupom de 10% — você paga o equivalente a $100 (em BRL ou USD) e recebe 110 AHC (100 base + 10 de bônus).",
       },
       {
         question: "Onde encontro cupons?",
@@ -213,7 +213,7 @@ const FAQ_EN: FaqSection[] = [
       {
         question: "What is AhiruCoin (AHC)?",
         answer:
-          "AHC is AhiruDrop's internal currency, pegged to the US dollar (1 AHC = $1 USD). You deposit in your local currency, receive AHC in your balance and use AHC to buy numbers in any raffle. The balance never expires.",
+          "AHC is AhiruDrop's internal currency, pegged 1:1 to the US dollar (1 AHC = $1 USD). When you deposit in BRL, the system converts using the live USD→BRL rate at the moment of payment. You use AHC to buy numbers in any raffle. The balance never expires.",
       },
       {
         question: "How do I deposit?",

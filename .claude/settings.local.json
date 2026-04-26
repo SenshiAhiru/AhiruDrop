@@ -21,7 +21,10 @@
       "Bash(tee /tmp/tsc.log)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(curl -s -i https://ahirudrop.vercel.app/api/cron/expire-reservations)",
+      "Bash(curl -s -i https://ahirudrop.vercel.app/api/cron/webhook-health)",
+      "Bash(curl -s -i https://ahirudrop.vercel.app/api/cron/expire-reservations -H \"Authorization: Bearer wrong-token-xyz\")"
     ]
   }
 }

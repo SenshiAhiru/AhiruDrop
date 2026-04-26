@@ -112,19 +112,24 @@ export async function POST(req: NextRequest) {
         select: { name: true },
       });
 
-      // Increment coupon usage + record per-user redemption (idempotent on referenceId)
+      // Increment coupon usage + record per-user redemption (idempotent on referenceId).
+      // Uses incrementUseAtomic to enforce maxUses at the DB level — if two
+      // simultaneous deposits race for the last slot, only one wins.
       if (couponId && bonusAhc > 0) {
         try {
           const existing = await prisma.couponRedemption.findFirst({
             where: { couponId, userId, referenceId: obj.id },
           });
           if (!existing) {
-            await prisma.$transaction([
-              prisma.coupon.update({
-                where: { id: couponId },
-                data: { currentUses: { increment: 1 } },
-              }),
-              prisma.couponRedemption.create({
+            const { couponService } = await import("@/services/coupon.service");
+            const inc = await couponService.incrementUseAtomic(couponId);
+            if (!inc.ok) {
+              console.warn(
+                `[stripe webhook] coupon ${couponId} exhausted before this credit ` +
+                `could be counted (race). Bonus already paid; redemption row skipped.`
+              );
+            } else {
+              await prisma.couponRedemption.create({
                 data: {
                   couponId,
                   userId,
@@ -132,8 +137,8 @@ export async function POST(req: NextRequest) {
                   referenceId: obj.id,
                   bonusAhc,
                 },
-              }),
-            ]);
+              });
+            }
           }
         } catch (err) {
           console.error("Failed to record coupon usage:", err);

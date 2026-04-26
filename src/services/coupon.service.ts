@@ -140,6 +140,25 @@ export const couponService = {
     });
   },
 
+  /**
+   * Atomically increments `currentUses` while enforcing maxUses at the DB
+   * level. Returns whether the increment actually happened — losers in a
+   * race-to-exhaustion (two parallel webhooks for the same coupon's last
+   * slot) get `false`. Callers can then decide to absorb or refund.
+   *
+   * Using a raw UPDATE because Prisma can't compare two columns of the same
+   * row in a single statement.
+   */
+  async incrementUseAtomic(couponId: string): Promise<{ ok: boolean }> {
+    const affected = await prisma.$executeRaw`
+      UPDATE "coupons"
+      SET "currentUses" = "currentUses" + 1, "updatedAt" = NOW()
+      WHERE "id" = ${couponId}
+        AND ("maxUses" IS NULL OR "currentUses" < "maxUses")
+    `;
+    return { ok: affected === 1 };
+  },
+
   async recordRedemption(params: {
     couponId: string;
     userId: string;

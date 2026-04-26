@@ -2,10 +2,11 @@ import { NextRequest } from "next/server";
 import { successResponse, errorResponse, handleApiError, requireAdmin } from "@/lib/api-utils";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
+import { auditService } from "@/services/audit.service";
 
 export async function POST(req: NextRequest) {
   try {
-    await requireAdmin();
+    const session = await requireAdmin();
 
     const { gatewayName, key } = await req.json();
     if (!gatewayName || !key) return errorResponse("Gateway e key obrigatórios", 400);
@@ -38,6 +39,16 @@ export async function POST(req: NextRequest) {
     }
 
     if (!value) return errorResponse("Credencial não encontrada", 404);
+
+    // Audit: revealing a gateway credential is a sensitive read. Log who
+    // did it, against which gateway/key — but never log the value itself.
+    await auditService.log(
+      session.user.id,
+      "GATEWAY_CREDENTIAL_REVEALED",
+      "payment_gateway",
+      gateway.id,
+      { gatewayName, key }
+    );
 
     return successResponse({ value });
   } catch (error) {

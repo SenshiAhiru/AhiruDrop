@@ -7,6 +7,7 @@ import {
 } from "@/lib/api-utils";
 import { prisma } from "@/lib/prisma";
 import { encrypt, decrypt } from "@/lib/crypto";
+import { auditService } from "@/services/audit.service";
 
 export async function GET(req: NextRequest) {
   try {
@@ -49,7 +50,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    await requireAdmin();
+    const session = await requireAdmin();
 
     let body: any;
     try {
@@ -103,6 +104,32 @@ export async function POST(req: NextRequest) {
         });
       }
     }
+
+    // Audit: gateway config changes are sensitive (toggling default,
+    // sandbox/live mode, credential rotation). Log the metadata; never
+    // log the actual credential values.
+    const credentialKeys =
+      credentials && typeof credentials === "object"
+        ? Object.entries(credentials)
+            .filter(([, v]) => {
+              const s = String(v);
+              return s && !s.includes("•");
+            })
+            .map(([k]) => k)
+        : [];
+    await auditService.log(
+      session.user.id,
+      "GATEWAY_CONFIG_UPDATED",
+      "payment_gateway",
+      gateway.id,
+      {
+        name: gateway.name,
+        isActive: gateway.isActive,
+        isDefault: gateway.isDefault,
+        sandbox: gateway.sandbox,
+        credentialKeysUpdated: credentialKeys,
+      }
+    );
 
     return successResponse({
       id: gateway.id,

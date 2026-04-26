@@ -84,19 +84,31 @@ export async function POST(req: NextRequest) {
           where: { couponId, userId: session.user.id, referenceId: paymentIntentId },
         });
         if (!existing) {
-          await tx.coupon.update({
-            where: { id: couponId },
-            data: { currentUses: { increment: 1 } },
-          });
-          await tx.couponRedemption.create({
-            data: {
-              couponId,
-              userId: session.user.id,
-              context: "deposit",
-              referenceId: paymentIntentId,
-              bonusAhc,
-            },
-          });
+          // Atomic increment that respects maxUses. Same SQL as
+          // couponService.incrementUseAtomic but inlined to stay inside
+          // the active transaction.
+          const affected = await tx.$executeRaw`
+            UPDATE "coupons"
+            SET "currentUses" = "currentUses" + 1, "updatedAt" = NOW()
+            WHERE "id" = ${couponId}
+              AND ("maxUses" IS NULL OR "currentUses" < "maxUses")
+          `;
+          if (affected !== 1) {
+            console.warn(
+              `[deposit/confirm] coupon ${couponId} exhausted before increment — ` +
+              `bonus already paid, redemption row skipped.`
+            );
+          } else {
+            await tx.couponRedemption.create({
+              data: {
+                couponId,
+                userId: session.user.id,
+                context: "deposit",
+                referenceId: paymentIntentId,
+                bonusAhc,
+              },
+            });
+          }
         }
       }
 

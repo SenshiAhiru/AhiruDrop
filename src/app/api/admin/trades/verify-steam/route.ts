@@ -32,8 +32,19 @@ const STEAM_STATE_LABELS: Record<number, string> = {
  * Partner ID can be used to match trade offers from GetTradeOffers API.
  */
 function extractPartnerId(tradeUrl: string): string | null {
-  const match = tradeUrl.match(/partner=(\d+)/);
-  return match ? match[1] : null;
+  // Defensive parse: accept only a Steam tradeoffer URL, then read `partner`
+  // from its query string. Avoids matching arbitrary URLs that happen to
+  // contain `partner=...`.
+  try {
+    const u = new URL(tradeUrl);
+    if (u.hostname !== "steamcommunity.com") return null;
+    if (!u.pathname.startsWith("/tradeoffer/")) return null;
+    const partner = u.searchParams.get("partner");
+    if (!partner || !/^\d+$/.test(partner)) return null;
+    return partner;
+  } catch {
+    return null;
+  }
 }
 
 export async function POST(req: NextRequest) {

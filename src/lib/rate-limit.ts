@@ -128,17 +128,50 @@ export function applyRateLimit(
 }
 
 /**
- * Same as applyRateLimit but uses an additional identifier (e.g. email)
- * to prevent sharing buckets between different users on the same IP.
+ * Rate-limit purely by user-supplied identifier (e.g. session user.id).
+ * Use this when the limit is per-user — IP rotation should NOT bypass it.
+ *
+ * If you want to limit anonymous traffic by IP, use applyRateLimit.
+ * If you want to limit per (IP, sub-id) — e.g. "5 login attempts per IP per
+ * email" — use applyRateLimitByIpAndId.
  */
 export function applyRateLimitWithId(
+  _req: NextRequest,
+  identifier: string,
+  options: RateLimitOptions
+): NextResponse | null {
+  const result = rateLimit(identifier, options);
+
+  if (!result.ok) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: `Muitas tentativas. Tente novamente em ${result.resetInSec}s.`,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(result.resetInSec),
+        },
+      }
+    );
+  }
+
+  return null;
+}
+
+/**
+ * Compound limit: (IP, extraId) bucket. Useful for "5 login tries per email
+ * per IP" — a single IP brute-forcing one email is throttled, but the same
+ * IP on a different email gets a fresh budget.
+ */
+export function applyRateLimitByIpAndId(
   req: NextRequest,
   extraId: string,
   options: RateLimitOptions
 ): NextResponse | null {
   const ip = getClientIp(req);
-  const identifier = `${ip}:${extraId}`;
-  const result = rateLimit(identifier, options);
+  const result = rateLimit(`${ip}:${extraId}`, options);
 
   if (!result.ok) {
     return NextResponse.json(

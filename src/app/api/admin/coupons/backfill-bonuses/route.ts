@@ -1,6 +1,7 @@
 import { successResponse, errorResponse, handleApiError, requireAdmin } from "@/lib/api-utils";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
+import { auditService } from "@/services/audit.service";
 import Stripe from "stripe";
 
 /**
@@ -12,7 +13,7 @@ import Stripe from "stripe";
  */
 export async function POST() {
   try {
-    await requireAdmin();
+    const session = await requireAdmin();
 
     // Load Stripe client from DB-stored gateway config
     const gateway = await prisma.paymentGateway.findUnique({
@@ -92,6 +93,21 @@ export async function POST() {
         });
       }
     }
+
+    // Audit: this endpoint can mutate balances indirectly (creating Deposit
+    // rows + updating coupon redemption bonus values). Log who triggered it.
+    await auditService.log(
+      session.user.id,
+      "COUPONS_BACKFILL_BONUSES",
+      "coupon",
+      "bulk",
+      {
+        scanned: candidates.length,
+        redemptionsUpdated: updated,
+        depositsCreated: createdDeposits,
+        errorCount: errors.length,
+      }
+    );
 
     return successResponse({
       scanned: candidates.length,

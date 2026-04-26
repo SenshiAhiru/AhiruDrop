@@ -52,42 +52,34 @@ export async function POST(req: NextRequest) {
       return errorResponse("Metadata de AHC inválida no pagamento", 400);
     }
 
-    // Prevent double-credit (webhook may have already processed)
-    if (pi.metadata?.credited === "true") {
-      const currentUser = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { balance: true },
-      });
-      return successResponse({
-        already: true,
-        balance: Number(currentUser?.balance ?? 0),
-      });
-    }
-
-    // Mark as credited BEFORE updating balance so concurrent webhook
-    // that retrieves metadata sees it and bails.
-    await stripeClient.paymentIntents.update(paymentIntentId, {
-      metadata: { ...pi.metadata, credited: "true" },
-    });
-
     const totalCredit = ahcAmount + (bonusAhc > 0 ? bonusAhc : 0);
     const couponId = pi.metadata?.couponId as string | undefined;
 
-    // Credit AHC + record coupon redemption + mark deposit in a transaction
+    // ── DB-level idempotency: race-safe with the Stripe webhook ───────
+    // The Deposit row created at /api/deposit/intent transitions PENDING →
+    // COMPLETED exactly once. updateMany with the PENDING filter returns
+    // affected=1 for the winner and 0 for the loser. No TOCTOU window.
     const updated = await prisma.$transaction(async (tx) => {
+      const claim = await tx.deposit.updateMany({
+        where: { paymentIntentId, status: "PENDING" },
+        data: { status: "COMPLETED", completedAt: new Date() },
+      });
+      if (claim.count === 0) {
+        // Webhook beat us. Just return current balance.
+        const u = await tx.user.findUnique({
+          where: { id: session.user.id },
+          select: { balance: true },
+        });
+        return { balance: u?.balance ?? 0, already: true };
+      }
+
       const user = await tx.user.update({
         where: { id: session.user.id },
         data: { balance: { increment: totalCredit } },
         select: { balance: true },
       });
 
-      await tx.deposit.updateMany({
-        where: { paymentIntentId, status: "PENDING" },
-        data: { status: "COMPLETED", completedAt: new Date() },
-      });
-
       if (couponId && bonusAhc > 0) {
-        // Check idempotency — don't double-record if webhook already did
         const existing = await tx.couponRedemption.findFirst({
           where: { couponId, userId: session.user.id, referenceId: paymentIntentId },
         });
@@ -108,8 +100,15 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      return user;
+      return { balance: user.balance, already: false };
     });
+
+    if (updated.already) {
+      return successResponse({
+        already: true,
+        balance: Number(updated.balance),
+      });
+    }
 
     console.log(
       `Deposit confirm: credited ${totalCredit} AHC to user ${session.user.id} (PI: ${paymentIntentId})`

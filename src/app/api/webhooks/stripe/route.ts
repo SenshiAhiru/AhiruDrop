@@ -87,58 +87,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing metadata" }, { status: 400 });
     }
 
-    // Idempotency: if credited flag is already set in PI metadata, skip.
-    // The /api/deposit/confirm route may have processed this first.
-    if (obj.metadata?.credited === "true") {
-      console.log(`Webhook: PI ${obj.id} already credited — skipping`);
-      return NextResponse.json({ received: true, skipped: "already_credited" });
-    }
-
     const totalCredit = ahcAmount + (bonusAhc > 0 ? bonusAhc : 0);
 
+    let updated: { name: string | null } | null = null;
     try {
-      // Mark credited first to close the race with /deposit/confirm
-      if (eventType === "payment_intent.succeeded") {
-        try {
-          const gateway = await prisma.paymentGateway.findUnique({
-            where: { name: "stripe" },
-            include: { configs: true },
-          });
-          const prefix = gateway?.sandbox ? "test_" : "live_";
-          const skConfig =
-            gateway?.configs.find((c) => c.key === `${prefix}secret_key`) ||
-            gateway?.configs.find((c) => c.key === "secret_key");
-          if (skConfig) {
-            let secretKey: string;
-            try { secretKey = decrypt(skConfig.value); } catch { secretKey = skConfig.value; }
-            const stripeClient = new Stripe(secretKey);
-            await stripeClient.paymentIntents.update(obj.id, {
-              metadata: { ...obj.metadata, credited: "true" },
-            });
-          }
-        } catch (err) {
-          console.error("Failed to mark PI as credited:", err);
-          // Continue — DB-level idempotency on CouponRedemption still protects coupon counts
-        }
+      // ── DB-level idempotency guard ─────────────────────────────────
+      // The Deposit row created at /api/deposit/intent transitions PENDING →
+      // COMPLETED exactly once. Using updateMany with the PENDING filter,
+      // only one caller (this webhook OR /deposit/confirm) wins the
+      // affected=1 — losers see 0 and skip the credit. This sidesteps the
+      // TOCTOU on the Stripe metadata `credited` flag.
+      const claim = await prisma.deposit.updateMany({
+        where: { paymentIntentId: obj.id, status: "PENDING" },
+        data: { status: "COMPLETED", completedAt: new Date() },
+      });
+      if (claim.count === 0) {
+        console.log(`Webhook: PI ${obj.id} already credited — skipping`);
+        return NextResponse.json({ received: true, skipped: "already_credited" });
       }
 
-      const updated = await prisma.user.update({
+      updated = await prisma.user.update({
         where: { id: userId },
-        data: {
-          balance: { increment: totalCredit },
-        },
+        data: { balance: { increment: totalCredit } },
         select: { name: true },
       });
-
-      // Mark the deposit row as COMPLETED (best-effort)
-      try {
-        await prisma.deposit.updateMany({
-          where: { paymentIntentId: obj.id, status: "PENDING" },
-          data: { status: "COMPLETED", completedAt: new Date() },
-        });
-      } catch (err) {
-        console.error("Failed to mark deposit COMPLETED:", err);
-      }
 
       // Increment coupon usage + record per-user redemption (idempotent on referenceId)
       if (couponId && bonusAhc > 0) {
@@ -175,7 +147,7 @@ export async function POST(req: NextRequest) {
       );
 
       // Notify admins if deposit crosses the threshold
-      if (totalCredit >= BIG_DEPOSIT_THRESHOLD_AHC) {
+      if (updated && totalCredit >= BIG_DEPOSIT_THRESHOLD_AHC) {
         try {
           await notificationService.notifyAdminsBigDeposit(
             userId,

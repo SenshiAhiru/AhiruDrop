@@ -62,21 +62,26 @@ export const drawService = {
       blockHeight = raffleAny.drawBlockHeight ?? null;
       devLog("[drawService] drawBlockHeight from raffle:", blockHeight);
 
+      // SECURITY: refuse to draw a provably-fair raffle without a committed
+      // block height. The previous behavior backfilled with the current tip,
+      // which let an admin time the draw to a favorable block — defeating
+      // the unpredictability guarantee. The block height MUST be committed
+      // BEFORE the draw so the beacon is unforgeable.
       if (!blockHeight) {
-        // Backfill: pick the current tip now as the beacon
-        blockHeight = await getCurrentBtcHeight();
-        devLog("[drawService] backfilled blockHeight with tip:", blockHeight);
-      } else {
-        // Ensure block is mined — if target height > current tip, refuse
-        const tip = await getCurrentBtcHeight();
-        devLog("[drawService] current BTC tip:", tip);
-        if (blockHeight > tip) {
-          const blocksAway = blockHeight - tip;
-          const minutesAway = blocksAway * 10;
-          throw new Error(
-            `Bloco alvo ainda não foi minerado. Faltam ${blocksAway} bloco(s) (~${minutesAway}min). Tip atual: ${tip}, alvo: ${blockHeight}.`
-          );
-        }
+        throw new Error(
+          "Rifa provably-fair não tem drawBlockHeight commitado. Defina manualmente um bloco futuro antes de sortear (compromisso prévio é parte do esquema de provably fair)."
+        );
+      }
+
+      // Ensure block is mined — if target height > current tip, refuse
+      const tip = await getCurrentBtcHeight();
+      devLog("[drawService] current BTC tip:", tip);
+      if (blockHeight > tip) {
+        const blocksAway = blockHeight - tip;
+        const minutesAway = blocksAway * 10;
+        throw new Error(
+          `Bloco alvo ainda não foi minerado. Faltam ${blocksAway} bloco(s) (~${minutesAway}min). Tip atual: ${tip}, alvo: ${blockHeight}.`
+        );
       }
 
       blockHash = await getBtcBlockHashAtHeight(blockHeight);

@@ -105,16 +105,25 @@ export async function PATCH(req: NextRequest) {
     if (status === "SENT" && !trade.sentAt) updateData.sentAt = new Date();
     if (status === "COMPLETED" && !trade.completedAt) {
       updateData.completedAt = new Date();
-      // Also mark the winner as claimed
-      await prisma.winner.update({
-        where: { id: trade.winnerId },
-        data: { claimedAt: new Date() },
-      });
     }
 
-    const updated = await prisma.tradeRequest.update({
-      where: { id: tradeId },
-      data: updateData,
+    // Run trade update + winner claim atomically. Without the transaction,
+    // a DB hiccup between the two updates would leave winner.claimedAt set
+    // while trade.status stayed PENDING/SENT — out of sync.
+    const updated = await prisma.$transaction(async (tx) => {
+      const result = await tx.tradeRequest.update({
+        where: { id: tradeId },
+        data: updateData,
+      });
+
+      if (status === "COMPLETED" && !trade.completedAt) {
+        await tx.winner.update({
+          where: { id: trade.winnerId },
+          data: { claimedAt: new Date() },
+        });
+      }
+
+      return result;
     });
 
     // Notify the user

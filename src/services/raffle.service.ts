@@ -23,13 +23,13 @@ export const raffleService = {
   }) {
     const result = await raffleRepository.findMany(params);
 
-    // Enrich with stats
-    const enriched = await Promise.all(
-      result.data.map(async (raffle) => {
-        const stats = await raffleRepository.getStats(raffle.id);
-        return { ...raffle, stats };
-      })
-    );
+    // Single groupBy across all raffles — avoids N+1.
+    const ids = result.data.map((r) => r.id);
+    const statsMap = await raffleRepository.getStatsBatch(ids);
+    const enriched = result.data.map((raffle) => ({
+      ...raffle,
+      stats: statsMap.get(raffle.id) ?? { available: 0, reserved: 0, paid: 0, total: 0 },
+    }));
 
     return { ...result, data: enriched };
   },

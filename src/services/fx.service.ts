@@ -12,6 +12,7 @@
 
 const AWESOMEAPI_URL = "https://economia.awesomeapi.com.br/last/USD-BRL";
 const CACHE_TTL_MS = 60_000;
+const MAX_STALE_MS = 60 * 60 * 1000; // 1h hard cap on stale cache reuse
 const FALLBACK_USD_BRL = 5.5; // last-resort value if API fails
 
 // Static platform rate: 1 AHC = $1 USD (parity)
@@ -51,7 +52,7 @@ export const fxService = {
   /**
    * Current USD→BRL rate. Never throws — falls back to cached or hardcoded value.
    */
-  async getUsdToBrl(): Promise<{ rate: number; fetchedAt: number; source: "live" | "fallback" | "cache" }> {
+  async getUsdToBrl(): Promise<{ rate: number; fetchedAt: number; source: "live" | "fallback" | "cache" | "cache-stale" }> {
     const now = Date.now();
     if (cached && now - cached.fetchedAt < CACHE_TTL_MS) {
       return { rate: cached.value, fetchedAt: cached.fetchedAt, source: "cache" };
@@ -63,9 +64,19 @@ export const fxService = {
       return { rate: live, fetchedAt: now, source: "live" };
     }
 
-    // API failed — use old cache even if stale, or the hardcoded fallback
+    // API failed. Reuse stale cache only if it's within the hard cap (1h).
+    // Beyond that the rate is too unreliable to charge users — fall back to
+    // the conservative hardcoded value and log so ops sees the degradation.
+    if (cached && now - cached.fetchedAt < MAX_STALE_MS) {
+      console.warn(
+        `[fxService] using stale cache (age ${Math.round((now - cached.fetchedAt) / 1000)}s)`
+      );
+      return { rate: cached.value, fetchedAt: cached.fetchedAt, source: "cache-stale" };
+    }
     if (cached) {
-      return { rate: cached.value, fetchedAt: cached.fetchedAt, source: "cache" };
+      console.error(
+        `[fxService] cache too stale (>${MAX_STALE_MS}ms) and live fetch failed — using fallback`
+      );
     }
     return { rate: FALLBACK_USD_BRL, fetchedAt: now, source: "fallback" };
   },

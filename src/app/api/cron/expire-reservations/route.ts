@@ -3,8 +3,19 @@ import { successResponse, errorResponse } from "@/lib/api-utils";
 
 export async function GET(req: NextRequest) {
   try {
-    // Verify cron secret if configured
     const cronSecret = process.env.CRON_SECRET;
+    const isProd = process.env.NODE_ENV === "production";
+
+    // In production CRON_SECRET is REQUIRED. A missing secret used to leave
+    // the endpoint open to anyone, which let outsiders trigger
+    // releaseExpired() at will — DoS surface and premature reservation
+    // releases in flight.
+    if (isProd && !cronSecret) {
+      console.error("CRON_SECRET is not set in production");
+      return errorResponse("Cron not configured", 503);
+    }
+
+    // When set (any env), the bearer header MUST match.
     if (cronSecret) {
       const authHeader = req.headers.get("authorization");
       if (authHeader !== `Bearer ${cronSecret}`) {

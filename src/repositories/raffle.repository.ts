@@ -86,6 +86,33 @@ export const raffleRepository = {
     return stats;
   },
 
+  /**
+   * Batched version of getStats — single groupBy across many raffles.
+   * Use when listing multiple raffles to avoid N+1 query patterns.
+   */
+  async getStatsBatch(ids: string[]) {
+    type Stats = { available: number; reserved: number; paid: number; total: number };
+    const out = new Map<string, Stats>();
+    for (const id of ids) {
+      out.set(id, { available: 0, reserved: 0, paid: 0, total: 0 });
+    }
+    if (ids.length === 0) return out;
+
+    const counts = await prisma.raffleNumber.groupBy({
+      by: ["raffleId", "status"],
+      where: { raffleId: { in: ids } },
+      _count: true,
+    });
+
+    for (const c of counts) {
+      const s = out.get(c.raffleId);
+      if (!s) continue;
+      s[c.status.toLowerCase() as keyof Stats] = c._count;
+      s.total += c._count;
+    }
+    return out;
+  },
+
   async countByStatus() {
     return prisma.raffle.groupBy({
       by: ["status"],

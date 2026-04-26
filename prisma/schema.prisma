@@ -187,13 +187,11 @@ model Order {
   totalAmount Decimal     @db.Decimal(10, 2)
   discount    Decimal     @default(0) @db.Decimal(10, 2)
   finalAmount Decimal     @db.Decimal(10, 2)
-  couponId    String?
   expiresAt   DateTime
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   user     User           @relation(fields: [userId], references: [id])
-  coupon   Coupon?        @relation(fields: [couponId], references: [id])
   items    OrderItem[]
   numbers  RaffleNumber[]
   payments Payment[]
@@ -213,7 +211,7 @@ model OrderItem {
   subtotal       Decimal @db.Decimal(10, 2)
 
   order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  raffle Raffle @relation(fields: [raffleId], references: [id])
+  raffle Raffle @relation(fields: [raffleId], references: [id], onDelete: Restrict)
 
   @@map("order_items")
 }
@@ -300,7 +298,6 @@ model Coupon {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  orders      Order[]
   redemptions CouponRedemption[]
 
   @@map("coupons")
@@ -358,8 +355,8 @@ model RaffleDraw {
   blockHeight        Int?     // Bitcoin block height
   drawnAt       DateTime @default(now())
 
-  raffle Raffle  @relation(fields: [raffleId], references: [id])
-  admin  User    @relation("DrawAdmin", fields: [adminId], references: [id])
+  raffle Raffle  @relation(fields: [raffleId], references: [id], onDelete: Restrict)
+  admin  User    @relation("DrawAdmin", fields: [adminId], references: [id], onDelete: Restrict)
   winner Winner?
 
   @@map("raffle_draws")
@@ -375,7 +372,7 @@ model Winner {
   seenAt    DateTime?  // null = popup not shown yet
   createdAt DateTime  @default(now())
 
-  draw         RaffleDraw    @relation(fields: [drawId], references: [id])
+  draw         RaffleDraw    @relation(fields: [drawId], references: [id], onDelete: Restrict)
   tradeRequest TradeRequest?
 
   @@index([userId])
@@ -395,8 +392,8 @@ model TradeRequest {
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 
-  winner Winner @relation(fields: [winnerId], references: [id])
-  user   User   @relation(fields: [userId], references: [id])
+  winner Winner @relation(fields: [winnerId], references: [id], onDelete: Restrict)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   @@index([userId])
   @@index([status])

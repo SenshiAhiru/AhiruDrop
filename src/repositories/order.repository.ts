@@ -7,7 +7,6 @@ export const orderRepository = {
     totalAmount: number;
     discount: number;
     finalAmount: number;
-    couponId?: string;
     expiresAt: Date;
     items: {
       raffleId: string;
@@ -23,7 +22,6 @@ export const orderRepository = {
           totalAmount: Number(data.totalAmount),
           discount: Number(data.discount),
           finalAmount: Number(data.finalAmount),
-          couponId: data.couponId,
           expiresAt: data.expiresAt,
           items: {
             create: data.items.map((item) => ({

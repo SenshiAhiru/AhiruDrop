@@ -260,10 +260,6 @@ export default function RegisterPage() {
               {t("auth.register.acceptTerms")}{" "}
               <Link href="/terms" className="text-primary-400 hover:text-primary-300 underline">
                 {t("auth.register.termsLink")}
-              </Link>{" "}
-              {t("auth.register.and")}{" "}
-              <Link href="/privacy" className="text-primary-400 hover:text-primary-300 underline">
-                {t("auth.register.privacyLink")}
               </Link>
             </label>
           </div>

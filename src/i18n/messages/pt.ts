@@ -474,7 +474,6 @@ export const pt = {
   "verify.formulaHint": "Basta aplicar a fórmula nos valores abaixo usando qualquer ferramenta SHA-256/HMAC (ex: biblioteca crypto do Node, Python, ou ferramentas online). O botão \"Verificar agora\" faz isso localmente no seu navegador com WebCrypto.",
 
   // ─── Profile extras ─────────────────────────────────────
-  "profile.phone": "Telefone",
   "profile.email": "E-mail",
   "profile.steamSubtitle": "Vincule sua conta Steam para receber skins",
   "profile.steamLinked": "Steam vinculada",

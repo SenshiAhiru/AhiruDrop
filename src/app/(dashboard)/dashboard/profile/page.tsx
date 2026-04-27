@@ -21,7 +21,6 @@ export default function ProfilePage() {
   const { data: session, status } = useSession();
 
   const [name, setName] = useState(session?.user?.name || "");
-  const [phone, setPhone] = useState("");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -54,7 +53,6 @@ export default function ProfilePage() {
         }
         if (data.name) setName(data.name);
         if (data.avatarUrl) setAvatarUrl(data.avatarUrl);
-        if (data.phone) setPhone(maskPhone(data.phone));
       })
       .catch(() => {});
 
@@ -105,18 +103,6 @@ export default function ProfilePage() {
   }, [session?.user?.name]);
 
 
-  function maskPhone(value: string) {
-    const digits = value.replace(/\D/g, "").slice(0, 11);
-    if (digits.length <= 10) {
-      return digits
-        .replace(/(\d{2})(\d)/, "($1) $2")
-        .replace(/(\d{4})(\d)/, "$1-$2");
-    }
-    return digits
-      .replace(/(\d{2})(\d)/, "($1) $2")
-      .replace(/(\d{5})(\d)/, "$1-$2");
-  }
-
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
     setProfileMessage(null);
@@ -129,7 +115,6 @@ export default function ProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
-          phone: phone.replace(/\D/g, ""),
         }),
       });
 
@@ -289,17 +274,6 @@ export default function ProfilePage() {
                   value={session?.user?.email || ""}
                   disabled
                   className="opacity-60"
-                />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="phone" className="text-sm font-medium text-[var(--foreground)]">
-                  {t("profile.phone")}
-                </label>
-                <Input
-                  id="phone"
-                  value={phone}
-                  onChange={(e) => setPhone(maskPhone(e.target.value))}
-                  placeholder="(00) 00000-0000"
                 />
               </div>
             </div>

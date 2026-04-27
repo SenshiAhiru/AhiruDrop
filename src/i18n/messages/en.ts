@@ -419,7 +419,6 @@ export const en: Record<MessageKey, string> = {
   "verify.formulaHint": "Just apply the formula to the values below using any SHA-256/HMAC tool (e.g. Node's crypto module, Python, or online tools). The \"Verify now\" button does this locally in your browser via WebCrypto.",
 
   // Profile extras
-  "profile.phone": "Phone",
   "profile.email": "Email",
   "profile.steamSubtitle": "Link your Steam account to receive skins",
   "profile.steamLinked": "Steam linked",

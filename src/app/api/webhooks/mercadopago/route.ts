@@ -72,6 +72,13 @@ export async function POST(req: NextRequest) {
   try {
     pmt = await mercadopagoService.getPaymentStatus(paymentId);
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    // 404 → payment doesn't exist (simulator test, or MP-side cleanup).
+    // Retrying won't help — ack with 200 so MP stops retrying.
+    if (msg.includes("HTTP 404")) {
+      warn(`MP webhook: payment ${paymentId} not found (likely simulator) — acking`);
+      return NextResponse.json({ received: true, ignored: "payment_not_found" });
+    }
     logError(`MP webhook: failed to fetch payment ${paymentId}`, err);
     return NextResponse.json({ error: "Failed to fetch payment" }, { status: 502 });
   }

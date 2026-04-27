@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCircle, Loader2, Tag, X, Sparkles } from "lucide-react";
+import { CheckCircle, Loader2, Tag, X, Sparkles, QrCode, Copy, CreditCard, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { useTranslation } from "@/i18n/provider";
 
@@ -110,6 +110,133 @@ function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () 
   );
 }
 
+// ─── PIX Panel ───
+function PixPanel({
+  pix,
+  totalAhc,
+  payAmount,
+  currencyInfo,
+  onCopy,
+  onCancel,
+}: {
+  pix: {
+    paymentId: string;
+    qrCode: string;
+    qrCodeBase64: string;
+    ticketUrl: string;
+    expiresAt: string;
+  };
+  totalAhc: number;
+  payAmount: number | null;
+  currencyInfo: { code: string; symbol: string; flag: string; name: string };
+  onCopy: () => void;
+  onCancel: () => void;
+}) {
+  // Live countdown to expiration
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const expiresMs = new Date(pix.expiresAt).getTime();
+  const remaining = Math.max(0, expiresMs - now);
+  const mm = Math.floor(remaining / 60000);
+  const ss = Math.floor((remaining % 60000) / 1000);
+  const expired = remaining === 0;
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-base flex items-center gap-2">
+              <QrCode className="h-4 w-4 text-emerald-400" />
+              Pague com PIX
+            </CardTitle>
+            <CardDescription>
+              {totalAhc.toFixed(2)} AHC • {currencyInfo.flag} {currencyInfo.symbol}{" "}
+              {payAmount !== null ? payAmount.toFixed(2) : "—"}
+            </CardDescription>
+          </div>
+          <button
+            onClick={onCancel}
+            className="text-sm text-surface-400 hover:text-white transition-colors"
+          >
+            ← Voltar
+          </button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* QR Code */}
+        <div className="flex flex-col items-center gap-3">
+          <div className="rounded-2xl bg-white p-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`data:image/png;base64,${pix.qrCodeBase64}`}
+              alt="QR Code PIX"
+              className="h-56 w-56"
+            />
+          </div>
+
+          <div
+            className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${
+              expired
+                ? "bg-red-500/10 text-red-400 border border-red-500/30"
+                : "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+            }`}
+          >
+            <Clock className="h-3.5 w-3.5" />
+            {expired
+              ? "QR Code expirado — gere um novo"
+              : `Expira em ${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`}
+          </div>
+        </div>
+
+        {/* Copia e cola */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-surface-300">
+            Ou use PIX Copia e Cola
+          </label>
+          <div className="flex gap-2">
+            <Input
+              readOnly
+              value={pix.qrCode}
+              className="font-mono text-xs"
+              onFocus={(e) => e.currentTarget.select()}
+            />
+            <Button type="button" variant="outline" onClick={onCopy} title="Copiar">
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Status indicator */}
+        <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 flex items-start gap-3">
+          <Loader2 className="h-4 w-4 text-emerald-400 animate-spin mt-0.5 flex-shrink-0" />
+          <div className="text-sm">
+            <p className="font-semibold text-emerald-400">Aguardando pagamento…</p>
+            <p className="text-xs text-emerald-400/70 mt-0.5">
+              Esta tela atualiza sozinha assim que o banco confirmar o pagamento. Você
+              também pode fechar e voltar depois — o saldo será creditado.
+            </p>
+          </div>
+        </div>
+
+        {pix.ticketUrl && (
+          <a
+            href={pix.ticketUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-center text-xs text-surface-400 hover:text-white transition-colors"
+          >
+            Abrir comprovante do Mercado Pago →
+          </a>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Main Page ───
 export default function DepositPage() {
   const { t } = useTranslation();
@@ -123,12 +250,25 @@ export default function DepositPage() {
   const [usdToBrl, setUsdToBrl] = useState<number | null>(null);
   const [fxLoading, setFxLoading] = useState(false);
 
-  // Payment state
+  // Payment state — Stripe (cards)
   const [stripePromise, setStripePromise] = useState<Promise<StripeType | null> | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
   const [creating, setCreating] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Method picker (BRL only — USD always Stripe)
+  const [method, setMethod] = useState<"card" | "pix">("card");
+
+  // Mercado Pago PIX flow state
+  const [pix, setPix] = useState<{
+    paymentId: string;
+    qrCode: string;
+    qrCodeBase64: string;
+    ticketUrl: string;
+    expiresAt: string;
+  } | null>(null);
+  const [pixAvailable, setPixAvailable] = useState(false);
 
   // Coupon state
   const [couponInput, setCouponInput] = useState("");
@@ -150,6 +290,58 @@ export default function DepositPage() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  // Check whether the PIX (Mercado Pago) gateway is configured + active.
+  // If not, the method picker won't show PIX and we never call /api/deposit/pix.
+  useEffect(() => {
+    fetch("/api/deposit/pix/available", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.success) setPixAvailable(Boolean(json.data?.available));
+      })
+      .catch(() => {});
+  }, []);
+
+  // USD has no PIX — force card if user switches to USD.
+  useEffect(() => {
+    if (currency === "USD" && method === "pix") setMethod("card");
+  }, [currency, method]);
+
+  // Poll the deposit status while a PIX is active. As soon as the webhook
+  // flips it to COMPLETED, the user sees the success state without an F5.
+  useEffect(() => {
+    if (!pix) return;
+
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    async function tick() {
+      if (!pix) return;
+      try {
+        const res = await fetch(`/api/deposit/${pix.paymentId}/status`, {
+          cache: "no-store",
+        });
+        const json = await res.json();
+        if (!cancelled && json.success && json.data?.status === "COMPLETED") {
+          setSuccess(true);
+          setPix(null);
+          const credit = Number(json.data.ahcTotal) || numAhc + (couponApplied?.bonusAhc ?? 0);
+          setBalance((prev) => (prev || 0) + credit);
+          return;
+        }
+      } catch {
+        // ignore — try again next tick
+      }
+      if (!cancelled) timer = setTimeout(tick, 4000);
+    }
+
+    timer = setTimeout(tick, 4000);
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pix?.paymentId]);
 
   // Load FX rate (BRL only needs it). Refresh every 2 min.
   useEffect(() => {
@@ -269,6 +461,56 @@ export default function DepositPage() {
     }
   };
 
+  const handleStartPix = async () => {
+    if (numAhc < 1) return;
+    setCreating(true);
+    try {
+      const res = await fetch("/api/deposit/pix", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: numAhc,
+          couponCode: couponApplied?.code,
+        }),
+      });
+      const json = await res.json();
+      if (json.success && json.data?.qrCodeBase64) {
+        setPix({
+          paymentId: json.data.paymentId,
+          qrCode: json.data.qrCode,
+          qrCodeBase64: json.data.qrCodeBase64,
+          ticketUrl: json.data.ticketUrl,
+          expiresAt: json.data.expiresAt,
+        });
+      } else {
+        addToast({ type: "error", message: json.error || "Erro ao gerar PIX" });
+      }
+    } catch {
+      addToast({ type: "error", message: "Erro ao conectar com gateway" });
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleStartCheckout = () => {
+    if (method === "pix") return handleStartPix();
+    return handleStartPayment();
+  };
+
+  const handleCopyPix = async () => {
+    if (!pix) return;
+    try {
+      await navigator.clipboard.writeText(pix.qrCode);
+      addToast({ type: "success", message: "Código PIX copiado!" });
+    } catch {
+      addToast({ type: "error", message: "Não foi possível copiar" });
+    }
+  };
+
+  const handleCancelPix = () => {
+    setPix(null);
+  };
+
   const handleSuccess = () => {
     setSuccess(true);
     setShowPayment(false);
@@ -337,7 +579,16 @@ export default function DepositPage() {
         </CardContent>
       </Card>
 
-      {!showPayment ? (
+      {pix ? (
+        <PixPanel
+          pix={pix}
+          totalAhc={totalAhcReceived}
+          payAmount={payAmount}
+          currencyInfo={currencyInfo}
+          onCopy={handleCopyPix}
+          onCancel={handleCancelPix}
+        />
+      ) : !showPayment ? (
         <>
           {/* Currency */}
           <Card>
@@ -524,14 +775,51 @@ export default function DepositPage() {
                 )}
               </div>
 
+              {/* Method picker (PIX only available for BRL when MP is configured) */}
+              {currency === "BRL" && pixAvailable && (
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-surface-300">
+                    Forma de pagamento
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMethod("card")}
+                      className={`flex items-center justify-center gap-2 rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-all ${
+                        method === "card"
+                          ? "border-primary-500 bg-primary-500/10 text-white"
+                          : "border-surface-700 text-surface-400 hover:border-surface-500"
+                      }`}
+                    >
+                      <CreditCard className="h-4 w-4" />
+                      Cartão
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMethod("pix")}
+                      className={`flex items-center justify-center gap-2 rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-all ${
+                        method === "pix"
+                          ? "border-emerald-500 bg-emerald-500/10 text-white"
+                          : "border-surface-700 text-surface-400 hover:border-surface-500"
+                      }`}
+                    >
+                      <QrCode className="h-4 w-4" />
+                      PIX
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <Button
                 className="w-full"
                 size="lg"
                 disabled={numAhc < 1 || creating}
-                onClick={handleStartPayment}
+                onClick={handleStartCheckout}
               >
                 {creating ? (
                   <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> {t("deposit.preparingPayment")}</>
+                ) : method === "pix" ? (
+                  <><QrCode className="h-5 w-5 mr-2" /> Gerar QR Code PIX</>
                 ) : (
                   t("deposit.continueToPayment")
                 )}

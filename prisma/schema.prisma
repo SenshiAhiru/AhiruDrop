@@ -306,12 +306,13 @@ model Coupon {
 model Deposit {
   id                String    @id @default(cuid())
   userId            String
-  paymentIntentId   String    @unique
-  currency          String    // "BRL" | "USD" | "EUR" | "GBP"
-  amountPaid        Decimal   @db.Decimal(10, 2) // original currency charged by Stripe
-  ahcBase           Decimal   @db.Decimal(10, 2) // AHC credited before bonus
+  provider          String    @default("stripe") // "stripe" | "mercadopago"
+  paymentIntentId   String    @unique // Stripe PI id OR Mercado Pago payment id
+  currency          String    // "BRL" | "USD"
+  amountPaid        Decimal   @db.Decimal(10, 2)
+  ahcBase           Decimal   @db.Decimal(10, 2)
   ahcBonus          Decimal   @default(0) @db.Decimal(10, 2)
-  ahcTotal          Decimal   @db.Decimal(10, 2) // base + bonus
+  ahcTotal          Decimal   @db.Decimal(10, 2)
   couponId          String?
   couponCode        String?
   status            String    @default("PENDING") // "PENDING" | "COMPLETED" | "FAILED"

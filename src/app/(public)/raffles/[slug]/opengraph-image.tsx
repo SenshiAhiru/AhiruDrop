@@ -20,8 +20,14 @@ export const contentType = "image/png";
 export default async function Image({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  // Next.js 16: params is async — must be awaited. Without this, slug
+  // is undefined, the Prisma query fails, and we render the fallback
+  // card instead of the branded one. (Caught by Discord/WhatsApp
+  // showing just the "AhiruDrop" placeholder.)
+  const { slug } = await params;
+
   let raffle: {
     title: string;
     skinImage: string | null;
@@ -38,7 +44,7 @@ export default async function Image({
 
   try {
     raffle = await prisma.raffle.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       select: {
         title: true,
         skinImage: true,
@@ -83,8 +89,17 @@ export default async function Image({
 
   const rarityColor = raffle.skinRarityColor || "#a78bfa";
   const priceStr = Number(raffle.pricePerNumber).toFixed(2);
-  const weapon = raffle.skinWeapon ?? "";
-  const skinName = raffle.skinName ?? raffle.title;
+
+  // De-dupe the weapon: if skinName already starts with the weapon
+  // (e.g. skinName="M4A4 | Desolate Space"), drop the weapon label
+  // so we don't show "M4A4" + "M4A4 | Desolate Space" stacked.
+  const rawName = raffle.skinName?.trim() ?? raffle.title;
+  const weaponDuplicated =
+    raffle.skinWeapon &&
+    raffle.skinName &&
+    raffle.skinName.toLowerCase().startsWith(raffle.skinWeapon.toLowerCase());
+  const weapon = weaponDuplicated ? "" : (raffle.skinWeapon ?? "");
+  const skinName = rawName;
 
   return new ImageResponse(
     (

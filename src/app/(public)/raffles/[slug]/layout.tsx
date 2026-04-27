@@ -48,18 +48,29 @@ export async function generateMetadata({
         ? "Sorteada"
         : raffle.status;
 
-    // Rich title: "AK-47 | Redline (Field-Tested) — Rifa por R$ 5,00"
-    const title =
-      raffle.skinWeapon && raffle.skinName
-        ? `${raffle.skinWeapon} | ${raffle.skinName}${
-            raffle.skinWear ? ` (${raffle.skinWear})` : ""
-          } — Rifa por R$ ${priceStr}`
-        : `${raffle.title} — Rifa CS2`;
+    // Build skin name without duplicating the weapon. Some entries store
+    // skinName already prefixed (e.g. weapon="M4A4", skinName="M4A4 | Desolate
+    // Space") which would otherwise render as "M4A4 | M4A4 | Desolate Space".
+    let skinTitle = raffle.skinName?.trim() || raffle.title;
+    if (
+      raffle.skinWeapon &&
+      raffle.skinName &&
+      !raffle.skinName.toLowerCase().startsWith(raffle.skinWeapon.toLowerCase())
+    ) {
+      skinTitle = `${raffle.skinWeapon} | ${raffle.skinName}`;
+    }
+    const titleHead = raffle.skinName
+      ? `${skinTitle}${raffle.skinWear ? ` (${raffle.skinWear})` : ""}`
+      : raffle.title;
+
+    // Price tag uses AHC (the platform's internal currency). Showing "R$"
+    // here was misleading — pricePerNumber is denominated in AHC, not reais.
+    const title = `${titleHead} — Rifa por ${priceStr} AHC`;
 
     const description =
       raffle.shortDescription ||
       (raffle.description && raffle.description.slice(0, 155)) ||
-      `${statusLabel} · ${raffle.totalNumbers} números · R$ ${priceStr} por cota${
+      `${statusLabel} · ${raffle.totalNumbers} números · ${priceStr} AHC por cota${
         raffle.skinRarity ? ` · ${raffle.skinRarity}` : ""
       }${raffle.skinWear ? ` · ${raffle.skinWear}` : ""}. Sorteio provably fair via Bitcoin.`;
 

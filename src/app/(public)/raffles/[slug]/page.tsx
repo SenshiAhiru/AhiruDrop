@@ -323,15 +323,15 @@ export default function RaffleDetailPage() {
           background: `radial-gradient(ellipse at center top, ${rarityColor}18 0%, transparent 60%)`,
         }}
       >
-        <div className="mx-auto max-w-7xl px-6 py-10">
-          <Link href="/raffles" className="inline-flex items-center gap-2 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors mb-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-10">
+          <Link href="/raffles" className="inline-flex items-center gap-2 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors mb-6 sm:mb-8">
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
             </svg>
             {t("raffleDetail.backToRaffles")}
           </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-start">
             {/* Left: Skin Image */}
             <div className="flex flex-col items-center">
               <div
@@ -527,7 +527,7 @@ export default function RaffleDetailPage() {
       </div>
 
       {/* Number Selector Section */}
-      <div id="number-selector" className="mx-auto max-w-7xl px-6 py-10 scroll-mt-20">
+      <div id="number-selector" className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-10 scroll-mt-20">
         <NumberSelector
           raffleId={raffle.id}
           numbers={numbers}

@@ -138,7 +138,7 @@ export function NumberSelector({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
           <Button
             variant="outline"
             size="sm"
@@ -156,7 +156,7 @@ export function NumberSelector({
             {t("numbers.random10")}
           </Button>
           {selectedNumbers.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={onClear}>
+            <Button variant="ghost" size="sm" onClick={onClear} className="col-span-2 sm:col-span-1">
               {t("numbers.clear")}
             </Button>
           )}
@@ -202,7 +202,7 @@ export function NumberSelector({
               }}
               title={mine ? "Seu número" : undefined}
               className={cn(
-                "h-10 w-full rounded-lg text-xs sm:text-sm font-mono transition-all duration-150",
+                "h-11 w-full rounded-lg text-xs sm:text-sm font-mono transition-all duration-150",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
                 getNumberClasses(number, status, mine)
               )}
@@ -268,7 +268,7 @@ export function NumberSelector({
       {buyModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setBuyModal(false)} />
-          <div className="relative w-full max-w-md rounded-2xl border border-surface-700 bg-surface-900 p-6 shadow-2xl">
+          <div className="relative w-full max-w-md rounded-2xl border border-surface-700 bg-surface-900 p-4 sm:p-6 shadow-2xl">
             <button
               onClick={() => setBuyModal(false)}
               className="absolute top-4 right-4 text-surface-500 hover:text-white transition-colors"
@@ -357,7 +357,7 @@ export function NumberSelector({
       {successData && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeSuccess} />
-          <div className="relative w-full max-w-md rounded-2xl border border-emerald-500/30 bg-surface-900 p-6 shadow-2xl">
+          <div className="relative w-full max-w-md rounded-2xl border border-emerald-500/30 bg-surface-900 p-4 sm:p-6 shadow-2xl">
             <div className="flex flex-col items-center text-center">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10">
                 <CheckCircle className="h-9 w-9 text-emerald-400" />

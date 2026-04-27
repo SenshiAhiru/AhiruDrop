@@ -63,7 +63,6 @@ export async function generateMetadata({
         raffle.skinRarity ? ` · ${raffle.skinRarity}` : ""
       }${raffle.skinWear ? ` · ${raffle.skinWear}` : ""}. Sorteio provably fair via Bitcoin.`;
 
-    const image = raffle.skinImage || raffle.featuredImage || "/og-image.png";
     const url = `${SITE_URL}/raffles/${slug}`;
 
     // Only index rifas em estados públicos. Draft/Paused/Cancelled = noindex.
@@ -72,6 +71,9 @@ export async function generateMetadata({
       raffle.status === "CLOSED" ||
       raffle.status === "DRAWN";
 
+    // NOTE: og:image is provided by `opengraph-image.tsx` in this same
+    // route segment — Next.js auto-injects the right meta tags. Don't
+    // duplicate `images` here or you get conflicting og:image tags.
     return {
       title,
       description,
@@ -83,20 +85,11 @@ export async function generateMetadata({
         siteName: "AhiruDrop",
         title,
         description,
-        images: [
-          {
-            url: image,
-            width: 1200,
-            height: 630,
-            alt: raffle.skinName ?? raffle.title,
-          },
-        ],
       },
       twitter: {
         card: "summary_large_image",
         title,
         description,
-        images: [image],
       },
       robots: indexable
         ? {

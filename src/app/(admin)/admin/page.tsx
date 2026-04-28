@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   DollarSign, Ticket, Users, ShoppingCart, ArrowUpRight, BarChart3,
@@ -224,8 +225,14 @@ export default function AdminDashboardPage() {
                   {recentOrders.map((o) => (
                     <div key={o.id} className="flex items-center gap-3 p-4 hover:bg-surface-900/30 transition-colors">
                       {o.user.avatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={o.user.avatarUrl} alt="" className="h-8 w-8 rounded-full border border-surface-700" />
+                        <Image
+                          src={o.user.avatarUrl}
+                          alt=""
+                          width={32}
+                          height={32}
+                          className="rounded-full border border-surface-700"
+                          unoptimized
+                        />
                       ) : (
                         <div className="h-8 w-8 rounded-full bg-primary-500/20 flex items-center justify-center text-xs font-bold text-primary-400">
                           {o.user.name.charAt(0).toUpperCase()}

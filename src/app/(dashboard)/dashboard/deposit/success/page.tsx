@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle } from "lucide-react";
+import { AhcCoin } from "@/components/shared/ahc-coin";
 
 function SuccessContent() {
   const params = useSearchParams();
@@ -21,8 +22,7 @@ function SuccessContent() {
       </p>
 
       <div className="flex items-center gap-2 mb-8">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/ahc-coin.png" alt="AHC" className="h-8 w-8 rounded-full" />
+        <AhcCoin size={32} />
         <span className="text-3xl font-bold text-accent-400">+{amount} AHC</span>
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -181,8 +182,14 @@ export default function AdminTicketDetailPage() {
               <p className="text-xs font-bold uppercase tracking-wider text-surface-500">Usuário</p>
               <div className="flex items-center gap-3">
                 {ticket.user.avatarUrl ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={ticket.user.avatarUrl} alt={ticket.user.name} className="h-12 w-12 rounded-full border border-surface-700" />
+                  <Image
+                    src={ticket.user.avatarUrl}
+                    alt={ticket.user.name}
+                    width={48}
+                    height={48}
+                    className="rounded-full border border-surface-700"
+                    unoptimized
+                  />
                 ) : (
                   <div className="h-12 w-12 rounded-full bg-primary-500/20 border border-primary-500/30 flex items-center justify-center text-lg font-bold text-primary-400">
                     {ticket.user.name.charAt(0).toUpperCase()}

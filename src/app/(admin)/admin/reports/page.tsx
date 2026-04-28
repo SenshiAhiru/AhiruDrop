@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   DollarSign, ShoppingCart, TrendingUp, Users, CalendarDays,
@@ -229,8 +230,13 @@ export default function ReportsPage() {
                           {i + 1}
                         </div>
                         {r.skinImage && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={r.skinImage} alt={r.title} className="h-12 w-12 object-contain rounded bg-surface-900 p-1 shrink-0" />
+                          <Image
+                            src={r.skinImage}
+                            alt={r.title}
+                            width={48}
+                            height={48}
+                            className="h-12 w-12 object-contain rounded bg-surface-900 p-1 shrink-0"
+                          />
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold truncate">{r.title}</p>

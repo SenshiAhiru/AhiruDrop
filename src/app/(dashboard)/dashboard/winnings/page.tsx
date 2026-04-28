@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Trophy, Shield, Loader2, CheckCircle, Clock, ExternalLink,
@@ -186,8 +187,13 @@ export default function WinningsPage() {
                   {/* Image */}
                   <div className="relative sm:w-48 aspect-square sm:aspect-auto bg-surface-900 flex items-center justify-center shrink-0">
                     {r.skinImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={r.skinImage} alt={r.title} className="h-full w-full object-contain p-4" />
+                      <Image
+                        src={r.skinImage}
+                        alt={r.title}
+                        width={192}
+                        height={192}
+                        className="h-full w-full object-contain p-4"
+                      />
                     ) : (
                       <Trophy className="h-16 w-16 text-surface-700" />
                     )}

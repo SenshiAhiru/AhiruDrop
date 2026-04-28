@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useToast } from "@/components/ui/toast";
 import {
@@ -117,10 +118,11 @@ export default function AdminRafflesPage() {
       render: (item) => (
         <div className="flex items-center gap-3">
           {item.skinImage && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={item.skinImage as string}
               alt=""
+              width={40}
+              height={40}
               className="h-10 w-10 rounded-lg bg-surface-800 object-contain"
             />
           )}

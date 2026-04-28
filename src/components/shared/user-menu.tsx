@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import {
@@ -34,8 +35,14 @@ export function UserMenu() {
         className="flex items-center gap-2 p-2 rounded-lg text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
       >
         {session.user.image ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={session.user.image} alt="" className="h-8 w-8 rounded-full object-cover" />
+          <Image
+            src={session.user.image}
+            alt=""
+            width={32}
+            height={32}
+            className="rounded-full object-cover"
+            unoptimized
+          />
         ) : (
           <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary-600 text-white text-xs font-bold">
             {session.user.name?.charAt(0).toUpperCase() ?? "U"}

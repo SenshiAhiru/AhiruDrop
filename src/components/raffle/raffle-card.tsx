@@ -1,7 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { cn, formatCurrency, calculatePercentage } from "@/lib/utils";
+import { AhcCoin } from "@/components/shared/ahc-coin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -82,10 +84,12 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
       {/* Image */}
       <div className="relative aspect-video overflow-hidden">
         {featuredImage ? (
-          <img
+          <Image
             src={featuredImage}
             alt={title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div
@@ -161,8 +165,7 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
 
         <div className="flex items-center gap-1.5">
           <span className="text-xs text-[var(--muted-foreground)]">{t("rafflesList.perTicket")}</span>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/ahc-coin.png" alt="AHC" className="h-5 w-5 rounded-full" />
+          <AhcCoin size={20} />
           <span className="text-lg font-bold text-accent-500 leading-none">{pricePerNumber}</span>
           <span className="text-xs font-semibold text-accent-500/70 leading-none">AHC</span>
         </div>

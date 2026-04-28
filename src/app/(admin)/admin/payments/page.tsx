@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Search, DollarSign, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -192,8 +193,14 @@ export default function PaymentsPage() {
                       {p.order?.user ? (
                         <div className="flex items-center gap-2">
                           {p.order.user.avatarUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={p.order.user.avatarUrl} alt="" className="h-7 w-7 rounded-full border border-surface-700" />
+                            <Image
+                              src={p.order.user.avatarUrl}
+                              alt=""
+                              width={28}
+                              height={28}
+                              className="rounded-full border border-surface-700"
+                              unoptimized
+                            />
                           ) : (
                             <div className="h-7 w-7 rounded-full bg-primary-500/20 flex items-center justify-center text-[10px] font-bold text-primary-400">
                               {p.order.user.name.charAt(0).toUpperCase()}

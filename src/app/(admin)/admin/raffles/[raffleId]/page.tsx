@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/components/ui/toast";
@@ -296,9 +297,11 @@ export default function EditRafflePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex flex-col items-center gap-4 sm:flex-row">
-              <img
+              <Image
                 src={raffle.skinImage}
                 alt={raffle.title}
+                width={192}
+                height={128}
                 className="h-32 w-auto rounded-lg object-contain"
               />
               <div className="flex flex-wrap gap-2">

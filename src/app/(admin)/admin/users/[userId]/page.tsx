@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -35,6 +36,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { formatDate } from "@/lib/utils";
+import { AhcCoin } from "@/components/shared/ahc-coin";
 
 type Detail = {
   user: {
@@ -250,11 +252,13 @@ export default function UserDetailPage() {
         <CardContent className="p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
             {user.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={user.avatarUrl}
                 alt={user.name}
-                className="h-20 w-20 rounded-full border-2 border-surface-700"
+                width={80}
+                height={80}
+                unoptimized
+                className="rounded-full border-2 border-surface-700"
               />
             ) : (
               <div className="h-20 w-20 rounded-full bg-primary-500/20 border-2 border-primary-500/30 flex items-center justify-center text-2xl font-bold text-primary-400">
@@ -312,8 +316,7 @@ export default function UserDetailPage() {
           <CardContent className="p-5">
             <p className="text-xs text-surface-400 uppercase">Saldo atual</p>
             <div className="flex items-center gap-2 mt-1">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/ahc-coin.png" alt="" className="h-6 w-6 rounded-full" />
+              <AhcCoin size={24} decorative />
               <p className="text-2xl font-bold text-accent-400">{user.balance.toFixed(2)}</p>
             </div>
             <Button
@@ -378,10 +381,11 @@ export default function UserDetailPage() {
                 className="flex items-center gap-3 rounded-lg border border-surface-700 bg-surface-800/40 p-3"
               >
                 {w.raffle?.skinImage ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={w.raffle.skinImage}
                     alt={w.raffle.title}
+                    width={56}
+                    height={56}
                     className="h-14 w-14 object-contain rounded-lg bg-surface-900"
                   />
                 ) : (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Trophy, X, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -159,11 +160,12 @@ export function WinnerCelebrationPopup({ win, onClose }: Props) {
                   className="absolute inset-0 rounded-2xl border opacity-40 celebration-glow"
                   style={{ borderColor: rarityColor }}
                 />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={win.raffle.skinImage}
                   alt={win.raffle.title}
-                  className="relative w-full h-full object-contain p-4 drop-shadow-2xl"
+                  fill
+                  sizes="224px"
+                  className="object-contain p-4 drop-shadow-2xl"
                 />
               </div>
             )}

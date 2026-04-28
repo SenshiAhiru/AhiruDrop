@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useToast } from "@/components/ui/toast";
 import { useConfirm } from "@/components/providers/confirm-provider";
@@ -28,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { formatDate } from "@/lib/utils";
+import { AhcCoin } from "@/components/shared/ahc-coin";
 
 type SortField =
   | "name"
@@ -371,11 +373,13 @@ export default function UsersPage() {
           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
           {item.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={item.avatarUrl as string}
               alt={item.name as string}
-              className="h-9 w-9 rounded-full border border-surface-700"
+              width={36}
+              height={36}
+              unoptimized
+              className="rounded-full border border-surface-700"
             />
           ) : (
             <div className="h-9 w-9 rounded-full bg-primary-500/20 border border-primary-500/30 flex items-center justify-center text-sm font-bold text-primary-400">
@@ -415,8 +419,7 @@ export default function UsersPage() {
       ),
       render: (item) => (
         <div className="flex items-center gap-1.5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/ahc-coin.png" alt="" className="h-4 w-4 rounded-full" />
+          <AhcCoin size={16} decorative />
           <span className="font-mono text-sm font-semibold text-accent-400">
             {(item.balance as number).toFixed(2)}
           </span>

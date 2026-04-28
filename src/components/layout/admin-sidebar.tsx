@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -101,8 +102,14 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       <div className="shrink-0 border-t border-[var(--border)] p-4">
         <div className="flex items-center gap-3">
           {session?.user?.image ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={session.user.image} alt="" className="h-9 w-9 rounded-full object-cover shrink-0" />
+            <Image
+              src={session.user.image}
+              alt=""
+              width={36}
+              height={36}
+              className="rounded-full object-cover shrink-0"
+              unoptimized
+            />
           ) : (
             <span className="flex items-center justify-center h-9 w-9 rounded-full bg-primary-600 text-white text-sm font-bold shrink-0">
               {session?.user?.name?.charAt(0).toUpperCase() ?? "A"}

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { AhcCoin } from "@/components/shared/ahc-coin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -344,11 +346,14 @@ export default function RaffleDetailPage() {
                   className="absolute inset-0 rounded-2xl border-2 opacity-30"
                   style={{ borderColor: rarityColor }}
                 />
-                <img
+                <Image
                   src={imageSrc}
                   alt={raffle.title}
-                  className="relative z-10 w-full h-full object-contain drop-shadow-2xl"
+                  fill
+                  sizes="(max-width: 1024px) 90vw, 512px"
+                  className="relative z-10 object-contain drop-shadow-2xl p-4"
                   draggable={false}
+                  priority
                 />
               </div>
 
@@ -415,11 +420,13 @@ export default function RaffleDetailPage() {
                   </div>
                   <div className="flex items-center gap-4">
                     {winnerInfo.avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={winnerInfo.avatarUrl}
                         alt={winnerInfo.name}
-                        className="h-14 w-14 rounded-full border-2 border-accent-400/50"
+                        width={56}
+                        height={56}
+                        className="rounded-full border-2 border-accent-400/50"
+                        unoptimized
                       />
                     ) : (
                       <div className="h-14 w-14 rounded-full bg-accent-500/20 border-2 border-accent-400/50 flex items-center justify-center text-xl font-bold text-accent-400">
@@ -450,8 +457,7 @@ export default function RaffleDetailPage() {
               <div className="rounded-xl border border-accent-500/20 bg-accent-500/5 p-5">
                 <p className="text-sm text-[var(--muted-foreground)]">{t("numbers.pricePerQuota")}</p>
                 <div className="flex items-center gap-2.5 mt-1">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/ahc-coin.png" alt="AHC" className="h-8 w-8 rounded-full" />
+                  <AhcCoin size={32} />
                   <span className="text-3xl font-bold text-accent-400 leading-none">{raffle.pricePerNumber}</span>
                   <span className="text-base font-semibold text-accent-400/70 leading-none">AHC</span>
                 </div>

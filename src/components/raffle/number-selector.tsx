@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ShoppingCart, X, CheckCircle, Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "@/i18n/provider";
+import { AhcCoin } from "@/components/shared/ahc-coin";
 
 interface NumberInfo {
   number: number;
@@ -247,8 +248,7 @@ export function NumberSelector({
               {selectedNumbers.length} {selectedNumbers.length === 1 ? t("numbers.quotaSingular") : t("numbers.quotaPlural")}
             </p>
             <div className="flex items-center gap-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/ahc-coin.png" alt="AHC" className="h-5 w-5 rounded-full" />
+              <AhcCoin size={20} />
               <span className="text-2xl font-bold text-accent-400">{total.toFixed(2)} AHC</span>
             </div>
           </div>
@@ -257,8 +257,7 @@ export function NumberSelector({
             className="w-full shadow-lg shadow-primary-600/25"
             onClick={() => setBuyModal(true)}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/ahc-coin.png" alt="" className="h-5 w-5 rounded-full mr-2" />
+            <AhcCoin size={20} decorative className="mr-2" />
             {t("numbers.buyWith", { total: total.toFixed(2) })}
           </Button>
         </div>
@@ -279,8 +278,7 @@ export function NumberSelector({
             <div className="flex flex-col items-center text-center">
               {/* Icon */}
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/10">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/ahc-coin.png" alt="AHC" className="h-10 w-10 rounded-full" />
+                <AhcCoin size={40} />
               </div>
 
               <h3 className="text-lg font-bold text-white mb-1">{t("numbers.confirmPurchase")}</h3>
@@ -306,8 +304,7 @@ export function NumberSelector({
                 <div className="flex justify-between items-center">
                   <span className="text-surface-400">{t("numbers.total")}</span>
                   <div className="flex items-center gap-1.5">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/ahc-coin.png" alt="" className="h-5 w-5 rounded-full" />
+                    <AhcCoin size={20} decorative />
                     <span className="text-lg font-bold text-accent-400">{total.toFixed(2)} AHC</span>
                   </div>
                 </div>
@@ -383,16 +380,14 @@ export function NumberSelector({
                 <div className="flex justify-between items-center">
                   <span className="text-surface-400">{t("numbers.totalDebited")}</span>
                   <div className="flex items-center gap-1.5">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/ahc-coin.png" alt="" className="h-4 w-4 rounded-full" />
+                    <AhcCoin size={16} decorative />
                     <span className="font-bold text-red-400">-{successData.spent.toFixed(2)} AHC</span>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-surface-400">{t("numbers.currentBalance")}</span>
                   <div className="flex items-center gap-1.5">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/ahc-coin.png" alt="" className="h-4 w-4 rounded-full" />
+                    <AhcCoin size={16} decorative />
                     <span className="font-bold text-accent-400">{successData.balance.toFixed(2)} AHC</span>
                   </div>
                 </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import {
@@ -189,8 +190,13 @@ export default function DashboardPage() {
                     >
                       <div className="flex items-center gap-3 mb-2">
                         {raffle.skinImage ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={raffle.skinImage} alt="" className="h-10 w-10 rounded-lg bg-surface-800 object-contain flex-shrink-0" />
+                          <Image
+                            src={raffle.skinImage}
+                            alt=""
+                            width={40}
+                            height={40}
+                            className="h-10 w-10 rounded-lg bg-surface-800 object-contain flex-shrink-0"
+                          />
                         ) : (
                           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-500/10 flex-shrink-0">
                             <Trophy className="h-4 w-4 text-primary-400" />

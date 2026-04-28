@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Send, Loader2, Shield, User as UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -76,11 +77,13 @@ export function TicketChat({ messages, currentUserId, canSend, disabledReason, o
                 {/* Avatar */}
                 <div className="shrink-0">
                   {m.sender?.avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={m.sender.avatarUrl}
                       alt={m.sender.name}
-                      className="h-8 w-8 rounded-full border border-surface-700"
+                      width={32}
+                      height={32}
+                      unoptimized
+                      className="rounded-full border border-surface-700"
                     />
                   ) : (
                     <div

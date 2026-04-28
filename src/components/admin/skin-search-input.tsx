@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-/* eslint-disable @next/next/no-img-element */
+import Image from "next/image";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/utils";
@@ -139,10 +139,12 @@ export function SkinSearchInput({ onSelect, selected, onClear }: SkinSearchInput
       <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden">
         {/* Image */}
         <div className="relative flex items-center justify-center h-[200px] bg-gradient-to-b from-surface-900 to-surface-800 rounded-t-xl">
-          <img
+          <Image
             src={selected.skinImage}
             alt={selected.skinName}
-            className="object-contain max-h-[180px] drop-shadow-2xl"
+            width={256}
+            height={180}
+            className="object-contain max-h-[180px] w-auto drop-shadow-2xl"
           />
         </div>
 
@@ -259,9 +261,11 @@ export function SkinSearchInput({ onSelect, selected, onClear }: SkinSearchInput
             >
               {/* Skin image */}
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-800">
-                <img
+                <Image
                   src={skin.image}
                   alt={skin.name}
+                  width={48}
+                  height={48}
                   className="h-12 w-12 object-contain"
                 />
               </div>

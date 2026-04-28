@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRightLeft, Loader2, Search, Copy, CheckCircle, Send,
@@ -357,8 +358,13 @@ export default function AdminTradesPage() {
                   {/* Skin preview */}
                   <div className="flex items-center gap-3 lg:w-64 shrink-0">
                     {raffle?.skinImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={raffle.skinImage} alt={raffle.title} className="h-16 w-16 rounded-lg object-contain bg-surface-900 p-1" />
+                      <Image
+                        src={raffle.skinImage}
+                        alt={raffle.title}
+                        width={64}
+                        height={64}
+                        className="h-16 w-16 rounded-lg object-contain bg-surface-900 p-1"
+                      />
                     ) : (
                       <div className="h-16 w-16 rounded-lg bg-surface-900 flex items-center justify-center">
                         <Package className="h-8 w-8 text-surface-600" />
@@ -379,8 +385,14 @@ export default function AdminTradesPage() {
                   <div className="flex-1 min-w-0 space-y-2">
                     <div className="flex items-center gap-2">
                       {t.user.avatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={t.user.avatarUrl} alt="" className="h-8 w-8 rounded-full border border-surface-700" />
+                        <Image
+                          src={t.user.avatarUrl}
+                          alt=""
+                          width={32}
+                          height={32}
+                          className="rounded-full border border-surface-700"
+                          unoptimized
+                        />
                       ) : (
                         <div className="h-8 w-8 rounded-full bg-primary-500/20 flex items-center justify-center text-xs font-bold text-primary-400">
                           {t.user.name.charAt(0).toUpperCase()}

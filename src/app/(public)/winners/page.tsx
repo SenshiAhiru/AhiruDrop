@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Trophy, Shield, Loader2, ExternalLink } from "lucide-react";
 import { useTranslation } from "@/i18n/provider";
@@ -103,11 +104,12 @@ export default function WinnersPage() {
               {/* Image */}
               <div className="relative aspect-square bg-gradient-to-br from-surface-800 to-surface-900 flex items-center justify-center overflow-hidden">
                 {item.skinImage ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={item.skinImage}
                     alt={item.title}
-                    className="h-full w-full object-contain p-6 group-hover:scale-105 transition-transform"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    className="object-contain p-6 group-hover:scale-105 transition-transform"
                   />
                 ) : (
                   <Trophy className="h-20 w-20 text-surface-700" />
@@ -150,11 +152,13 @@ export default function WinnersPage() {
                 {item.winner && (
                   <div className="flex items-center gap-2 rounded-lg border border-surface-700 bg-surface-800/60 p-2">
                     {item.winner.avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={item.winner.avatarUrl}
                         alt={item.winner.name}
-                        className="h-8 w-8 rounded-full border border-accent-500/40"
+                        width={32}
+                        height={32}
+                        unoptimized
+                        className="rounded-full border border-accent-500/40"
                       />
                     ) : (
                       <div className="h-8 w-8 rounded-full bg-accent-500/20 border border-accent-500/40 flex items-center justify-center text-xs font-bold text-accent-400">

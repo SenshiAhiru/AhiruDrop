@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -131,11 +132,13 @@ export function PublicHeader() {
             {session?.user && (
               <div className="px-4 py-4 border-b border-surface-800 flex items-center gap-3">
                 {session.user.image ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
+                  <Image
                     src={session.user.image}
                     alt=""
-                    className="h-12 w-12 rounded-full border-2 border-primary-500/50 object-cover"
+                    width={48}
+                    height={48}
+                    unoptimized
+                    className="rounded-full border-2 border-primary-500/50 object-cover"
                   />
                 ) : (
                   <span className="flex items-center justify-center h-12 w-12 rounded-full bg-primary-600 text-white text-lg font-bold">

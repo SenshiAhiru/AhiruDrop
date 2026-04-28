@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Search, MessageSquare, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -181,11 +182,13 @@ export default function AdminSupportPage() {
               >
                 <div className="flex items-start gap-3">
                   {t.user.avatarUrl ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
+                    <Image
                       src={t.user.avatarUrl}
                       alt={t.user.name}
-                      className="h-10 w-10 rounded-full border border-surface-700 shrink-0"
+                      width={40}
+                      height={40}
+                      unoptimized
+                      className="rounded-full border border-surface-700 shrink-0"
                     />
                   ) : (
                     <div className="h-10 w-10 rounded-full bg-primary-500/20 border border-primary-500/30 flex items-center justify-center text-sm font-bold text-primary-400 shrink-0">

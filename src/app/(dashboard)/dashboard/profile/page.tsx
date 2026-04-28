@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -235,8 +236,14 @@ export default function ProfilePage() {
             {/* Avatar */}
             <div className="flex items-center gap-4 pb-2">
               {avatarUrl ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={avatarUrl} alt="Avatar" className="h-16 w-16 rounded-full ring-2 ring-primary-500/30 object-cover" />
+                <Image
+                  src={avatarUrl}
+                  alt="Avatar"
+                  width={64}
+                  height={64}
+                  className="rounded-full ring-2 ring-primary-500/30 object-cover"
+                  unoptimized
+                />
               ) : (
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/20 ring-2 ring-primary-500/30 text-primary-400 text-xl font-bold">
                   {(session?.user?.name || "U")[0].toUpperCase()}

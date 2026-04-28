@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { usePoll } from "@/hooks/use-poll";
 import { useTranslation } from "@/i18n/provider";
+import { AhcCoin } from "@/components/shared/ahc-coin";
 
 export function AhcBalance({ className }: { className?: string }) {
   const { t } = useTranslation();
@@ -41,8 +42,7 @@ export function AhcBalance({ className }: { className?: string }) {
       title={t("deposit.title")}
     >
       {/* AHC icon */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/ahc-coin.png" alt="AHC" className="h-6 w-6 rounded-full" />
+      <AhcCoin size={24} />
       <span className="text-sm font-bold text-accent-400">
         {balance != null ? balance.toFixed(2) : "—"}
       </span>

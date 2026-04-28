@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle, Loader2, Tag, X, Sparkles, QrCode, Copy, CreditCard, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { useTranslation } from "@/i18n/provider";
+import { AhcCoin } from "@/components/shared/ahc-coin";
 
 const CURRENCIES = [
   { code: "BRL", symbol: "R$", flag: "🇧🇷", name: "Real" },
@@ -100,8 +101,7 @@ function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () 
           <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> {t("deposit.processing")}</>
         ) : (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/ahc-coin.png" alt="" className="h-5 w-5 rounded-full mr-2" />
+            <AhcCoin size={20} decorative className="mr-2" />
             {t("deposit.payAndReceive", { total: totalAhc.toFixed(2) })}
           </>
         )}
@@ -530,8 +530,7 @@ export default function DepositPage() {
         <h1 className="text-2xl font-bold text-white mb-2">{t("deposit.successTitle")}</h1>
         <p className="text-surface-400 mb-4">{t("deposit.successSubtitle")}</p>
         <div className="flex items-center gap-2 mb-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/ahc-coin.png" alt="AHC" className="h-8 w-8 rounded-full" />
+          <AhcCoin size={32} />
           <span className="text-3xl font-bold text-accent-400">+{totalAhcReceived.toFixed(2)} AHC</span>
         </div>
         <div className="flex gap-3">
@@ -563,8 +562,7 @@ export default function DepositPage() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/ahc-coin.png" alt="AHC" className="h-12 w-12 rounded-full" />
+            <AhcCoin size={48} />
             <div>
               <p className="text-sm text-[var(--muted-foreground)]">{t("balance.yourBalance")}</p>
               {loading ? (
@@ -648,8 +646,7 @@ export default function DepositPage() {
                       }`}
                     >
                       <div className="flex items-center gap-1">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/ahc-coin.png" alt="" className="h-4 w-4 rounded-full" />
+                        <AhcCoin size={16} decorative />
                         <span className="text-lg font-bold text-accent-400">{preset}</span>
                       </div>
                       <span className="text-[10px] text-surface-500">

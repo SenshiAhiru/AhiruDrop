@@ -88,7 +88,7 @@ export const en: Record<MessageKey, string> = {
   "deposit.youPay": "You pay",
   "deposit.balanceAfter": "Balance after deposit",
   "deposit.continueToPayment": "Continue to payment",
-  "deposit.securePayment": "Secure payment via Stripe",
+  "deposit.securePayment": "Secure payment via Stripe (card) and Mercado Pago (PIX)",
   "deposit.couponLabel": "Bonus coupon (optional)",
   "deposit.couponPlaceholder": "ENTER CODE",
   "deposit.couponApply": "Apply",
@@ -224,7 +224,7 @@ export const en: Record<MessageKey, string> = {
   "about.step1.title": "Create your account",
   "about.step1.desc": "Sign up in seconds with email and password, or log in with your Steam account. You must be 18+.",
   "about.step2.title": "Deposit AhiruCoins (AHC)",
-  "about.step2.desc": "AHC is the platform's internal currency, pegged to USD. Deposit via credit card (Stripe) in BRL or USD. Got a coupon? Apply it and earn bonus AHC.",
+  "about.step2.desc": "AHC is the platform's internal currency, fixed-pegged at 1 AHC = $1 USD. Deposit by card (Stripe) in BRL or USD, or via PIX (Mercado Pago) in BRL — balance credits instantly. Got a coupon? Apply it and earn bonus AHC.",
   "about.step3.title": "Pick a CS2 skin",
   "about.step3.desc": "Browse active CS2 skin raffles — AK-47, AWP, knives, gloves and more. Check rarity, wear, float and price per ticket.",
   "about.step4.title": "Buy your numbers",
@@ -474,7 +474,7 @@ export const en: Record<MessageKey, string> = {
   "privacy.s3Body": "Data is used to: create and authenticate your account; process deposits and credit AHC; allow purchase of raffle numbers; run provably-fair draws; deliver won skins via Steam Trade; send in-app notifications about your raffles; prevent fraud and abuse (rate limiting, multi-account detection); and comply with legal and tax obligations.",
 
   "privacy.s4Title": "4. Sharing with third parties",
-  "privacy.s4Body": "We do not sell your data. We share only with strictly necessary providers: Stripe (payment processing), Vercel (hosting), Supabase (database), Steam/Valve (authentication and skin delivery) and Cloudflare (optional CAPTCHA). Each of these partners has its own privacy policy which we recommend reviewing.",
+  "privacy.s4Body": "We do not sell your data. We share only with strictly necessary providers: Stripe (card payments), Mercado Pago (PIX payments), Vercel (hosting), Supabase (database), Steam/Valve (authentication and skin delivery) and Cloudflare (optional CAPTCHA). Each of these partners has its own privacy policy which we recommend reviewing.",
 
   "privacy.s5Title": "5. Cookies and similar technologies",
   "privacy.s5Body": "We use essential cookies to keep your session logged in (NextAuth session cookie) and to remember your preferences (language, theme, currency). We do not use ad-tracking cookies. You can block cookies in your browser, but parts of the platform (like staying logged in) may stop working.",

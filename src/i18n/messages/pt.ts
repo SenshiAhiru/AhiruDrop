@@ -88,7 +88,7 @@ export const pt = {
   "deposit.youPay": "Você paga",
   "deposit.balanceAfter": "Saldo após depósito",
   "deposit.continueToPayment": "Continuar para pagamento",
-  "deposit.securePayment": "Pagamento seguro via Stripe",
+  "deposit.securePayment": "Pagamento seguro via Stripe (cartão) e Mercado Pago (PIX)",
   "deposit.couponLabel": "Cupom de bônus (opcional)",
   "deposit.couponPlaceholder": "DIGITE O CÓDIGO",
   "deposit.couponApply": "Aplicar",
@@ -220,7 +220,7 @@ export const pt = {
   "about.step1.title": "Crie sua conta",
   "about.step1.desc": "Cadastre-se em segundos usando e-mail e senha, ou entre direto com sua conta Steam. Você precisa ser maior de 18 anos.",
   "about.step2.title": "Deposite AhiruCoins (AHC)",
-  "about.step2.desc": "AHC é a moeda interna da plataforma, pegada ao dólar. Deposite via cartão de crédito (Stripe), em BRL ou USD. Tem cupom? Aplica na hora e ganha AHC bônus.",
+  "about.step2.desc": "AHC é a moeda interna da plataforma, com paridade fixa de 1 AHC = US$ 1. Deposite via cartão (Stripe) em BRL ou USD, ou via PIX (Mercado Pago) em BRL — saldo cai instantaneamente. Tem cupom? Aplica na hora e ganha AHC bônus.",
   "about.step3.title": "Escolha uma skin CS2",
   "about.step3.desc": "Navegue pelas rifas ativas de skins de Counter-Strike 2 — AK-47, AWP, facas, luvas e mais. Veja raridade, wear, float e preço por cota.",
   "about.step4.title": "Compre seus números",
@@ -326,7 +326,7 @@ export const pt = {
   "privacy.s3Body": "Os dados são usados pra: criar e autenticar sua conta; processar depósitos e creditar AHC; permitir compra de números em rifas; realizar sorteios provably fair; enviar skins ganhas via Steam Trade; emitir notificações in-app sobre o andamento das suas rifas; prevenir fraude e abuso (rate limiting, detecção de múltiplas contas); cumprir obrigações legais e fiscais.",
 
   "privacy.s4Title": "4. Compartilhamento com terceiros",
-  "privacy.s4Body": "Não vendemos seus dados. Compartilhamos apenas com prestadores estritamente necessários: Stripe (processamento de pagamentos), Vercel (hospedagem), Supabase (banco de dados), Steam/Valve (autenticação e entrega de skins) e Cloudflare (CAPTCHA opcional). Cada um desses parceiros tem políticas próprias de proteção de dados que recomendamos consultar.",
+  "privacy.s4Body": "Não vendemos seus dados. Compartilhamos apenas com prestadores estritamente necessários: Stripe (pagamentos com cartão), Mercado Pago (pagamentos via PIX), Vercel (hospedagem), Supabase (banco de dados), Steam/Valve (autenticação e entrega de skins) e Cloudflare (CAPTCHA opcional). Cada um desses parceiros tem políticas próprias de proteção de dados que recomendamos consultar.",
 
   "privacy.s5Title": "5. Cookies e tecnologias similares",
   "privacy.s5Body": "Usamos cookies essenciais pra manter sua sessão logada (cookie de sessão NextAuth) e pra lembrar suas preferências (idioma, tema, moeda). Não usamos cookies de rastreamento publicitário. Você pode bloquear cookies no navegador, mas isso pode impedir o funcionamento de partes da plataforma (como permanecer logado).",

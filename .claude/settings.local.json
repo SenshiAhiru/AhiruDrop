@@ -24,7 +24,15 @@
       "Bash(git push *)",
       "Bash(curl -s -i https://ahirudrop.vercel.app/api/cron/expire-reservations)",
       "Bash(curl -s -i https://ahirudrop.vercel.app/api/cron/webhook-health)",
-      "Bash(curl -s -i https://ahirudrop.vercel.app/api/cron/expire-reservations -H \"Authorization: Bearer wrong-token-xyz\")"
+      "Bash(curl -s -i https://ahirudrop.vercel.app/api/cron/expire-reservations -H \"Authorization: Bearer wrong-token-xyz\")",
+      "Bash(curl -A \"facebookexternalhit/1.1\" -sI \"https://ahirudrop.vercel.app/raffles/m4a4-desolate-space-well-worn-mohc6bol\")",
+      "Bash(curl -A \"facebookexternalhit/1.1\" -sI \"https://ahirudrop.vercel.app/raffles/m4a4-desolate-space-well-worn-mohc6bol/opengraph-image\")",
+      "Bash(curl -sI \"https://ahirudrop.vercel.app/raffles/m4a4-desolate-space-well-worn-mohc6bol/opengraph-image\")",
+      "Bash(curl -sL \"https://ahirudrop.vercel.app/raffles/m4a4-desolate-space-well-worn-mohc6bol\" -A \"facebookexternalhit/1.1\")",
+      "Bash(curl -sI -A \"facebookexternalhit/1.1 \\(+http://www.facebook.com/externalhit_uatext.php\\)\" \"https://ahirudrop.vercel.app/raffles/m4a4-desolate-space-well-worn-mohc6bol\")",
+      "Bash(curl -sI -A \"facebookexternalhit/1.1\" -H \"Accept: text/html\" \"https://ahirudrop.vercel.app/raffles/m4a4-desolate-space-well-worn-mohc6bol\")",
+      "Bash(curl -sI \"https://ahirudrop.vercel.app/raffles/m4a4-desolate-space-well-worn-mohc6bol\")",
+      "Bash(curl -sI -A \"meta-externalagent/1.1 \\(+https://developers.facebook.com/docs/sharing/webmasters/crawler\\)\" \"https://ahirudrop.vercel.app/raffles/m4a4-desolate-space-well-worn-mohc6bol\")"
     ]
   }
 }

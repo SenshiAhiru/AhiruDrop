@@ -48,8 +48,10 @@ export function OnboardingWizard({ userName, onDismiss }: Props) {
       description: (
         <>
           Pra comprar tickets de rifa você usa <strong className="text-accent-400">AHC</strong>.
-          É a moeda interna do site, fixada em <strong>1:1</strong> com o real (1 AHC = R$ 1,00).
-          Você deposita via Stripe (cartão ou PIX) e recebe instantaneamente.
+          É a moeda interna do site com paridade fixa: <strong>1 AHC = US$ 1,00</strong>{" "}
+          (em reais, segue o câmbio do dia). Você deposita via{" "}
+          <strong>cartão (Stripe)</strong> ou <strong>PIX (Mercado Pago)</strong> e recebe
+          o saldo instantaneamente.
         </>
       ),
       accent: "from-accent-500/20 via-accent-500/10 to-transparent",

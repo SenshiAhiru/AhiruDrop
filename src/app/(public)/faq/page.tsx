@@ -40,12 +40,12 @@ const FAQ_PT: FaqSection[] = [
       {
         question: "Como faço um depósito?",
         answer:
-          "No dashboard, vai em Depositar AHC. Escolhe a moeda (BRL ou USD), a quantidade de AHC e paga via cartão de crédito pelo Stripe — o pagamento é processado em segundos. O saldo é creditado automaticamente assim que o cartão é aprovado.",
+          "No dashboard, vai em Depositar AHC. Escolhe a moeda (BRL ou USD) e a quantidade de AHC. Em USD, paga com cartão pelo Stripe. Em BRL, escolhe entre cartão (Stripe) ou PIX (Mercado Pago). O saldo é creditado automaticamente assim que o pagamento é confirmado — geralmente em segundos.",
       },
       {
         question: "Quais formas de pagamento são aceitas?",
         answer:
-          "Hoje aceitamos cartão de crédito via Stripe. Outros métodos (incluindo PIX via Mercado Pago) estão no roadmap e devem chegar em breve.",
+          "Cartão de crédito via Stripe (BRL ou USD) e PIX via Mercado Pago (BRL). O PIX é processado pelo Mercado Pago, então o nome do recebedor que aparece no app do seu banco é o titular da conta MP da plataforma — é normal.",
       },
       {
         question: "Posso sacar AHC de volta pra reais?",
@@ -150,7 +150,7 @@ const FAQ_PT: FaqSection[] = [
       {
         question: "E o depósito em reais?",
         answer:
-          "Depósitos via cartão seguem a política da Stripe. Se houver erro de cobrança, contata o suporte que avaliamos caso a caso. Depósitos efetivamente creditados em AHC não são reembolsáveis em dinheiro — viram saldo de plataforma.",
+          "Depósitos via cartão seguem a política do Stripe; depósitos via PIX seguem a política do Mercado Pago. Em caso de erro de cobrança, contata o suporte que avaliamos caso a caso. Depósitos efetivamente creditados em AHC não são reembolsáveis em dinheiro — viram saldo de plataforma.",
       },
     ],
   },
@@ -160,7 +160,7 @@ const FAQ_PT: FaqSection[] = [
       {
         question: "Meus dados estão seguros?",
         answer:
-          "Sim. Senhas são hasheadas com bcrypt, tokens de sessão são JWT assinados, pagamentos passam pelo Stripe (nunca armazenamos dados de cartão) e toda comunicação é HTTPS. Seguimos boas práticas da LGPD pros dados pessoais.",
+          "Sim. Senhas são hasheadas com bcrypt, tokens de sessão são JWT assinados, pagamentos passam por gateways certificados (Stripe pra cartão, Mercado Pago pra PIX) — nunca armazenamos dados de cartão nem chaves PIX — e toda comunicação é HTTPS. Seguimos boas práticas da LGPD pros dados pessoais.",
       },
       {
         question: "Como protegem contra bot / abuso?",
@@ -218,12 +218,12 @@ const FAQ_EN: FaqSection[] = [
       {
         question: "How do I deposit?",
         answer:
-          "On the dashboard, go to Deposit AHC. Pick a currency (BRL or USD), the AHC amount and pay with a credit card via Stripe — processed in seconds. The balance is credited automatically as soon as the card is approved.",
+          "On the dashboard, go to Deposit AHC. Pick a currency (BRL or USD) and the AHC amount. In USD, you pay by card via Stripe. In BRL, choose between card (Stripe) or PIX (Mercado Pago). The balance is credited automatically as soon as the payment confirms — typically within seconds.",
       },
       {
         question: "Which payment methods are accepted?",
         answer:
-          "Today we accept credit card via Stripe. Other methods (including PIX via Mercado Pago) are on the roadmap and coming soon.",
+          "Credit card via Stripe (BRL or USD) and PIX via Mercado Pago (BRL only — PIX is a Brazilian payment rail). PIX is processed by Mercado Pago, so the receiver name shown in your bank app is the holder of the platform's MP account — that's expected.",
       },
       {
         question: "Can I withdraw AHC back to cash?",
@@ -328,7 +328,7 @@ const FAQ_EN: FaqSection[] = [
       {
         question: "What about the actual cash deposit?",
         answer:
-          "Card deposits follow Stripe's policy. For billing issues, contact support and we'll evaluate case by case. Deposits already credited as AHC are not refundable to cash — they stay as platform balance.",
+          "Card deposits follow Stripe's policy; PIX deposits follow Mercado Pago's. For billing issues, contact support and we'll evaluate case by case. Deposits already credited as AHC are not refundable to cash — they stay as platform balance.",
       },
     ],
   },
@@ -338,7 +338,7 @@ const FAQ_EN: FaqSection[] = [
       {
         question: "Is my data safe?",
         answer:
-          "Yes. Passwords are hashed with bcrypt, session tokens are signed JWTs, payments go through Stripe (we never store card data) and all communication is HTTPS. We follow LGPD best practices for personal data.",
+          "Yes. Passwords are hashed with bcrypt, session tokens are signed JWTs, payments go through certified gateways (Stripe for cards, Mercado Pago for PIX) — we never store card data nor PIX keys — and all communication is HTTPS. We follow LGPD best practices for personal data.",
       },
       {
         question: "How do you protect against bots / abuse?",

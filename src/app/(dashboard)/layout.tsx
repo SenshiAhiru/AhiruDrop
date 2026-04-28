@@ -20,7 +20,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const mobileNavItems = [
-    { label: t("dashboard.overview"), href: "/dashboard", icon: LayoutDashboard },
+    // exact: only highlight on /dashboard, not on every /dashboard/* route
+    { label: t("dashboard.overview"), href: "/dashboard", icon: LayoutDashboard, exact: true },
     { label: t("dashboard.depositAhc"), href: "/dashboard/deposit", icon: Coins },
     { label: t("dashboard.myOrders"), href: "/dashboard/orders", icon: ShoppingCart },
     { label: t("dashboard.myWins"), href: "/dashboard/winnings", icon: Trophy },

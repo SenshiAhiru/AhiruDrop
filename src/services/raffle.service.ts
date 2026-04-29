@@ -111,6 +111,32 @@ export const raffleService = {
     // Generate all numbers for this raffle
     await raffleNumberRepository.generateNumbers(raffle.id, data.totalNumbers);
 
+    // If admin created the raffle directly as ACTIVE (skipping the
+    // DRAFT phase), announce on Discord here. The matching hook in
+    // updateStatus() handles the DRAFT → ACTIVE transition path.
+    // Mutually exclusive — no double-post risk.
+    if (status === "ACTIVE") {
+      try {
+        const { discord } = await import("@/lib/discord");
+        await discord.notifyRaffleActivated({
+          id: raffle.id,
+          slug: raffle.slug,
+          title: raffle.title,
+          skinImage: raffle.skinImage ?? null,
+          skinName: raffle.skinName ?? null,
+          skinWeapon: raffle.skinWeapon ?? null,
+          skinRarity: raffle.skinRarity ?? null,
+          skinRarityColor: raffle.skinRarityColor ?? null,
+          skinWear: raffle.skinWear ?? null,
+          pricePerNumber: raffle.pricePerNumber as unknown as string,
+          totalNumbers: raffle.totalNumbers,
+          scheduledDrawAt: raffle.scheduledDrawAt,
+        });
+      } catch (err) {
+        console.error("[raffle] discord new-raffle webhook failed (create):", err);
+      }
+    }
+
     return raffle;
   },
 

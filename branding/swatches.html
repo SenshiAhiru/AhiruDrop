@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>AhiruDrop — Color Swatches</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #09090b;
+    --card: #18181b;
+    --border: #27272a;
+    --text: #fafafa;
+    --muted: #a1a1aa;
+    --primary: #7c3aed;
+    --accent: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    padding: 48px 32px;
+    line-height: 1.5;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 64px; }
+  h1 {
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    margin: 0 0 12px;
+    background: linear-gradient(135deg, #7c3aed 0%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  header p { color: var(--muted); margin: 0; font-size: 18px; }
+  .duck { font-size: 64px; line-height: 1; margin-bottom: 16px; }
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 56px 0 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  h2 .num { color: var(--muted); font-weight: 400; margin-right: 12px; }
+  .desc { color: var(--muted); margin: 0 0 24px; max-width: 720px; font-size: 14px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+  .swatch {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--card);
+    transition: transform 0.15s;
+  }
+  .swatch:hover { transform: translateY(-2px); }
+  .color-block {
+    height: 120px;
+    display: flex;
+    align-items: flex-end;
+    padding: 12px;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .swatch.light .color-block { color: #18181b; text-shadow: none; }
+  .swatch-info {
+    padding: 12px 14px 14px;
+    font-size: 13px;
+  }
+  .swatch-name { font-weight: 700; margin-bottom: 2px; }
+  .swatch-hex { color: var(--muted); font-family: "SF Mono", Menlo, monospace; font-size: 12px; }
+  .star { float: right; color: #fbbf24; }
+  .footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .gradient-block {
+    height: 200px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    margin-bottom: 12px;
+  }
+  .typo-row {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .typo-row:last-child { border-bottom: 0; }
+  .typo-row .label {
+    color: var(--muted);
+    font-size: 12px;
+    font-family: "SF Mono", Menlo, monospace;
+    width: 140px;
+    flex-shrink: 0;
+  }
+  .typo-row .sample { flex: 1; }
+  .mono { font-family: "Geist Mono", "SF Mono", Menlo, monospace; }
+  @media print {
+    body { padding: 24px; }
+    .swatch { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <div class="duck">🦆</div>
+  <h1>AhiruDrop</h1>
+  <p>Color palette · v1.0 · 2026-04-29</p>
+</header>
+
+<!-- ── Brand Gradient Hero ── -->
+<div class="gradient-block" style="background: linear-gradient(135deg, #7c3aed 0%, #f59e0b 100%);">
+  Brand Gradient
+</div>
+<p class="desc"><code class="mono">linear-gradient(135deg, #7c3aed 0%, #f59e0b 100%)</code></p>
+
+<!-- ── Primary ── -->
+<h2><span class="num">01</span>Primary · Roxo</h2>
+<p class="desc">Cor principal da marca. Use <code class="mono">primary-600</code> em qualquer dúvida.</p>
+<div class="grid">
+  <div class="swatch"><div class="color-block" style="background:#f5f3ff; color:#18181b; text-shadow:none;">primary-50</div><div class="swatch-info"><div class="swatch-name">primary-50</div><div class="swatch-hex">#f5f3ff</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#ede9fe; color:#18181b; text-shadow:none;">primary-100</div><div class="swatch-info"><div class="swatch-name">primary-100</div><div class="swatch-hex">#ede9fe</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#ddd6fe; color:#18181b; text-shadow:none;">primary-200</div><div class="swatch-info"><div class="swatch-name">primary-200</div><div class="swatch-hex">#ddd6fe</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#c4b5fd; color:#18181b; text-shadow:none;">primary-300</div><div class="swatch-info"><div class="swatch-name">primary-300</div><div class="swatch-hex">#c4b5fd</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#a78bfa;">primary-400</div><div class="swatch-info"><div class="swatch-name">primary-400</div><div class="swatch-hex">#a78bfa</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#8b5cf6;">primary-500</div><div class="swatch-info"><div class="swatch-name">primary-500</div><div class="swatch-hex">#8b5cf6</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#7c3aed;">primary-600 <span class="star">★</span></div><div class="swatch-info"><div class="swatch-name">primary-600 <span class="star">★</span></div><div class="swatch-hex">#7c3aed</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#6d28d9;">primary-700</div><div class="swatch-info"><div class="swatch-name">primary-700</div><div class="swatch-hex">#6d28d9</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#5b21b6;">primary-800</div><div class="swatch-info"><div class="swatch-name">primary-800</div><div class="swatch-hex">#5b21b6</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#4c1d95;">primary-900</div><div class="swatch-info"><div class="swatch-name">primary-900</div><div class="swatch-hex">#4c1d95</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#2e1065;">primary-950</div><div class="swatch-info"><div class="swatch-name">primary-950</div><div class="swatch-hex">#2e1065</div></div></div>
+</div>
+
+<!-- ── Accent ── -->
+<h2><span class="num">02</span>Accent · Dourado / Âmbar</h2>
+<p class="desc">Cor da vitória, do dinheiro, dos troféus. Reservada pra valores AHC e elementos premium.</p>
+<div class="grid">
+  <div class="swatch"><div class="color-block" style="background:#fffbeb; color:#18181b; text-shadow:none;">accent-50</div><div class="swatch-info"><div class="swatch-name">accent-50</div><div class="swatch-hex">#fffbeb</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#fef3c7; color:#18181b; text-shadow:none;">accent-100</div><div class="swatch-info"><div class="swatch-name">accent-100</div><div class="swatch-hex">#fef3c7</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#fde68a; color:#18181b; text-shadow:none;">accent-200</div><div class="swatch-info"><div class="swatch-name">accent-200</div><div class="swatch-hex">#fde68a</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#fcd34d; color:#18181b; text-shadow:none;">accent-300</div><div class="swatch-info"><div class="swatch-name">accent-300</div><div class="swatch-hex">#fcd34d</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#fbbf24; color:#18181b; text-shadow:none;">accent-400 ★</div><div class="swatch-info"><div class="swatch-name">accent-400 <span class="star">★</span></div><div class="swatch-hex">#fbbf24</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#f59e0b;">accent-500 <span class="star">★</span></div><div class="swatch-info"><div class="swatch-name">accent-500 <span class="star">★</span></div><div class="swatch-hex">#f59e0b</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#d97706;">accent-600</div><div class="swatch-info"><div class="swatch-name">accent-600</div><div class="swatch-hex">#d97706</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#b45309;">accent-700</div><div class="swatch-info"><div class="swatch-name">accent-700</div><div class="swatch-hex">#b45309</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#92400e;">accent-800</div><div class="swatch-info"><div class="swatch-name">accent-800</div><div class="swatch-hex">#92400e</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#78350f;">accent-900</div><div class="swatch-info"><div class="swatch-name">accent-900</div><div class="swatch-hex">#78350f</div></div></div>
+</div>
+
+<!-- ── Semantic ── -->
+<h2><span class="num">03</span>Semânticas</h2>
+<p class="desc">Cores de status. Aplicar APENAS pra estados correspondentes — nunca decorativamente.</p>
+<div class="grid">
+  <div class="swatch"><div class="color-block" style="background:#10b981;">success</div><div class="swatch-info"><div class="swatch-name">success</div><div class="swatch-hex">#10b981 · OK / aprovado</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#f59e0b;">warning</div><div class="swatch-info"><div class="swatch-name">warning</div><div class="swatch-hex">#f59e0b · atenção / sandbox</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#ef4444;">danger</div><div class="swatch-info"><div class="swatch-name">danger</div><div class="swatch-hex">#ef4444 · erro / destrutivo</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#3b82f6;">info</div><div class="swatch-info"><div class="swatch-name">info</div><div class="swatch-hex">#3b82f6 · informativo</div></div></div>
+</div>
+
+<!-- ── Surface (Dark) ── -->
+<h2><span class="num">04</span>Surface · Dark mode</h2>
+<p class="desc">Escala neutra padrão. <code class="mono">surface-950</code> é o background da página, <code class="mono">surface-50</code> é o texto principal. Inverte automaticamente em light mode.</p>
+<div class="grid">
+  <div class="swatch"><div class="color-block" style="background:#fafafa; color:#18181b; text-shadow:none;">surface-50</div><div class="swatch-info"><div class="swatch-name">surface-50</div><div class="swatch-hex">#fafafa · text</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#f4f4f5; color:#18181b; text-shadow:none;">surface-100</div><div class="swatch-info"><div class="swatch-name">surface-100</div><div class="swatch-hex">#f4f4f5</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#e4e4e7; color:#18181b; text-shadow:none;">surface-200</div><div class="swatch-info"><div class="swatch-name">surface-200</div><div class="swatch-hex">#e4e4e7</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#d4d4d8; color:#18181b; text-shadow:none;">surface-300</div><div class="swatch-info"><div class="swatch-name">surface-300</div><div class="swatch-hex">#d4d4d8</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#a1a1aa;">surface-400</div><div class="swatch-info"><div class="swatch-name">surface-400</div><div class="swatch-hex">#a1a1aa · muted</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#71717a;">surface-500</div><div class="swatch-info"><div class="swatch-name">surface-500</div><div class="swatch-hex">#71717a · placeholder</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#52525b;">surface-600</div><div class="swatch-info"><div class="swatch-name">surface-600</div><div class="swatch-hex">#52525b</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#3f3f46;">surface-700</div><div class="swatch-info"><div class="swatch-name">surface-700</div><div class="swatch-hex">#3f3f46 · border</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#27272a;">surface-800</div><div class="swatch-info"><div class="swatch-name">surface-800</div><div class="swatch-hex">#27272a · card-alt</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#18181b;">surface-900</div><div class="swatch-info"><div class="swatch-name">surface-900</div><div class="swatch-hex">#18181b · card</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#09090b;">surface-950</div><div class="swatch-info"><div class="swatch-name">surface-950</div><div class="swatch-hex">#09090b · background</div></div></div>
+</div>
+
+<!-- ── CS2 Rarities ── -->
+<h2><span class="num">05</span>CS2 Rarities <span style="font-size:14px; font-weight:400; color:var(--muted); margin-left:8px;">(Valve standard)</span></h2>
+<p class="desc">Cores oficiais da Valve pra raridade de skins. Use exatamente esses valores, sem variação.</p>
+<div class="grid">
+  <div class="swatch"><div class="color-block" style="background:#b0c3d9; color:#18181b; text-shadow:none;">Consumer</div><div class="swatch-info"><div class="swatch-name">Consumer Grade</div><div class="swatch-hex">#b0c3d9</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#5e98d9;">Industrial</div><div class="swatch-info"><div class="swatch-name">Industrial Grade</div><div class="swatch-hex">#5e98d9</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#4b69ff;">Mil-Spec</div><div class="swatch-info"><div class="swatch-name">Mil-Spec Grade</div><div class="swatch-hex">#4b69ff</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#8847ff;">Restricted</div><div class="swatch-info"><div class="swatch-name">Restricted</div><div class="swatch-hex">#8847ff</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#d32ce6;">Classified</div><div class="swatch-info"><div class="swatch-name">Classified</div><div class="swatch-hex">#d32ce6</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#eb4b4b;">Covert</div><div class="swatch-info"><div class="swatch-name">Covert</div><div class="swatch-hex">#eb4b4b</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#e4ae39; color:#18181b; text-shadow:none;">Contraband</div><div class="swatch-info"><div class="swatch-name">Contraband / Extraordinary</div><div class="swatch-hex">#e4ae39</div></div></div>
+</div>
+
+<!-- ── Wear Conditions ── -->
+<h2><span class="num">06</span>CS2 Wear Conditions</h2>
+<p class="desc">Cor por desgaste, ordem do float (mais novo → mais usado).</p>
+<div class="grid">
+  <div class="swatch"><div class="color-block" style="background:#4ade80; color:#18181b; text-shadow:none;">FN</div><div class="swatch-info"><div class="swatch-name">Factory New</div><div class="swatch-hex">#4ade80 · 0.00–0.07</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#a3e635; color:#18181b; text-shadow:none;">MW</div><div class="swatch-info"><div class="swatch-name">Minimal Wear</div><div class="swatch-hex">#a3e635 · 0.07–0.15</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#facc15; color:#18181b; text-shadow:none;">FT</div><div class="swatch-info"><div class="swatch-name">Field-Tested</div><div class="swatch-hex">#facc15 · 0.15–0.38</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#fb923c;">WW</div><div class="swatch-info"><div class="swatch-name">Well-Worn</div><div class="swatch-hex">#fb923c · 0.38–0.45</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#ef4444;">BS</div><div class="swatch-info"><div class="swatch-name">Battle-Scarred</div><div class="swatch-hex">#ef4444 · 0.45–1.00</div></div></div>
+</div>
+
+<!-- ── External ── -->
+<h2><span class="num">07</span>Externos</h2>
+<p class="desc">Cores de marcas terceiras usadas em integrações. Use apenas no contexto da própria marca.</p>
+<div class="grid">
+  <div class="swatch"><div class="color-block" style="background:#5865F2;">Discord</div><div class="swatch-info"><div class="swatch-name">Discord</div><div class="swatch-hex">#5865F2</div></div></div>
+  <div class="swatch"><div class="color-block" style="background:#171a21;">Steam</div><div class="swatch-info"><div class="swatch-name">Steam</div><div class="swatch-hex">#171a21</div></div></div>
+</div>
+
+<!-- ── Typography ── -->
+<h2><span class="num">08</span>Tipografia</h2>
+<p class="desc">Geist Sans pro corpo e UI. Geist Mono pra números, hashes e identificadores. Webfonts via Google.</p>
+<div style="background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px;">
+  <div class="typo-row">
+    <span class="label">Hero · 60px / 800</span>
+    <span class="sample" style="font-size:60px; font-weight:800; letter-spacing:-1.5px;">AhiruDrop</span>
+  </div>
+  <div class="typo-row">
+    <span class="label">H1 · 36px / 800</span>
+    <span class="sample" style="font-size:36px; font-weight:800;">Rifas de skins CS2</span>
+  </div>
+  <div class="typo-row">
+    <span class="label">H2 · 30px / 700</span>
+    <span class="sample" style="font-size:30px; font-weight:700;">Sorteio Provably Fair</span>
+  </div>
+  <div class="typo-row">
+    <span class="label">Body · 16px / 400</span>
+    <span class="sample" style="font-size:16px;">Concorra a skins reais com sorteios verificáveis publicamente via Bitcoin.</span>
+  </div>
+  <div class="typo-row">
+    <span class="label">Small · 14px / 400</span>
+    <span class="sample" style="font-size:14px; color:var(--muted);">Subtítulos e textos secundários ficam em surface-400.</span>
+  </div>
+  <div class="typo-row">
+    <span class="label">Mono · 14px / 600</span>
+    <span class="sample mono" style="font-size:14px; font-weight:600; color:#fbbf24;">0042 · 1500.00 AHC</span>
+  </div>
+</div>
+
+<!-- ── Gradients ── -->
+<h2><span class="num">09</span>Gradientes</h2>
+<div class="gradient-block" style="background: linear-gradient(135deg, #7c3aed 0%, #f59e0b 100%);">
+  Brand · 135° · Roxo → Dourado
+</div>
+<p class="desc"><code class="mono">linear-gradient(135deg, #7c3aed 0%, #f59e0b 100%)</code> · uso: hero, headings, CTAs especiais</p>
+
+<div class="gradient-block" style="background: linear-gradient(135deg, #5865F2 0%, #7c3aed 50%, #fbbf24 100%);">
+  Discord Banner · Azul → Roxo → Dourado
+</div>
+<p class="desc"><code class="mono">linear-gradient(135deg, #5865F2 0%, #7c3aed 50%, #fbbf24 100%)</code> · uso: CTA Discord, banner de comunidade</p>
+
+<div class="footer">
+  <p>🦆 AhiruDrop · v1.0 · github.com/SenshiAhiru/AhiruDrop</p>
+  <p>Source of truth: <code class="mono">src/app/globals.css</code> + <code class="mono">src/constants/cs2.ts</code></p>
+</div>
+
+</div>
+</body>
+</html>

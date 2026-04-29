@@ -76,6 +76,10 @@ async function postToWebhook(channel: Channel, payload: { content?: string; embe
 export const discord = {
   /**
    * Posted in #novas-rifas the moment an admin flips a raffle to ACTIVE.
+   *
+   * Bilingual (PT + EN) so members in the international channel still
+   * understand the announcement without us fragmenting into two
+   * locale-specific channels at this stage.
    */
   async notifyRaffleActivated(raffle: {
     id: string;
@@ -101,25 +105,27 @@ export const discord = {
     }
 
     const fields: DiscordEmbed["fields"] = [
-      { name: "💰 Preço por número", value: `${price} AHC`, inline: true },
-      { name: "🎟️ Total de números", value: String(raffle.totalNumbers), inline: true },
+      { name: "💰 Preço · Price", value: `${price} AHC`, inline: true },
+      { name: "🎟️ Total · Tickets", value: String(raffle.totalNumbers), inline: true },
     ];
     if (raffle.skinRarity) {
-      fields.push({ name: "✨ Raridade", value: raffle.skinRarity, inline: true });
+      fields.push({ name: "✨ Raridade · Rarity", value: raffle.skinRarity, inline: true });
     }
     if (raffle.skinWear) {
       fields.push({ name: "🔧 Wear", value: raffle.skinWear, inline: true });
     }
     if (raffle.scheduledDrawAt) {
       const ts = Math.floor(new Date(raffle.scheduledDrawAt).getTime() / 1000);
-      fields.push({ name: "🗓️ Sorteio", value: `<t:${ts}:F>`, inline: false });
+      // <t:ts:F> already auto-localizes per Discord client locale
+      fields.push({ name: "🗓️ Sorteio · Draw", value: `<t:${ts}:F>`, inline: false });
     }
 
     const embed: DiscordEmbed = {
       title: `🎲 ${raffle.title}`,
       description:
-        `Uma nova rifa acaba de abrir no AhiruDrop! Concorra a partir de **${price} AHC** por número.\n\n` +
-        `[**🎟️ Participar agora →**](${url})`,
+        `🇧🇷 Uma nova rifa acaba de abrir no AhiruDrop! Concorra a partir de **${price} AHC** por número.\n` +
+        `🇺🇸 A new raffle just opened on AhiruDrop! Join from **${price} AHC** per ticket.\n\n` +
+        `[**🎟️ Participar agora · Join now →**](${url})`,
       url,
       color,
       fields,
@@ -129,7 +135,7 @@ export const discord = {
     if (raffle.skinImage) embed.image = { url: raffle.skinImage };
 
     await postToWebhook("NEW_RAFFLE", {
-      content: "🎲 **Nova rifa disponível!** @here",
+      content: "🎲 **Nova rifa disponível! · New raffle available!** @here",
       embeds: [embed],
     });
   },
@@ -156,34 +162,35 @@ export const discord = {
     }
 
     const fields: DiscordEmbed["fields"] = [
-      { name: "🏆 Vencedor", value: args.winnerName, inline: true },
-      { name: "🎯 Número", value: `#${args.winningNumber}`, inline: true },
+      { name: "🏆 Vencedor · Winner", value: args.winnerName, inline: true },
+      { name: "🎯 Número · Number", value: `#${args.winningNumber}`, inline: true },
     ];
     if (args.blockHeight) {
       fields.push({
-        name: "⛓️ Bloco BTC",
+        name: "⛓️ Bloco BTC · BTC Block",
         value: `[#${args.blockHeight}](https://mempool.space/block/${args.blockHeight})`,
         inline: true,
       });
     }
 
     const embed: DiscordEmbed = {
-      title: `🏆 Sorteada: ${args.raffleTitle}`,
+      title: `🏆 Sorteada · Drawn: ${args.raffleTitle}`,
       description:
-        `**Parabéns, ${args.winnerName}!**\n\n` +
-        `O sorteio foi feito de forma **Provably Fair** e a prova matemática está pública.\n\n` +
-        `[**🔍 Verificar a prova →**](${url})`,
+        `**Parabéns, ${args.winnerName}! · Congrats, ${args.winnerName}!**\n\n` +
+        `🇧🇷 O sorteio foi feito de forma **Provably Fair** e a prova matemática está pública.\n` +
+        `🇺🇸 The draw was done **Provably Fair** and the math proof is public.\n\n` +
+        `[**🔍 Verificar prova · Verify proof →**](${url})`,
       url,
       color,
       fields,
-      footer: { text: "AhiruDrop · Resultado verificável publicamente" },
+      footer: { text: "AhiruDrop · Resultado verificável · Publicly verifiable" },
       timestamp: new Date().toISOString(),
     };
     if (args.skinImage) embed.thumbnail = { url: args.skinImage };
     if (args.winnerAvatarUrl) embed.author = { name: args.winnerName, icon_url: args.winnerAvatarUrl };
 
     await postToWebhook("WINNERS", {
-      content: "🏆 **Temos um vencedor!**",
+      content: "🏆 **Temos um vencedor! · We have a winner!**",
       embeds: [embed],
     });
   },

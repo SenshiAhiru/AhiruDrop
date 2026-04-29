@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>AhiruDrop · Pitch Deck</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* ─── AhiruDrop palette ─── */
+  :root {
+    --primary: #7c3aed;
+    --primary-light: #a78bfa;
+    --accent: #fbbf24;
+    --accent-dark: #f59e0b;
+    --bg: #09090b;
+    --bg-2: #14081f;
+    --card: #18181b;
+    --border: #27272a;
+    --text: #fafafa;
+    --muted: #a1a1aa;
+    --muted-2: #71717a;
+    --success: #10b981;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.5;
+  }
+
+  /* ─── Slide layout ─── */
+  .deck {
+    display: flex;
+    flex-direction: column;
+  }
+  .slide {
+    width: 100vw;
+    min-height: 100vh;
+    padding: 8vh 8vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    scroll-snap-align: start;
+  }
+  html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top right, rgba(124,58,237,0.12) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .slide-num {
+    position: absolute;
+    top: 32px; right: 40px;
+    font-size: 13px;
+    color: var(--muted-2);
+    letter-spacing: 4px;
+    font-weight: 600;
+  }
+  .slide-num span { color: var(--accent); }
+
+  /* ─── Typography ─── */
+  h1 {
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 900;
+    letter-spacing: -3px;
+    line-height: 1;
+    margin-bottom: 32px;
+  }
+  h2 {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+  h3 {
+    font-size: clamp(20px, 2vw, 28px);
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  p { font-size: clamp(16px, 1.5vw, 22px); color: var(--muted); max-width: 800px; }
+  p.lead { font-size: clamp(20px, 2vw, 28px); color: var(--text); }
+  .gradient-text {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .accent { color: var(--accent); }
+  .primary { color: var(--primary-light); }
+
+  /* ─── Components ─── */
+  .pill {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .pill.primary-bg {
+    background: var(--primary);
+    color: white;
+  }
+  .pill.success-bg {
+    background: rgba(16,185,129,0.12);
+    color: var(--success);
+    border: 1px solid rgba(16,185,129,0.4);
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 48px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 32px;
+  }
+  .card .num {
+    font-size: 56px;
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .card h4 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .card p {
+    font-size: 15px;
+  }
+  ul.bullets {
+    list-style: none;
+    margin-top: 24px;
+  }
+  ul.bullets li {
+    padding-left: 32px;
+    position: relative;
+    font-size: clamp(16px, 1.5vw, 20px);
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  ul.bullets li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 900;
+  }
+  .cta {
+    display: inline-block;
+    margin-top: 32px;
+    padding: 18px 40px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent-dark) 100%);
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 12px;
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+
+  /* ─── Mascot ─── */
+  .mascot {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 32px;
+  }
+  .mascot.large {
+    width: 320px;
+    height: 320px;
+  }
+
+  /* ─── Print friendly ─── */
+  @media print {
+    .slide { page-break-after: always; min-height: auto; height: 100vh; }
+    body { background: white; color: black; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ SVG SPRITE ════════════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="55%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <radialGradient id="bodyShine" cx="35%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="purpleSparkle" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <symbol id="duck" viewBox="0 0 256 256">
+      <path
+        d="M 128 28 C 178 28, 218 64, 218 118 C 218 168, 178 218, 128 218
+           C 78 218, 38 178, 38 130 C 38 88, 70 52, 110 38 C 116 35, 122 32, 128 28 Z"
+        fill="url(#bodyGrad)"/>
+      <path
+        d="M 128 28 C 178 28, 218 64, 218 118 C 218 168, 178 218, 128 218
+           C 78 218, 38 178, 38 130 C 38 88, 70 52, 110 38 C 116 35, 122 32, 128 28 Z"
+        fill="url(#bodyShine)"/>
+      <path d="M 200 110 Q 240 118, 240 130 Q 240 142, 200 150 L 195 130 Z" fill="#f59e0b"/>
+      <path d="M 200 110 Q 240 118, 240 130 L 200 130 Z" fill="#fbbf24" opacity="0.4"/>
+      <circle cx="170" cy="100" r="11" fill="#0a0a0a"/>
+      <circle cx="173" cy="96" r="3" fill="#ffffff"/>
+      <path d="M 215 50 L 220 64 L 234 69 L 220 74 L 215 88 L 210 74 L 196 69 L 210 64 Z"
+        fill="url(#purpleSparkle)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="deck">
+
+<!-- ───────────── SLIDE 1: COVER ───────────── -->
+<section class="slide" style="text-align:center; align-items:center;">
+  <div class="slide-num"><span>01</span> · 10</div>
+  <svg class="mascot large"><use href="#duck"/></svg>
+  <h1 class="gradient-text">AhiruDrop</h1>
+  <p class="lead" style="margin: 0 auto;">Rifas de skins CS2 com sorteios <strong class="accent">Provably Fair</strong> via Bitcoin.</p>
+  <div style="margin-top: 64px; color: var(--muted-2); font-size: 14px; letter-spacing: 2px;">
+    PITCH DECK · 2026
+  </div>
+</section>
+
+<!-- ───────────── SLIDE 2: PROBLEMA ───────────── -->
+<section class="slide">
+  <div class="slide-num"><span>02</span> · 10</div>
+  <h3>O Problema</h3>
+  <h2>Rifas online de skins CS2 são opacas, fragmentadas e<br><span class="accent">impossíveis de auditar</span>.</h2>
+  <ul class="bullets">
+    <li><strong style="color:white;">Telegram / Discord não-oficial:</strong> sorteios "no print" sem prova matemática</li>
+    <li><strong style="color:white;">Sites internacionais:</strong> custo em dólar, métodos de pagamento que não funcionam pra brasileiro</li>
+    <li><strong style="color:white;">Falta de transparência:</strong> ninguém consegue verificar se o sorteio foi justo de fato</li>
+    <li><strong style="color:white;">Entrega manual:</strong> ganhador depende da boa vontade do organizador pra receber a skin</li>
+  </ul>
+</section>
+
+<!-- ───────────── SLIDE 3: SOLUÇÃO ───────────── -->
+<section class="slide">
+  <div class="slide-num"><span>03</span> · 10</div>
+  <h3>A Solução</h3>
+  <h2 class="gradient-text">Plataforma brasileira com<br>verificação matemática pública.</h2>
+  <div class="grid-3">
+    <div class="card">
+      <div class="num">⛓️</div>
+      <h4>Provably Fair via Bitcoin</h4>
+      <p>Cada sorteio usa hash de bloco BTC público + commit-reveal de seed. Resultado matematicamente verificável por qualquer pessoa.</p>
+    </div>
+    <div class="card">
+      <div class="num">🇧🇷</div>
+      <h4>PIX nativo</h4>
+      <p>Depósito em segundos via Mercado Pago. Cartão internacional via Stripe pra USD. Sem ginástica de carteira cripto.</p>
+    </div>
+    <div class="card">
+      <div class="num">🎮</div>
+      <h4>Entrega via Steam</h4>
+      <p>Skin cai direto no inventário via trade offer oficial. Sem endereço, sem correios, sem espera longa.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── SLIDE 4: COMO FUNCIONA ───────────── -->
+<section class="slide">
+  <div class="slide-num"><span>04</span> · 10</div>
+  <h3>Como Funciona</h3>
+  <h2>Quatro passos. <span class="accent">Sem complicação.</span></h2>
+  <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+    <div class="card">
+      <div class="num">1</div>
+      <h4>Cadastro</h4>
+      <p>Email + senha, ou Steam direto. Verificação em segundos.</p>
+    </div>
+    <div class="card">
+      <div class="num">2</div>
+      <h4>Depósito</h4>
+      <p>PIX ou cartão. 1 AHC = $1 USD (paridade fixa).</p>
+    </div>
+    <div class="card">
+      <div class="num">3</div>
+      <h4>Compra de números</h4>
+      <p>Escolhe quantos quer. Saldo debita na hora.</p>
+    </div>
+    <div class="card">
+      <div class="num">4</div>
+      <h4>Sorteio + Entrega</h4>
+      <p>Hash do bloco BTC define o vencedor. Skin via Steam Trade.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── SLIDE 5: DIFERENCIAL ───────────── -->
+<section class="slide">
+  <div class="slide-num"><span>05</span> · 10</div>
+  <h3>O Diferencial</h3>
+  <h2>Provably Fair é <span class="gradient-text">a nova régua</span><br>do mercado.</h2>
+  <p class="lead" style="margin-top: 24px;">
+    Enquanto concorrentes pedem confiança, a gente <strong class="accent">prova matematicamente</strong>
+    que o sorteio não foi manipulado.
+  </p>
+  <ul class="bullets">
+    <li>Server seed é <strong style="color:white;">commitado em SHA-256 antes da rifa abrir</strong> — impossível trocar depois</li>
+    <li>Bloco Bitcoin futuro é <strong style="color:white;">imprevisível</strong> mesmo pelo nosso time</li>
+    <li>Fórmula completa publicada na página de cada rifa — qualquer um pode recomputar</li>
+    <li>Open source na parte de verificação; código auditável no GitHub</li>
+  </ul>
+</section>
+
+<!-- ───────────── SLIDE 6: PRODUTO ───────────── -->
+<section class="slide">
+  <div class="slide-num"><span>06</span> · 10</div>
+  <h3>O Produto</h3>
+  <h2>Já está em produção.</h2>
+  <div class="grid-3">
+    <div class="card">
+      <div class="num">✓</div>
+      <h4>Stripe (cartão)</h4>
+      <p>BRL e USD. Operacional.</p>
+    </div>
+    <div class="card">
+      <div class="num">✓</div>
+      <h4>PIX (Mercado Pago)</h4>
+      <p>Validado com pagamento real. Operacional.</p>
+    </div>
+    <div class="card">
+      <div class="num">✓</div>
+      <h4>Provably Fair</h4>
+      <p>Commit-reveal + Bitcoin block hash. Operacional.</p>
+    </div>
+    <div class="card">
+      <div class="num">✓</div>
+      <h4>Steam OIDC</h4>
+      <p>Login direto via Steam. Operacional.</p>
+    </div>
+    <div class="card">
+      <div class="num">✓</div>
+      <h4>Discord integration</h4>
+      <p>Webhooks de novas rifas / vencedores em tempo real.</p>
+    </div>
+    <div class="card">
+      <div class="num">✓</div>
+      <h4>Bilíngue PT/EN</h4>
+      <p>i18n nativa em todas as páginas e notificações.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── SLIDE 7: STACK ───────────── -->
+<section class="slide">
+  <div class="slide-num"><span>07</span> · 10</div>
+  <h3>Stack Técnico</h3>
+  <h2>Construído pra <span class="accent">escalar</span>,<br>com <span class="accent">custo baixo</span>.</h2>
+  <div class="grid-3">
+    <div class="card">
+      <h4 class="primary">Frontend</h4>
+      <p>Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · Geist fonts</p>
+    </div>
+    <div class="card">
+      <h4 class="primary">Backend</h4>
+      <p>Next.js API routes · Prisma 7 · PostgreSQL (Supabase) · NextAuth v5</p>
+    </div>
+    <div class="card">
+      <h4 class="primary">Deploy</h4>
+      <p>Vercel (edge + serverless) · Cron jobs · CDN automático</p>
+    </div>
+    <div class="card">
+      <h4 class="primary">Pagamentos</h4>
+      <p>Stripe Elements · Mercado Pago REST · Idempotência DB-level</p>
+    </div>
+    <div class="card">
+      <h4 class="primary">Provably Fair</h4>
+      <p>HMAC-SHA256 · mempool.space + blockstream.info · AES-256-GCM</p>
+    </div>
+    <div class="card">
+      <h4 class="primary">Integrações</h4>
+      <p>Steam OIDC · Steam Trade · Discord webhooks · Cloudflare Turnstile</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── SLIDE 8: ECONOMIA ───────────── -->
+<section class="slide">
+  <div class="slide-num"><span>08</span> · 10</div>
+  <h3>Economia</h3>
+  <h2>Modelo de receita simples e transparente.</h2>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 48px;">
+    <div>
+      <h4 style="color:var(--accent); font-size:24px; margin-bottom:16px;">Como ganhamos</h4>
+      <ul class="bullets">
+        <li>Margem entre o pot da rifa e o valor de mercado da skin</li>
+        <li>Spread de câmbio em depósitos BRL (se aplicável)</li>
+        <li>Sem taxas escondidas; usuário sabe exatamente quanto paga</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="color:var(--accent); font-size:24px; margin-bottom:16px;">Como o usuário ganha</h4>
+      <ul class="bullets">
+        <li>Skin cara (R$ 200+) por <strong style="color:white;">centavos</strong> em quotas</li>
+        <li>Cupons de bônus AHC em depósitos</li>
+        <li>Saldo nunca expira</li>
+        <li>Reembolso automático se rifa cancelada</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── SLIDE 9: ROADMAP ───────────── -->
+<section class="slide">
+  <div class="slide-num"><span>09</span> · 10</div>
+  <h3>Roadmap</h3>
+  <h2>O que vem por aí.</h2>
+  <div class="grid-3">
+    <div class="card">
+      <span class="pill primary-bg">Q2 2026</span>
+      <h4 style="margin-top:12px;">Email transacional</h4>
+      <p>Notificação de vitória + reset de senha via Resend.</p>
+    </div>
+    <div class="card">
+      <span class="pill primary-bg">Q2 2026</span>
+      <h4 style="margin-top:12px;">Sentry + Analytics</h4>
+      <p>Visibilidade de erros e funil de conversão em tempo real.</p>
+    </div>
+    <div class="card">
+      <span class="pill primary-bg">Q3 2026</span>
+      <h4 style="margin-top:12px;">Discord OAuth + bot</h4>
+      <p>Login Discord, comandos slash, auto-cargos de vencedor.</p>
+    </div>
+    <div class="card">
+      <span class="pill primary-bg">Q3 2026</span>
+      <h4 style="margin-top:12px;">Daily rewards + Referral</h4>
+      <p>Sistema de retenção e crescimento orgânico.</p>
+    </div>
+    <div class="card">
+      <span class="pill primary-bg">Q4 2026</span>
+      <h4 style="margin-top:12px;">Mobile app</h4>
+      <p>iOS/Android nativo com push notifications.</p>
+    </div>
+    <div class="card">
+      <span class="pill primary-bg">Q4 2026</span>
+      <h4 style="margin-top:12px;">Marketplace P2P</h4>
+      <p>Usuários revenderem skins ganhas dentro da plataforma.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── SLIDE 10: CONTATO ───────────── -->
+<section class="slide" style="text-align:center; align-items:center;">
+  <div class="slide-num"><span>10</span> · 10</div>
+  <svg class="mascot"><use href="#duck"/></svg>
+  <h3>Vamos conversar?</h3>
+  <h2 class="gradient-text" style="margin-bottom:48px;">Junte-se ao bando.</h2>
+  <p class="lead" style="margin: 0 auto 32px;">
+    AhiruDrop está em produção e crescendo.<br>
+    Pra parcerias, integrações ou investimento — fala com a gente.
+  </p>
+  <div style="display:flex; gap:24px; flex-wrap:wrap; justify-content:center; margin-top: 32px;">
+    <a class="cta" href="https://ahirudrop.vercel.app">ahirudrop.vercel.app</a>
+    <a class="cta" href="mailto:contato@ahirudrop.com" style="background: var(--card); border: 1px solid var(--border);">contato@ahirudrop.com</a>
+  </div>
+  <div style="margin-top: 64px; color: var(--muted-2); font-size: 13px; letter-spacing: 2px;">
+    🦆 AHIRUDROP · 2026
+  </div>
+</section>
+
+</div>
+
+</body>
+</html>

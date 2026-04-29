@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AhiruDrop · social avatar · v0
+  Master 1024×1024. Exporte pra PNG nas resoluções:
+  · 1024×1024 (Discord, Twitter, Instagram master)
+  · 512×512 (display compacto)
+  · 256×256 (favicon source)
+  · 96×96 (Discord small avatar)
+  Background: gradiente brand pra destacar o mascote em qualquer
+  feed. Mascote centralizado e ampliado pra leitura clara em
+  tamanhos pequenos.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="bgRadial" cx="50%" cy="35%" r="80%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="60%" stop-color="#5b21b6"/>
+      <stop offset="100%" stop-color="#1a0b2e"/>
+    </radialGradient>
+    <linearGradient id="bodyGradA" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="55%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <radialGradient id="bodyShineA" cx="35%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="purpleSparkleA" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="22" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="1024" fill="url(#bgRadial)"/>
+
+  <!-- Soft accent glow behind mascot -->
+  <circle cx="512" cy="512" r="380" fill="#fbbf24" opacity="0.12"/>
+
+  <!-- Decorative micro-stars -->
+  <g fill="#ffffff" opacity="0.18">
+    <circle cx="120" cy="180" r="3"/>
+    <circle cx="900" cy="220" r="4"/>
+    <circle cx="180" cy="820" r="3"/>
+    <circle cx="880" cy="780" r="3"/>
+    <circle cx="500" cy="100" r="2.5"/>
+    <circle cx="80" cy="520" r="2.5"/>
+    <circle cx="950" cy="500" r="2.5"/>
+  </g>
+
+  <!-- Mascot, scaled up and centered (~3.4x of base 256 size) -->
+  <g transform="translate(70, 70) scale(3.45)" filter="url(#glow)">
+    <path
+      d="M 128 28
+         C 178 28, 218 64, 218 118
+         C 218 168, 178 218, 128 218
+         C 78 218, 38 178, 38 130
+         C 38 88, 70 52, 110 38
+         C 116 35, 122 32, 128 28 Z"
+      fill="url(#bodyGradA)"/>
+    <path
+      d="M 128 28
+         C 178 28, 218 64, 218 118
+         C 218 168, 178 218, 128 218
+         C 78 218, 38 178, 38 130
+         C 38 88, 70 52, 110 38
+         C 116 35, 122 32, 128 28 Z"
+      fill="url(#bodyShineA)"/>
+    <path d="M 200 110 Q 240 118, 240 130 Q 240 142, 200 150 L 195 130 Z" fill="#f59e0b"/>
+    <path d="M 200 110 Q 240 118, 240 130 L 200 130 Z" fill="#fbbf24" opacity="0.4"/>
+    <circle cx="170" cy="100" r="11" fill="#0a0a0a"/>
+    <circle cx="173" cy="96" r="3" fill="#ffffff"/>
+    <path
+      d="M 215 50 L 220 64 L 234 69 L 220 74 L 215 88 L 210 74 L 196 69 L 210 64 Z"
+      fill="url(#purpleSparkleA)"/>
+  </g>
+</svg>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AhiruDrop · logo-mono-white · v0
+  Versão monocromática branca pra usar sobre fundos escuros
+  (Discord embeds, banners, materiais coloridos).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 256" width="800" height="256">
+  <!-- Mascot -->
+  <g transform="translate(0, 0)">
+    <path
+      d="M 128 28
+         C 178 28, 218 64, 218 118
+         C 218 168, 178 218, 128 218
+         C 78 218, 38 178, 38 130
+         C 38 88, 70 52, 110 38
+         C 116 35, 122 32, 128 28 Z"
+      fill="#ffffff"/>
+    <path
+      d="M 200 110 Q 240 118, 240 130 Q 240 142, 200 150 L 195 130 Z"
+      fill="#ffffff"/>
+    <circle cx="170" cy="100" r="11" fill="#0a0a0a"/>
+    <path
+      d="M 215 50 L 220 64 L 234 69 L 220 74 L 215 88 L 210 74 L 196 69 L 210 64 Z"
+      fill="#ffffff"/>
+  </g>
+  <!-- Wordmark -->
+  <text
+    x="280" y="160"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+    font-weight="900"
+    font-size="110"
+    letter-spacing="-3"
+    fill="#ffffff"
+  >AhiruDrop</text>
+  <text
+    x="283" y="200"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+    font-weight="600"
+    font-size="20"
+    letter-spacing="3"
+    fill="#ffffff" opacity="0.55"
+  >RIFAS DE SKINS · PROVABLY FAIR</text>
+</svg>

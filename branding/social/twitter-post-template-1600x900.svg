@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AhiruDrop · Twitter/X post template · v0
+  1600×900 (16:9 padrão Twitter card). Layout horizontal pra
+  anunciar nova rifa ou vencedor.
+  Substitua os placeholders { } com os dados reais.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <linearGradient id="twBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a0b2e"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </linearGradient>
+    <radialGradient id="twGlowL" cx="20%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="twGlowR" cx="80%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bodyGradT" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="goldText" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#twBg)"/>
+  <rect width="1600" height="900" fill="url(#twGlowL)"/>
+  <rect width="1600" height="900" fill="url(#twGlowR)"/>
+
+  <!-- Header strip -->
+  <g transform="translate(60, 60)">
+    <g transform="scale(0.32)">
+      <path
+        d="M 128 28 C 178 28, 218 64, 218 118 C 218 168, 178 218, 128 218
+           C 78 218, 38 178, 38 130 C 38 88, 70 52, 110 38 C 116 35, 122 32, 128 28 Z"
+        fill="url(#bodyGradT)"/>
+      <path d="M 200 110 Q 240 118, 240 130 Q 240 142, 200 150 L 195 130 Z" fill="#f59e0b"/>
+      <circle cx="170" cy="100" r="11" fill="#0a0a0a"/>
+    </g>
+    <text
+      x="100" y="55"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="900" font-size="48" fill="#ffffff"
+    >AhiruDrop</text>
+  </g>
+
+  <!-- Provably Fair pill (top right) -->
+  <g transform="translate(1230, 60)">
+    <rect width="310" height="60" rx="30" fill="#10b981" fill-opacity="0.12" stroke="#10b981" stroke-opacity="0.4"/>
+    <text
+      x="155" y="40" text-anchor="middle"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="700" font-size="22" fill="#34d399"
+    >✓ PROVABLY FAIR</text>
+  </g>
+
+  <!-- Left side — text content -->
+  <g transform="translate(80, 280)">
+    <rect width="240" height="50" rx="25" fill="#7c3aed"/>
+    <text
+      x="120" y="35" text-anchor="middle"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="800" font-size="22" letter-spacing="2" fill="#ffffff"
+    >NOVA RIFA</text>
+
+    <text
+      x="0" y="160"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="900" font-size="80" letter-spacing="-2" fill="#ffffff"
+    >{SKIN_NAME}</text>
+    <text
+      x="0" y="220"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="500" font-size="36" fill="#a1a1aa"
+    >{SKIN_WEAR}</text>
+
+    <!-- Price card -->
+    <g transform="translate(0, 280)">
+      <rect width="380" height="160" rx="20" fill="#fbbf24" fill-opacity="0.10" stroke="#fbbf24" stroke-opacity="0.4"/>
+      <text
+        x="24" y="50"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+        font-weight="600" font-size="18" letter-spacing="2" fill="#fbbf24"
+      >POR NÚMERO · PER TICKET</text>
+      <text
+        x="24" y="120"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+        font-weight="900" font-size="64" fill="url(#goldText)"
+      >{PRICE} AHC</text>
+    </g>
+
+    <!-- URL -->
+    <text
+      x="0" y="510"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="700" font-size="26" letter-spacing="3" fill="#a78bfa"
+    >ahirudrop.vercel.app</text>
+  </g>
+
+  <!-- Right side — skin image area -->
+  <g transform="translate(820, 200)">
+    <rect width="700" height="500" rx="32"
+      fill="#27272a" stroke="#fbbf24" stroke-width="2" stroke-dasharray="8 6"/>
+    <text
+      x="350" y="240" text-anchor="middle"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="600" font-size="28" fill="#71717a"
+    >&lt;SKIN IMAGE GOES HERE&gt;</text>
+    <text
+      x="350" y="280" text-anchor="middle"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-size="18" fill="#71717a"
+    >700×500 · transparent PNG</text>
+  </g>
+</svg>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AhiruDrop · Instagram post template · v0
+  1080×1080. Template pra anunciar uma nova rifa no feed.
+  Áreas com {placeholder} são pra trocar com Inkscape, Figma ou
+  no próprio editor de SVG do browser. Substitua:
+    {SKIN_NAME}     · ex "AK-47 | Phantom Disruptor"
+    {SKIN_WEAR}     · ex "Minimal Wear"
+    {PRICE}         · ex "0.50"
+    {TICKET_COUNT}  · ex "50"
+    {RARITY_COLOR}  · hex da raridade (ver branding/palette.json)
+    {SKIN_IMAGE}    · src de imagem (PNG/SVG da skin com fundo
+                      transparente)
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <defs>
+    <linearGradient id="igBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a0b2e"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </linearGradient>
+    <radialGradient id="igGlow" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bodyGradI" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1080" height="1080" fill="url(#igBg)"/>
+  <rect width="1080" height="1080" fill="url(#igGlow)"/>
+
+  <!-- Top bar — brand + Provably Fair badge -->
+  <g transform="translate(60, 60)">
+    <!-- Mini mascot -->
+    <g transform="scale(0.27)">
+      <path
+        d="M 128 28 C 178 28, 218 64, 218 118 C 218 168, 178 218, 128 218
+           C 78 218, 38 178, 38 130 C 38 88, 70 52, 110 38 C 116 35, 122 32, 128 28 Z"
+        fill="url(#bodyGradI)"/>
+      <path d="M 200 110 Q 240 118, 240 130 Q 240 142, 200 150 L 195 130 Z" fill="#f59e0b"/>
+      <circle cx="170" cy="100" r="11" fill="#0a0a0a"/>
+    </g>
+    <text
+      x="80" y="46"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="900" font-size="40" fill="#ffffff"
+    >AhiruDrop</text>
+  </g>
+
+  <!-- Provably Fair pill -->
+  <g transform="translate(720, 60)">
+    <rect width="300" height="60" rx="30" fill="#10b981" fill-opacity="0.12" stroke="#10b981" stroke-opacity="0.4"/>
+    <text
+      x="150" y="40"
+      text-anchor="middle"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="700" font-size="22" fill="#34d399"
+    >✓ PROVABLY FAIR</text>
+  </g>
+
+  <!-- "NOVA RIFA" label -->
+  <g transform="translate(60, 200)">
+    <rect width="220" height="50" rx="25" fill="#7c3aed"/>
+    <text
+      x="110" y="35"
+      text-anchor="middle"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="800" font-size="22" letter-spacing="2" fill="#ffffff"
+    >NOVA RIFA</text>
+  </g>
+
+  <!-- Skin name (placeholder) -->
+  <text
+    x="60" y="340"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+    font-weight="900" font-size="68" letter-spacing="-2" fill="#ffffff"
+  >{SKIN_NAME}</text>
+  <text
+    x="60" y="395"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+    font-weight="500" font-size="32" fill="#a1a1aa"
+  >{SKIN_WEAR}</text>
+
+  <!-- Skin image area (placeholder rectangle — replace with skin PNG) -->
+  <g transform="translate(140, 460)">
+    <rect width="800" height="400" rx="32"
+      fill="#27272a" stroke="#fbbf24" stroke-width="2" stroke-dasharray="8 6"/>
+    <text
+      x="400" y="200"
+      text-anchor="middle"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="600" font-size="24" fill="#71717a"
+    >&lt;SKIN IMAGE GOES HERE&gt;</text>
+    <text
+      x="400" y="240"
+      text-anchor="middle"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-size="16" fill="#71717a"
+    >800×400 · transparent PNG</text>
+  </g>
+
+  <!-- Bottom bar — price + tickets + CTA -->
+  <g transform="translate(60, 920)">
+    <!-- Price -->
+    <text
+      x="0" y="35"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="500" font-size="20" letter-spacing="2" fill="#a1a1aa"
+    >POR NÚMERO</text>
+    <text
+      x="0" y="95"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="900" font-size="64" letter-spacing="-1" fill="#fbbf24"
+    >{PRICE} AHC</text>
+
+    <!-- Tickets count -->
+    <text
+      x="420" y="35"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="500" font-size="20" letter-spacing="2" fill="#a1a1aa"
+    >TOTAL DE NÚMEROS</text>
+    <text
+      x="420" y="95"
+      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+      font-weight="900" font-size="64" letter-spacing="-1" fill="#ffffff"
+    >{TICKET_COUNT}</text>
+  </g>
+
+  <!-- URL footer -->
+  <text
+    x="540" y="1040"
+    text-anchor="middle"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+    font-weight="700" font-size="22" letter-spacing="3" fill="#a78bfa"
+  >ahirudrop.vercel.app</text>
+</svg>

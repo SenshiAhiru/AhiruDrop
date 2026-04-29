@@ -1,12 +1,12 @@
 {
   "$schema": "https://design-tokens.github.io/community-group/format/",
   "name": "AhiruDrop",
-  "version": "1.0.0",
-  "description": "Official AhiruDrop color palette. Source of truth: src/app/globals.css.",
+  "version": "1.1.0",
+  "description": "Official AhiruDrop color palette. Source of truth: src/app/globals.css. Aligned with v1 brand vision board (2026-04-29).",
   "colors": {
     "primary": {
       "description": "Brand primary — purple. Used for CTAs, links, focus rings.",
-      "50": { "value": "#f5f3ff", "type": "color" },
+      "50":  { "value": "#f5f3ff", "type": "color" },
       "100": { "value": "#ede9fe", "type": "color" },
       "200": { "value": "#ddd6fe", "type": "color" },
       "300": { "value": "#c4b5fd", "type": "color" },
@@ -17,6 +17,11 @@
       "800": { "value": "#5b21b6", "type": "color" },
       "900": { "value": "#4c1d95", "type": "color" },
       "950": { "value": "#2e1065", "type": "color" }
+    },
+    "purpleSecondary": {
+      "description": "Brighter purple used in v1 brand mockup gradients (Discord banner, hero glows). Sits between primary-400 and primary-500 in tone.",
+      "value": "#b26bff",
+      "type": "color"
     },
     "accent": {
       "description": "Brand accent — gold/amber. Used for AHC values, trophies, secondary CTAs.",

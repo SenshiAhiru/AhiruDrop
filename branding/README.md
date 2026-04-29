@@ -1,8 +1,15 @@
 # AhiruDrop · Branding Kit
 
-> Versão 1.0 · 2026-04-29
+> Versão 1.1 · 2026-04-29
 
 Toda a identidade visual do AhiruDrop em um lugar só. Use pra design, mídias sociais, parcerias, materiais impressos.
+
+## 🚦 Status atual
+
+- ✅ **Brand v0** (SVG dev placeholders) — em `logo/` e `social/`. Funcional mas substituível.
+- ✅ **Brand v1 vision board** — composite AI-gerado aprovado (mascote moeda + personagem anime + estilo dark luxury). Imagem de referência guardada em `v1-reference/` quando disponível.
+- ⏳ **Source files v1** — pendente. Designer profissional precisa recriar elementos isolados (PSD/AI). Brief em `DESIGNER_BRIEF.md`.
+- ⏳ **Integração no site** — só após source files chegarem. Hoje site usa wordmark texto v0.
 
 ---
 
@@ -10,25 +17,29 @@ Toda a identidade visual do AhiruDrop em um lugar só. Use pra design, mídias s
 
 ```
 branding/
-├── BRAND.md                              ← guia escrito de uso
+├── BRAND.md                              ← guidelines escritos (v1.1)
 ├── README.md                             ← você está aqui
-├── palette.json                          ← design tokens (importável em Figma)
+├── DESIGNER_BRIEF.md                     ← briefing pronto pra contratar designer
+├── PRODUCTION_BLUEPRINT.md               ← spec master de produção (PSD)
+├── palette.json                          ← design tokens (Figma-ready)
 ├── palette.css                           ← variáveis CSS prontas
-├── swatches.html                         ← sheet visual (abre no browser)
-├── pitch-deck.html                       ← apresentação 10 slides (browser/PDF)
+├── swatches.html                         ← sheet visual de cores
+├── pitch-deck.html                       ← apresentação 10 slides
 │
-├── logo/
-│   ├── logo-icon.svg                     ← só o pato (256×256)
-│   ├── logo-full.svg                     ← pato + wordmark (800×256)
-│   ├── logo-mono-white.svg               ← versão branca pra fundo escuro
-│   └── logo-mono-black.svg               ← versão preta pra impressão
+├── logo/                                 ← SVGs v0 (placeholder)
+│   ├── logo-icon.svg
+│   ├── logo-full.svg
+│   ├── logo-mono-white.svg
+│   └── logo-mono-black.svg
 │
-└── social/
-    ├── avatar.svg                        ← 1024×1024, exporta em N tamanhos
-    ├── twitter-banner-1500x500.svg       ← banner Twitter/X
-    ├── instagram-post-template-1080.svg  ← template post quadrado
-    └── twitter-post-template-1600x900.svg ← template post horizontal
+└── social/                               ← templates v0
+    ├── avatar.svg
+    ├── twitter-banner-1500x500.svg
+    ├── instagram-post-template-1080.svg
+    └── twitter-post-template-1600x900.svg
 ```
+
+> **Quando v1 source files chegarem do designer:** entregue em `branding/production/` seguindo a estrutura completa do `PRODUCTION_BLUEPRINT.md` (01_Logos, 02_AHC_Coin, 03_Tickets, etc.). Os SVGs em `logo/` e `social/` ficarão como referência histórica.
 
 ---
 

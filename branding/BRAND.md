@@ -1,8 +1,9 @@
 # AhiruDrop — Brand Guidelines
 
-> Versão 1.0 · 2026-04-29
+> Versão 1.1 · 2026-04-29
+> **Status:** v1 vision board approved (AI-generated composite). Source files pendentes de designer profissional pra extração/recriação dos assets isolados. Site ainda usa wordmark v0 — integração visual planejada após assets ficarem prontos.
 
-Este documento é a fonte de verdade pra aplicar a identidade do AhiruDrop em qualquer mídia: site, social, parcerias, materiais impressos, vídeos. Tudo aqui vem direto do código do projeto, então o site e o material institucional sempre batem.
+Este documento é a fonte de verdade pra aplicar a identidade do AhiruDrop em qualquer mídia: site, social, parcerias, materiais impressos, vídeos. Tudo aqui vem direto do código do projeto + da vision board v1.
 
 ---
 
@@ -11,8 +12,10 @@ Este documento é a fonte de verdade pra aplicar a identidade do AhiruDrop em qu
 **AhiruDrop é uma plataforma brasileira de rifas de skins de Counter-Strike 2 com sorteios provably fair via blockchain Bitcoin.**
 
 - **Audiência:** gamers de CS2, 18+, predominantemente brasileiros. Familiares com o ecossistema Steam, mercado de skins, conceitos de fairness.
-- **Posicionamento:** transparência verificável + experiência premium. O contrário das rifas opacas que você vê em grupos de Telegram.
-- **Mascote:** o pato (🦆) — calmo, observador, presente em momentos felizes (vencedor, depósito creditado, popups de celebração).
+- **Posicionamento:** dark luxury + premium economy + community trust + global scalability. Concorre visualmente com CSGO.NET, Hellcase, Keydrop.
+- **Tagline oficial:** **RIFAS · SKINS · DIVERSÃO**
+- **Mascote primário:** pato kawaii dentro de moeda dourada (a "moeda AHC personificada"). Versão simplificada usada como ícone/favicon.
+- **Mascote secundário:** personagem anime feminina (cabelo prateado/lilás, traços élficos, vestes pretas com detalhes roxos). Usada como elemento permanente em hero banners, posts promocionais e templates de campanha. Carrega o tom premium/épico que diferencia da concorrência.
 
 ### Tom de voz
 
@@ -22,33 +25,72 @@ Este documento é a fonte de verdade pra aplicar a identidade do AhiruDrop em qu
 - **Casual mas profissional.** Pode usar gírias leves ("massa", "show"), mas evita memes datados e não fala palavrão.
 - **Emojis funcionais, não decorativos.** 🦆 pra brand, 🏆 pra vitória, ✅ pra status. Nunca "🎉🎊🥳🤩" em sequência.
 
+### Headlines aprovadas (curtas, all-caps, ≤4 palavras)
+
+Usar essas mensagens-âncora em ads, posts, banners. Variações devem manter caps lock e voz ativa.
+
+- **SUA SORTE PODE SER ÉPICA**
+- **GANHE SKINS INSANAS**
+- **RIFAS JUSTAS 100% VERIFICÁVEIS**
+- **DEPOSITE COM PIX**
+- **SUPORTE 24/7**
+- **NOVAS RIFAS NO AR**
+- **PAGAMENTO NA HORA**
+- **100% JUSTO · 100% VERIFICÁVEL**
+- **RIFAS ATUALIZADAS**
+- **GANHE SKINS ÉPICAS**
+
 ---
 
 ## 2. Logotipo
 
-> ⚠️ Asset oficial do logo está em `public/logo.svg` (SVG vetorial). Pra mídias estáticas, exporte em `@2x` ou `@3x`.
+> ⚠️ **Status atual:** o site usa apenas wordmark em texto com gradient (`<span className="text-gradient">AhiruDrop</span>` em `src/components/shared/logo.tsx`). A v1 (mascote moeda + wordmark) existe como vision board AI-gerada — assets isolados pendentes de designer profissional. SVGs v0 em `branding/logo/*.svg` ficam como referência mas serão substituídos.
+
+### Composição oficial v1
+
+O logo tem 3 elementos principais empilháveis:
+
+1. **Mascote:** pato amarelo kawaii dentro de moeda dourada com borda roxa. Olho preto, bico laranja-dourado, expressão neutra-amigável.
+2. **Wordmark "AhiruDrop":** sans-serif bold branco, com "Drop" às vezes em gradient roxo-claro pra destaque.
+3. **Tagline:** **"RIFAS · SKINS · DIVERSÃO"** em letras menores, espaçamento amplo.
+
+### Variações necessárias (a serem produzidas)
+
+| Variação | Quando usar |
+|----------|-------------|
+| **Logo principal horizontal** | Headers de site, banners, apresentações com espaço lateral |
+| **Logo vertical** | Posts quadrados, stories, layouts com pouca largura |
+| **Ícone só (moeda)** | Favicon, app icon, avatares pequenos, watermarks |
+| **Wordmark sem mascote** | Footer compacto, parceiros |
+| **Logo dark** | Sobre fundos claros, mídia impressa |
+| **Logo light** | Sobre fundos escuros (uso predominante) |
 
 ### Regras de uso
 
-- **Espaço de respiro:** mantenha pelo menos 1× a altura do logo livre em todos os lados.
-- **Tamanho mínimo:** 24px de altura digital, 8mm em mídia impressa. Abaixo disso, use só o ícone do pato.
+- **Espaço de respiro:** mantenha pelo menos 1× a altura do mascote livre em todos os lados.
+- **Tamanho mínimo:** 24px de altura digital, 8mm em mídia impressa. Abaixo disso, use só a moeda (ícone).
 - **Cores permitidas:**
-  - Logo principal: roxo `#7c3aed` + dourado `#fbbf24`
-  - Versão monocromática branca: pra fundos escuros (Discord embeds, banners)
-  - Versão monocromática preta: pra mídia impressa monocromática
+  - Moeda: dourado `#fbbf24` core + borda roxa `#7c3aed`
+  - Pato: amarelo claro com bico laranja
+  - Wordmark: branco `#ffffff` (versão escura) ou preto `#0a0a0a` (versão clara)
 - **Não faça:**
   - Não distorça proporções (sem stretch horizontal/vertical)
-  - Não aplique sombra externa diretamente no logo (é o gradiente que dá o glow)
-  - Não troque as cores por outras da paleta (roxo pode virar `primary-700`, mas nunca virar `accent` ou semântico)
-  - Não coloque o logo sobre fundos com baixo contraste
+  - Não troque o pato por outro animal/personagem (o pato é registro de marca)
+  - Não use a moeda dourada sem o pato (vira só ícone genérico)
+  - Não aplique filtros de cor que mudem a hue do mascote (vermelho, verde, etc.)
+  - Não coloque o logo sobre fundos com baixo contraste sem proteção (overlay, blur, halo)
 
-### Mascote
+### Personagem secundária (anime)
 
-O pato (🦆) pode ser usado **separado** do logo em:
-- Avatares de mídias sociais
-- Stickers de comunidade
-- Easter eggs no produto (como na celebração de vitória)
-- Watermark sutil em designs
+A garota anime de cabelos prateados é elemento de campanha permanente. **Variações de pose precisam ser produzidas** (próximas iterações):
+
+- Hero idle (atual — neutra confiante segurando skin)
+- Vitória / comemorando (vencedor de rifa)
+- Surprised / shocked (drop raro / depósito grande)
+- Sleeping / waiting (sem rifas ativas)
+- Pointing (CTA explícito — "deposite agora")
+
+Use sempre **separada do mascote do pato**: ela é "embaixadora", não substitui a marca.
 
 ---
 
@@ -163,12 +205,31 @@ Essas cores **não são da marca AhiruDrop** — são cores oficiais da Valve us
 
 ## 5. Tipografia
 
-### Família
+A marca usa **dois tiers** dependendo do contexto:
 
-- **Sans-serif (UI):** Geist Sans
-- **Mono (códigos, números de rifa, hashes):** Geist Mono
+### Tier 1 — Marketing & Display (banners, ads, social)
 
-Ambas via `next/font/google`. Webfonts sem custo.
+Fontes pesadas com presença, pra criar hierarquia em hero/banners/ads:
+
+- **Helvetica Bold** — display geral, banners institucionais
+- **Orbitron Bold** — headlines tech/futurista (preferida pra "ÉPICA", "INSANO", brand voice agressiva)
+- **Montserrat SemiBold** — texto secundário em campanhas, copy de ads
+
+> Use no Photoshop/Illustrator. Não são webfonts no site — só material gráfico.
+
+### Tier 2 — Produto & UI (já em produção)
+
+Webfonts otimizadas, gratuitas via Google Fonts:
+
+- **Geist Sans** — UI, body, formulários, dashboards
+- **Geist Mono** — números de rifa, hashes, valores AHC
+
+Ambas carregadas via `next/font/google`. Sem custo, performance ótima.
+
+### Regra de aplicação
+
+- **Marketing/social/ads/Instagram/Twitter** → Tier 1 (Helvetica/Orbitron/Montserrat)
+- **Site/dashboard/email transacional** → Tier 2 (Geist)
 
 ### Hierarquia (web)
 

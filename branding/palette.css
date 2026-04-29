@@ -21,6 +21,9 @@
   --ahiru-primary-900: #4c1d95;
   --ahiru-primary-950: #2e1065;
 
+  /* Secondary purple used in v1 brand vision (banners, glows). */
+  --ahiru-purple-secondary: #b26bff;
+
   /* ─── Accent (Gold / Amber) ────────────────────────────── */
   --ahiru-accent-50:  #fffbeb;
   --ahiru-accent-100: #fef3c7;

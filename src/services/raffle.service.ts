@@ -176,6 +176,31 @@ export const raffleService = {
       }
     }
 
+    // Announce on Discord when an admin first activates the raffle.
+    // We only fire on DRAFT → ACTIVE so re-activations from PAUSED don't
+    // double-post. Best-effort: any failure is logged inside discord.ts.
+    if (status === "ACTIVE" && raffle.status === "DRAFT") {
+      try {
+        const { discord } = await import("@/lib/discord");
+        await discord.notifyRaffleActivated({
+          id: updated.id,
+          slug: updated.slug,
+          title: updated.title,
+          skinImage: updated.skinImage ?? null,
+          skinName: updated.skinName ?? null,
+          skinWeapon: updated.skinWeapon ?? null,
+          skinRarity: updated.skinRarity ?? null,
+          skinRarityColor: updated.skinRarityColor ?? null,
+          skinWear: updated.skinWear ?? null,
+          pricePerNumber: updated.pricePerNumber as unknown as string,
+          totalNumbers: updated.totalNumbers,
+          scheduledDrawAt: updated.scheduledDrawAt,
+        });
+      } catch (err) {
+        console.error("[raffle] discord new-raffle webhook failed:", err);
+      }
+    }
+
     return updated;
   },
 

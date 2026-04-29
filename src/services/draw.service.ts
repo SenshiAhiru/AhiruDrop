@@ -165,6 +165,28 @@ export const drawService = {
             raffle.title,
             winningNumberRecord.number
           );
+
+          // Announce on Discord. Best-effort — never blocks the draw.
+          try {
+            const winnerUser = await prisma.user.findUnique({
+              where: { id: order.userId },
+              select: { name: true, avatarUrl: true },
+            });
+            const { discord } = await import("@/lib/discord");
+            await discord.notifyWinner({
+              raffleId: raffle.id,
+              raffleSlug: raffle.slug,
+              raffleTitle: raffle.title,
+              skinImage: raffle.skinImage ?? null,
+              skinRarityColor: raffle.skinRarityColor ?? null,
+              winnerName: winnerUser?.name ?? "Anônimo",
+              winnerAvatarUrl: winnerUser?.avatarUrl ?? null,
+              winningNumber: winningNumberRecord.number,
+              blockHeight: blockHeight ?? null,
+            });
+          } catch (err) {
+            console.error("[draw] discord winner webhook failed:", err);
+          }
         }
       }
     }

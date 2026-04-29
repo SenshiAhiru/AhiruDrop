@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
         }) to user ${userId}`
       );
 
-      // Notify admins if deposit crosses the threshold
+      // Notify admins if deposit crosses the threshold (in-app + Discord)
       if (updated && totalCredit >= BIG_DEPOSIT_THRESHOLD_AHC) {
         try {
           await notificationService.notifyAdminsBigDeposit(
@@ -162,6 +162,17 @@ export async function POST(req: NextRequest) {
           );
         } catch (err) {
           logError("Failed to notify admins of big deposit:", err);
+        }
+        try {
+          const { discord } = await import("@/lib/discord");
+          await discord.notifyBigDeposit({
+            userId,
+            userName: updated.name ?? "Usuário",
+            amount: totalCredit,
+            provider: "stripe",
+          });
+        } catch (err) {
+          logError("Failed to post big-deposit Discord alert:", err);
         }
       }
     } catch (error) {

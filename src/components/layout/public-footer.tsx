@@ -18,6 +18,11 @@ function DiscordIcon({ className }: { className?: string }) {
   );
 }
 
+// Permanent Discord invite — comes from env so we never have to redeploy
+// when the invite link is rotated. Public env (NEXT_PUBLIC_) because it's
+// rendered in the client footer.
+const DISCORD_INVITE = process.env.NEXT_PUBLIC_DISCORD_INVITE || "";
+
 export function PublicFooter() {
   const { t } = useTranslation();
   const quickLinks = [
@@ -74,15 +79,17 @@ export function PublicFooter() {
               >
                 <Globe className="h-5 w-5" />
               </a>
-              <a
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center h-10 w-10 rounded-lg bg-surface-800 text-surface-400 hover:bg-[#5865F2] hover:text-white transition-all duration-200"
-                aria-label="Discord"
-              >
-                <DiscordIcon className="h-5 w-5" />
-              </a>
+              {DISCORD_INVITE && (
+                <a
+                  href={DISCORD_INVITE}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center h-10 w-10 rounded-lg bg-surface-800 text-surface-400 hover:bg-[#5865F2] hover:text-white transition-all duration-200"
+                  aria-label="Discord"
+                >
+                  <DiscordIcon className="h-5 w-5" />
+                </a>
+              )}
             </div>
           </div>
 

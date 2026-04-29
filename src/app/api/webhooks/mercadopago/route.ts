@@ -167,6 +167,17 @@ export async function POST(req: NextRequest) {
       } catch (err) {
         logError("MP webhook: failed to notify admins of big deposit:", err);
       }
+      try {
+        const { discord } = await import("@/lib/discord");
+        await discord.notifyBigDeposit({
+          userId,
+          userName: updated.name ?? "Usuário",
+          amount: totalCredit,
+          provider: "mercadopago",
+        });
+      } catch (err) {
+        logError("MP webhook: failed to post big-deposit Discord alert:", err);
+      }
     }
   } catch (err) {
     logError("MP webhook: failed to credit AHC:", err);

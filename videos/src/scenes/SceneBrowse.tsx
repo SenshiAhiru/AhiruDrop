@@ -11,29 +11,55 @@ import { MockRaffleCard } from "../components/MockRaffleCard";
 const DURATION = 90; // 3s
 export const sceneBrowseDuration = DURATION;
 
-const CARDS = [
+// Edita esses cards pra trocar quais rifas aparecem na cena 02.
+//
+// COMO USAR IMAGEM REAL DE SKIN:
+//   1. Salva o PNG em `videos/public/skins/<arquivo>.png`
+//      (PNG transparente é ideal, ~512×384 funciona bem)
+//   2. Troca `imageSrc: null` por `imageSrc: "skins/<arquivo>.png"`
+//   3. Re-renderiza com `npm run render:showcase`
+//
+// Se deixar imageSrc como null, usa o emoji como placeholder.
+type CardData = {
+  weapon: string;
+  skin: string;
+  imageSrc: string | null;
+  emoji: string;
+  rarity: string;
+  rarityColor: string;
+  wear: string;
+  price: string;
+};
+
+const CARDS: CardData[] = [
   {
     weapon: "AK-47",
-    skin: "Wild Lotus",
+    skin: "Phantom Disruptor",
+    imageSrc: null, // → "skins/phantom-disruptor.png" quando dropar o PNG
     emoji: "🔫",
-    rarity: "Covert",
-    rarityColor: "#eb4b4b",
-    price: "1.250",
+    rarity: "Classified",
+    rarityColor: "#d32ce6",
+    wear: "MW",
+    price: "0.5",
   },
   {
     weapon: "AWP",
     skin: "Dragon Lore",
+    imageSrc: null, // → "skins/dragon-lore.png"
     emoji: "🎯",
-    rarity: "Classified",
-    rarityColor: "#d32ce6",
+    rarity: "Covert",
+    rarityColor: "#eb4b4b",
+    wear: "FN",
     price: "2.350",
   },
   {
     weapon: "Karambit",
     skin: "Doppler",
+    imageSrc: null, // → "skins/karambit-doppler.png"
     emoji: "🗡️",
-    rarity: "Restricted",
-    rarityColor: "#8847ff",
+    rarity: "Covert",
+    rarityColor: "#eb4b4b",
+    wear: "FN",
     price: "3.750",
   },
 ];
@@ -138,7 +164,17 @@ export const SceneBrowse: React.FC = () => {
                 transform: `translateX(${anim.translateX}px) scale(${anim.scale})`,
               }}
             >
-              <MockRaffleCard {...card} width={width * 0.7} />
+              <MockRaffleCard
+                weapon={card.weapon}
+                skin={card.skin}
+                imageSrc={card.imageSrc ?? undefined}
+                emoji={card.emoji}
+                rarity={card.rarity}
+                rarityColor={card.rarityColor}
+                wear={card.wear}
+                price={card.price}
+                width={width * 0.7}
+              />
             </div>
           );
         })}

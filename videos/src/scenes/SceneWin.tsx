@@ -16,6 +16,17 @@ export const sceneWinDuration = DURATION;
 const CONFETTI_COUNT = 50;
 const CONFETTI_COLORS = ["#fbbf24", "#f59e0b", "#7c3aed", "#a78bfa", "#b26bff", "#ffffff"];
 
+// Skin "ganha" no closing do video.
+//
+// COMO USAR IMAGEM REAL:
+//   1. Salva o PNG em videos/public/skins/<arquivo>.png
+//   2. Troca WINNER_SKIN_SRC abaixo de null → "skins/<arquivo>.png"
+//
+// Enquanto for null, usa o emoji como placeholder.
+const WINNER_SKIN_SRC: string | null = null; // → "skins/phantom-disruptor.png"
+const WINNER_SKIN_EMOJI = "🔫";
+const WINNER_SKIN_NAME = "AK-47 | Phantom Disruptor";
+
 /**
  * Cena 5 · WIN (0:12–0:15)
  *
@@ -156,7 +167,7 @@ export const SceneWin: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: "58%",
+          top: "57%",
           left: 0,
           right: 0,
           textAlign: "center",
@@ -165,15 +176,38 @@ export const SceneWin: React.FC = () => {
           fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
         }}
       >
-        <div style={{ fontSize: width * 0.15, marginBottom: 8 }}>🎯</div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: width * 0.4,
+            marginBottom: 8,
+          }}
+        >
+          {WINNER_SKIN_SRC ? (
+            <Img
+              src={staticFile(WINNER_SKIN_SRC)}
+              style={{
+                maxWidth: "70%",
+                maxHeight: "100%",
+                objectFit: "contain",
+                filter: "drop-shadow(0 0 30px rgba(251, 191, 36, 0.5))",
+              }}
+            />
+          ) : (
+            <span style={{ fontSize: width * 0.18 }}>{WINNER_SKIN_EMOJI}</span>
+          )}
+        </div>
         <div
           style={{
             color: "#d1d5db",
             fontSize: width * 0.04,
             fontWeight: 700,
+            letterSpacing: "-0.01em",
           }}
         >
-          AWP | Dragon Lore
+          {WINNER_SKIN_NAME}
         </div>
       </div>
 

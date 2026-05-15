@@ -1,0 +1,24 @@
+{
+  "name": "ahirudrop-videos",
+  "version": "0.1.0",
+  "description": "AhiruDrop motion templates rendered via Remotion (React → MP4).",
+  "private": true,
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render",
+    "render:logo": "remotion render LogoIntro out/logo-intro.mp4",
+    "render:logo-square": "remotion render LogoIntro out/logo-intro-square.mp4 --props='{\"size\":\"square\"}'",
+    "render:all": "npm run render:logo"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.4.0"
+  }
+}

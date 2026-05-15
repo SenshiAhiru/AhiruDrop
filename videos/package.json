@@ -21,6 +21,14 @@
     "render:showcase-horizontal": "remotion render SiteShowcaseHorizontal out/site-showcase-horizontal.mp4",
     "render:showcase-prores": "remotion render SiteShowcaseHorizontal out/site-showcase.mov --codec=prores --prores-profile=hq",
 
+    "// === Individual scenes as transparent ProRes 4444 (Premiere layers) === ": "",
+    "render:scene-01": "remotion render Scene01Hook out/scene-01-hook-alpha.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
+    "render:scene-02": "remotion render Scene02Browse out/scene-02-browse-alpha.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
+    "render:scene-03": "remotion render Scene03Buy out/scene-03-buy-alpha.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
+    "render:scene-04": "remotion render Scene04Draw out/scene-04-draw-alpha.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
+    "render:scene-05": "remotion render Scene05Win out/scene-05-win-alpha.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
+    "render:scenes-all": "npm run render:scene-01 && npm run render:scene-02 && npm run render:scene-03 && npm run render:scene-04 && npm run render:scene-05",
+
     "render:all": "npm run render:logo && npm run render:logo-square && npm run render:logo-horizontal"
   },
   "dependencies": {

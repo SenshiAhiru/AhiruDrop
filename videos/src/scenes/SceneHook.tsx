@@ -13,6 +13,8 @@ import { Particles } from "../components/Particles";
 const DURATION = 90; // 3s @ 30fps
 export const sceneHookDuration = DURATION;
 
+export type SceneHookProps = { transparentBackground?: boolean };
+
 /**
  * Cena 1 · HOOK (0:00–0:03)
  *
@@ -23,7 +25,7 @@ export const sceneHookDuration = DURATION;
  * - "SUA SORTE PODE SER ÉPICA" headline grande
  * - Particles ao fundo
  */
-export const SceneHook: React.FC = () => {
+export const SceneHook: React.FC<SceneHookProps> = ({ transparentBackground = false }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
 
@@ -52,13 +54,15 @@ export const SceneHook: React.FC = () => {
 
   return (
     <SceneWrapper durationInFrames={DURATION}>
-      <AbsoluteFill
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 50%, #14081f 0%, #07070a 100%)",
-        }}
-      />
-      <Particles count={25} width={width} height={height} />
+      {!transparentBackground && (
+        <AbsoluteFill
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 50%, #14081f 0%, #07070a 100%)",
+          }}
+        />
+      )}
+      {!transparentBackground && <Particles count={25} width={width} height={height} />}
 
       {/* Coin */}
       <div

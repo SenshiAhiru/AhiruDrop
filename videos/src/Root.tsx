@@ -1,6 +1,11 @@
 import { Composition } from "remotion";
 import { LogoIntro, LogoIntroProps } from "./compositions/LogoIntro";
 import { SiteShowcase, SITE_SHOWCASE_DURATION } from "./compositions/SiteShowcase";
+import { SceneHook, sceneHookDuration } from "./scenes/SceneHook";
+import { SceneBrowse, sceneBrowseDuration } from "./scenes/SceneBrowse";
+import { SceneBuy, sceneBuyDuration } from "./scenes/SceneBuy";
+import { SceneDraw, sceneDrawDuration } from "./scenes/SceneDraw";
+import { SceneWin, sceneWinDuration } from "./scenes/SceneWin";
 
 /**
  * Root registry — every composition that can be rendered must be listed
@@ -90,6 +95,57 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
+      />
+
+      {/* ═══════════════════════════════════════════════════════════
+          INDIVIDUAL SCENES with transparent background
+          Render cada uma como ProRes 4444 .mov pra empilhar no Premiere
+          como camadas independentes. Cada cena tem 90 frames (3s).
+          ═══════════════════════════════════════════════════════════ */}
+      <Composition
+        id="Scene01Hook"
+        component={SceneHook}
+        durationInFrames={sceneHookDuration}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ transparentBackground: true }}
+      />
+      <Composition
+        id="Scene02Browse"
+        component={SceneBrowse}
+        durationInFrames={sceneBrowseDuration}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ transparentBackground: true }}
+      />
+      <Composition
+        id="Scene03Buy"
+        component={SceneBuy}
+        durationInFrames={sceneBuyDuration}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ transparentBackground: true }}
+      />
+      <Composition
+        id="Scene04Draw"
+        component={SceneDraw}
+        durationInFrames={sceneDrawDuration}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ transparentBackground: true }}
+      />
+      <Composition
+        id="Scene05Win"
+        component={SceneWin}
+        durationInFrames={sceneWinDuration}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ transparentBackground: true }}
       />
     </>
   );

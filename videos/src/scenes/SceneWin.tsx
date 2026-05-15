@@ -13,6 +13,8 @@ import { SceneWrapper } from "../components/SceneWrapper";
 const DURATION = 90; // 3s
 export const sceneWinDuration = DURATION;
 
+export type SceneWinProps = { transparentBackground?: boolean };
+
 const CONFETTI_COUNT = 50;
 const CONFETTI_COLORS = ["#fbbf24", "#f59e0b", "#7c3aed", "#a78bfa", "#b26bff", "#ffffff"];
 
@@ -23,7 +25,7 @@ const CONFETTI_COLORS = ["#fbbf24", "#f59e0b", "#7c3aed", "#a78bfa", "#b26bff", 
 //   2. Troca WINNER_SKIN_SRC abaixo de null → "skins/<arquivo>.png"
 //
 // Enquanto for null, usa o emoji como placeholder.
-const WINNER_SKIN_SRC: string | null = null; // → "skins/phantom-disruptor.png"
+const WINNER_SKIN_SRC: string | null = "skins/phantom-disruptor.png"; // → "skins/phantom-disruptor.png"
 const WINNER_SKIN_EMOJI = "🔫";
 const WINNER_SKIN_NAME = "AK-47 | Phantom Disruptor";
 
@@ -33,7 +35,7 @@ const WINNER_SKIN_NAME = "AK-47 | Phantom Disruptor";
  * Vencedor + skin reveal + confete + CTA "ahirudrop.vercel.app".
  * Encerramento épico do showcase.
  */
-export const SceneWin: React.FC = () => {
+export const SceneWin: React.FC<SceneWinProps> = ({ transparentBackground = false }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
 
@@ -71,12 +73,14 @@ export const SceneWin: React.FC = () => {
 
   return (
     <SceneWrapper durationInFrames={DURATION}>
-      <AbsoluteFill
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 30%, #2e1065 0%, #0a0a0a 70%)",
-        }}
-      />
+      {!transparentBackground && (
+        <AbsoluteFill
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 30%, #2e1065 0%, #0a0a0a 70%)",
+          }}
+        />
+      )}
 
       {/* Confetti */}
       {Array.from({ length: CONFETTI_COUNT }).map((_, i) => {

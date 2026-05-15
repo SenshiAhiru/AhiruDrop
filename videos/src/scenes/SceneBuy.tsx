@@ -11,6 +11,8 @@ import { SceneWrapper } from "../components/SceneWrapper";
 const DURATION = 90; // 3s
 export const sceneBuyDuration = DURATION;
 
+export type SceneBuyProps = { transparentBackground?: boolean };
+
 const TOTAL_NUMBERS = 50; // 5 cols × 10 rows
 const COLS = 5;
 const SELECTED = [7, 18, 23, 31, 42]; // numbers that "light up"
@@ -21,7 +23,7 @@ const SELECTED = [7, 18, 23, 31, 42]; // numbers that "light up"
  * Grid de números aparece, alguns acendem em roxo, saldo
  * AHC desce. Mostra a mecânica de compra direta.
  */
-export const SceneBuy: React.FC = () => {
+export const SceneBuy: React.FC<SceneBuyProps> = ({ transparentBackground = false }) => {
   const frame = useCurrentFrame();
   const { fps, width } = useVideoConfig();
 
@@ -57,12 +59,14 @@ export const SceneBuy: React.FC = () => {
 
   return (
     <SceneWrapper durationInFrames={DURATION}>
-      <AbsoluteFill
-        style={{
-          background:
-            "linear-gradient(180deg, #14081f 0%, #07070a 100%)",
-        }}
-      />
+      {!transparentBackground && (
+        <AbsoluteFill
+          style={{
+            background:
+              "linear-gradient(180deg, #14081f 0%, #07070a 100%)",
+          }}
+        />
+      )}
 
       {/* Header */}
       <div

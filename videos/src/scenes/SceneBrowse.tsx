@@ -11,6 +11,8 @@ import { MockRaffleCard } from "../components/MockRaffleCard";
 const DURATION = 90; // 3s
 export const sceneBrowseDuration = DURATION;
 
+export type SceneBrowseProps = { transparentBackground?: boolean };
+
 // Edita esses cards pra trocar quais rifas aparecem na cena 02.
 //
 // COMO USAR IMAGEM REAL DE SKIN:
@@ -35,7 +37,7 @@ const CARDS: CardData[] = [
   {
     weapon: "AK-47",
     skin: "Phantom Disruptor",
-    imageSrc: null, // → "skins/phantom-disruptor.png" quando dropar o PNG
+    imageSrc: "skins/phantom-disruptor.png", // → "skins/phantom-disruptor.png" quando dropar o PNG
     emoji: "🔫",
     rarity: "Classified",
     rarityColor: "#d32ce6",
@@ -70,7 +72,7 @@ const CARDS: CardData[] = [
  * 3 cards de rifa entram em cascata pela direita.
  * Header "ESCOLHA SUA RIFA" desliza de cima.
  */
-export const SceneBrowse: React.FC = () => {
+export const SceneBrowse: React.FC<SceneBrowseProps> = ({ transparentBackground = false }) => {
   const frame = useCurrentFrame();
   const { fps, width } = useVideoConfig();
 
@@ -97,12 +99,14 @@ export const SceneBrowse: React.FC = () => {
 
   return (
     <SceneWrapper durationInFrames={DURATION}>
-      <AbsoluteFill
-        style={{
-          background:
-            "linear-gradient(180deg, #07070a 0%, #14081f 100%)",
-        }}
-      />
+      {!transparentBackground && (
+        <AbsoluteFill
+          style={{
+            background:
+              "linear-gradient(180deg, #07070a 0%, #14081f 100%)",
+          }}
+        />
+      )}
 
       {/* Header */}
       <div

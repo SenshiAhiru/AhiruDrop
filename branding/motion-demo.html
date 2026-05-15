@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>AhiruDrop · Motion Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --primary: #7c3aed;
+    --primary-light: #a78bfa;
+    --primary-bright: #b26bff;
+    --accent: #fbbf24;
+    --accent-dark: #f59e0b;
+    --bg: #09090b;
+    --bg-2: #14081f;
+    --card: #18181b;
+    --card-2: #27272a;
+    --border: #27272a;
+    --text: #fafafa;
+    --muted: #a1a1aa;
+    --muted-2: #71717a;
+    --success: #10b981;
+    --discord: #5865F2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--primary); color: white; }
+
+  /* ─── Layout ─── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+  section.demo {
+    min-height: 80vh;
+    padding: 120px 0;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+  .demo-label {
+    color: var(--muted-2);
+    font-size: 12px;
+    letter-spacing: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .demo-label span { color: var(--accent); }
+  h2 {
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    margin-bottom: 16px;
+  }
+  .demo-desc {
+    color: var(--muted);
+    font-size: 18px;
+    max-width: 640px;
+    margin-bottom: 48px;
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ═════════════════════════════════════════════════════ */
+  /* HERO — particles + entrance                           */
+  /* ═════════════════════════════════════════════════════ */
+  .hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 30% 40%, rgba(124,58,237,0.25) 0%, transparent 55%),
+      radial-gradient(ellipse at 70% 60%, rgba(251,191,36,0.10) 0%, transparent 55%),
+      linear-gradient(135deg, #07070a 0%, #14081f 100%);
+  }
+  #particles {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 0 32px;
+  }
+  .hero h1 {
+    font-size: clamp(56px, 10vw, 120px);
+    font-weight: 900;
+    letter-spacing: -4px;
+    line-height: 0.95;
+    opacity: 0;
+    transform: translateY(40px);
+    animation: heroEnter 1s ease-out 0.2s forwards;
+  }
+  .hero .tagline {
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 6px;
+    font-size: clamp(14px, 1.5vw, 18px);
+    margin-top: 16px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroEnter 0.8s ease-out 0.6s forwards;
+  }
+  .hero .lead {
+    color: var(--muted);
+    font-size: clamp(16px, 2vw, 22px);
+    margin-top: 32px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroEnter 0.8s ease-out 0.9s forwards;
+  }
+  .hero .ctas {
+    margin-top: 48px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: heroEnter 0.8s ease-out 1.2s forwards;
+  }
+  @keyframes heroEnter {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .btn {
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent-dark) 100%);
+    color: white;
+    box-shadow: 0 0 0 0 rgba(124,58,237,0.5);
+    animation: ctaPulse 2.5s ease-in-out infinite;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -8px rgba(124,58,237,0.5);
+  }
+  @keyframes ctaPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.5); }
+    50% { box-shadow: 0 0 30px 10px rgba(124,58,237,0); }
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--primary); }
+
+  /* Scroll hint */
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--muted-2);
+    font-size: 12px;
+    letter-spacing: 3px;
+    opacity: 0;
+    animation: heroEnter 0.8s ease-out 1.5s forwards, scrollBounce 2s ease-in-out 2s infinite;
+  }
+  @keyframes scrollBounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* ═════════════════════════════════════════════════════ */
+  /* DEMO 1 — coin float                                   */
+  /* ═════════════════════════════════════════════════════ */
+  .coin-stage {
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .coin {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fde68a 0%, #fbbf24 50%, #b45309 100%);
+    position: relative;
+    box-shadow:
+      0 0 60px rgba(251,191,36,0.4),
+      inset -10px -10px 30px rgba(0,0,0,0.3),
+      inset 10px 10px 30px rgba(255,255,255,0.2);
+    animation: coinFloat 4s ease-in-out infinite;
+  }
+  .coin::before {
+    content: '🦆';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  }
+  .coin::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 20px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%);
+    filter: blur(8px);
+    animation: shadowBounce 4s ease-in-out infinite;
+  }
+  @keyframes coinFloat {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-25px) rotate(3deg); }
+  }
+  @keyframes shadowBounce {
+    0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.4; }
+    50% { transform: translateX(-50%) scaleX(0.7); opacity: 0.2; }
+  }
+
+  /* ═════════════════════════════════════════════════════ */
+  /* DEMO 2 — number counter                               */
+  /* ═════════════════════════════════════════════════════ */
+  .balance-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    max-width: 600px;
+  }
+  .balance-coin {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fde68a 0%, #fbbf24 50%, #b45309 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    flex-shrink: 0;
+    box-shadow: 0 0 30px rgba(251,191,36,0.3);
+  }
+  .balance-info {
+    flex: 1;
+  }
+  .balance-label {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .balance-amount {
+    font-size: 56px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    color: var(--accent);
+    font-family: "SF Mono", Menlo, monospace;
+    line-height: 1;
+  }
+  .balance-suffix { font-size: 24px; color: var(--accent-dark); margin-left: 8px; }
+  .balance-flash {
+    animation: balanceFlash 1s ease-out;
+  }
+  @keyframes balanceFlash {
+    0% { color: var(--accent); transform: scale(1); }
+    30% { color: #fde68a; transform: scale(1.08); }
+    100% { color: var(--accent); transform: scale(1); }
+  }
+
+  /* ═════════════════════════════════════════════════════ */
+  /* DEMO 3 — card stagger reveal                          */
+  /* ═════════════════════════════════════════════════════ */
+  .raffle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+  .raffle-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+  .raffle-card.in-view {
+    animation: cardReveal 0.6s ease-out forwards;
+  }
+  .raffle-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--primary);
+    box-shadow: 0 16px 32px -16px rgba(124,58,237,0.5);
+  }
+  @keyframes cardReveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .raffle-img {
+    height: 180px;
+    background: var(--card-2);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+  }
+  .raffle-img::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, var(--rarity-color, var(--primary)) 0%, transparent 65%);
+    opacity: 0.3;
+    transition: opacity 0.3s;
+  }
+  .raffle-card:hover .raffle-img::before {
+    opacity: 0.6;
+  }
+  .raffle-img-emoji {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.4s;
+  }
+  .raffle-card:hover .raffle-img-emoji {
+    transform: scale(1.1) rotate(-5deg);
+  }
+  .raffle-body { padding: 20px; }
+  .raffle-weapon {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .raffle-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .raffle-badges {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .raffle-price {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .raffle-price-value {
+    color: var(--accent);
+    font-weight: 900;
+    font-size: 20px;
+    font-family: "SF Mono", Menlo, monospace;
+  }
+  .raffle-card-cta {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .raffle-card:hover .raffle-card-cta { color: var(--primary-light); }
+
+  /* ═════════════════════════════════════════════════════ */
+  /* DEMO 4 — winner celebration                           */
+  /* ═════════════════════════════════════════════════════ */
+  #celebration-stage {
+    position: relative;
+    min-height: 600px;
+    border: 1px dashed var(--border);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .trigger-win {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent-dark) 100%);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+    font-family: inherit;
+  }
+  .trigger-win:hover { transform: scale(1.05); }
+  .trigger-win:active { transform: scale(0.95); }
+
+  .win-modal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .win-modal.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .win-card {
+    background: var(--card);
+    border: 2px solid var(--accent);
+    border-radius: 24px;
+    padding: 48px;
+    text-align: center;
+    max-width: 400px;
+    transform: scale(0.7);
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 80px rgba(251,191,36,0.4);
+  }
+  .win-modal.active .win-card {
+    transform: scale(1);
+  }
+  .trophy {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background: radial-gradient(circle, #fde68a 0%, #fbbf24 60%, #b45309 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    animation: trophyBounce 1s ease-in-out infinite;
+  }
+  @keyframes trophyBounce {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-8px) rotate(5deg); }
+  }
+  .win-card h3 {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--primary-bright) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .win-card p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .win-skin {
+    background: var(--card-2);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .win-skin-emoji {
+    font-size: 56px;
+    margin-bottom: 8px;
+  }
+  .win-skin-name {
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .win-close {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .win-close:hover { color: var(--text); border-color: var(--primary); }
+
+  .confetti-piece {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .win-modal.active .confetti-piece {
+    animation: confettiFall 3s ease-out forwards;
+  }
+  @keyframes confettiFall {
+    0% { opacity: 1; transform: translateY(-50vh) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(60vh) rotate(720deg); }
+  }
+
+  /* ═════════════════════════════════════════════════════ */
+  /* DEMO 5 — skeleton loader                              */
+  /* ═════════════════════════════════════════════════════ */
+  .skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+  .skeleton {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    padding: 20px;
+  }
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--card-2) 0%,
+      var(--border) 50%,
+      var(--card-2) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 8px;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .shimmer.img { height: 140px; margin-bottom: 16px; }
+  .shimmer.line { height: 14px; margin-bottom: 8px; }
+  .shimmer.line.short { width: 60%; }
+  .shimmer.line.medium { width: 80%; }
+
+  /* ═════════════════════════════════════════════════════ */
+  /* DEMO 6 — provably fair flow                           */
+  /* ═════════════════════════════════════════════════════ */
+  .pf-flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    max-width: 900px;
+  }
+  .pf-step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .pf-step.active {
+    animation: pfActivate 0.6s ease-out forwards;
+    border-color: var(--success);
+    box-shadow: 0 0 20px rgba(16,185,129,0.2);
+  }
+  @keyframes pfActivate {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .pf-step .num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--card-2);
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    margin: 0 auto 16px;
+    font-family: "SF Mono", Menlo, monospace;
+    transition: all 0.4s;
+  }
+  .pf-step.active .num {
+    background: var(--success);
+    color: white;
+    box-shadow: 0 0 20px rgba(16,185,129,0.5);
+  }
+  .pf-step h4 { font-size: 14px; margin-bottom: 8px; }
+  .pf-step p { font-size: 12px; color: var(--muted); }
+
+  /* Footer */
+  footer {
+    padding: 64px 0;
+    text-align: center;
+    color: var(--muted-2);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="hero">
+  <canvas id="particles"></canvas>
+
+  <div class="hero-content">
+    <div class="tagline">RIFAS · SKINS · DIVERSÃO</div>
+    <h1 class="gradient-text">AhiruDrop</h1>
+    <p class="lead">Sua sorte pode ser <strong style="color: var(--accent)">épica</strong>.</p>
+    <div class="ctas">
+      <button class="btn btn-primary" onclick="document.getElementById('demo-1').scrollIntoView({behavior:'smooth'})">
+        Ver demos de motion
+      </button>
+      <a class="btn btn-ghost" href="#">Como funciona</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">↓ SCROLL</div>
+</section>
+
+<!-- ═══════════════════ DEMO 1 ═══════════════════ -->
+<section class="demo" id="demo-1">
+  <div class="container">
+    <div class="demo-label"><span>01</span> · Coin Idle Float</div>
+    <h2>Mascote <span class="gradient-text">vivo</span> em todas as telas</h2>
+    <p class="demo-desc">
+      Loop suave de 4 segundos com balanço lateral, sombra dinâmica e glow dourado.
+      Pra cabeçalho de saldo, dashboard, página de depósito.
+    </p>
+    <div class="coin-stage">
+      <div class="coin"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ DEMO 2 ═══════════════════ -->
+<section class="demo">
+  <div class="container">
+    <div class="demo-label"><span>02</span> · Number Counter</div>
+    <h2>Saldo conta como em <span class="gradient-text">slot machine</span></h2>
+    <p class="demo-desc">
+      Quando depósito completa via webhook, o saldo no header anima do valor antigo até
+      o novo. Visual gamificado, reforça a sensação de "ganhei". Easing personalizado
+      pra dar peso.
+    </p>
+    <div class="balance-card">
+      <div class="balance-coin">🦆</div>
+      <div class="balance-info">
+        <div class="balance-label">Seu saldo</div>
+        <div class="balance-amount" id="balance"><span id="balance-num">0</span><span class="balance-suffix">AHC</span></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="margin-top: 24px;" onclick="triggerBalance()">
+      Simular depósito de +250 AHC
+    </button>
+  </div>
+</section>
+
+<!-- ═══════════════════ DEMO 3 ═══════════════════ -->
+<section class="demo">
+  <div class="container">
+    <div class="demo-label"><span>03</span> · Card Stagger Reveal</div>
+    <h2>Cards entram <span class="gradient-text">em cascata</span> ao scroll</h2>
+    <p class="demo-desc">
+      IntersectionObserver detecta cards entrando no viewport e revela em cascata
+      (delay de 100ms por card). Hover: levantam 6px, glow da raridade aparece,
+      skin gira sutilmente. <strong>Scroll pra cima e desce de novo pra ver entrando.</strong>
+    </p>
+    <div class="raffle-grid" id="raffleGrid">
+      <div class="raffle-card" style="--rarity-color: #eb4b4b">
+        <div class="raffle-img"><span class="raffle-img-emoji">🔫</span></div>
+        <div class="raffle-body">
+          <div class="raffle-weapon">AK-47</div>
+          <div class="raffle-title">Wild Lotus</div>
+          <div class="raffle-badges">
+            <span class="badge" style="background:#eb4b4b20; color:#eb4b4b">Covert</span>
+            <span class="badge" style="background:#27272a; color:#a1a1aa">FT</span>
+          </div>
+          <div class="raffle-price">
+            <span class="raffle-price-value">1.250 AHC</span>
+            <span class="raffle-card-cta">PARTICIPAR →</span>
+          </div>
+        </div>
+      </div>
+      <div class="raffle-card" style="--rarity-color: #d32ce6">
+        <div class="raffle-img"><span class="raffle-img-emoji">🎯</span></div>
+        <div class="raffle-body">
+          <div class="raffle-weapon">AWP</div>
+          <div class="raffle-title">Dragon Lore</div>
+          <div class="raffle-badges">
+            <span class="badge" style="background:#d32ce620; color:#d32ce6">Classified</span>
+            <span class="badge" style="background:#27272a; color:#a1a1aa">FN</span>
+          </div>
+          <div class="raffle-price">
+            <span class="raffle-price-value">2.350 AHC</span>
+            <span class="raffle-card-cta">PARTICIPAR →</span>
+          </div>
+        </div>
+      </div>
+      <div class="raffle-card" style="--rarity-color: #8847ff">
+        <div class="raffle-img"><span class="raffle-img-emoji">🗡️</span></div>
+        <div class="raffle-body">
+          <div class="raffle-weapon">Karambit</div>
+          <div class="raffle-title">Doppler</div>
+          <div class="raffle-badges">
+            <span class="badge" style="background:#8847ff20; color:#a78bfa">Restricted</span>
+            <span class="badge" style="background:#fb923c20; color:#fb923c">StatTrak</span>
+          </div>
+          <div class="raffle-price">
+            <span class="raffle-price-value">3.750 AHC</span>
+            <span class="raffle-card-cta">PARTICIPAR →</span>
+          </div>
+        </div>
+      </div>
+      <div class="raffle-card" style="--rarity-color: #4b69ff">
+        <div class="raffle-img"><span class="raffle-img-emoji">🔪</span></div>
+        <div class="raffle-body">
+          <div class="raffle-weapon">M4A4</div>
+          <div class="raffle-title">Howl</div>
+          <div class="raffle-badges">
+            <span class="badge" style="background:#4b69ff20; color:#4b69ff">Mil-Spec</span>
+            <span class="badge" style="background:#27272a; color:#a1a1aa">MW</span>
+          </div>
+          <div class="raffle-price">
+            <span class="raffle-price-value">1.890 AHC</span>
+            <span class="raffle-card-cta">PARTICIPAR →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ DEMO 4 ═══════════════════ -->
+<section class="demo">
+  <div class="container">
+    <div class="demo-label"><span>04</span> · Winner Celebration</div>
+    <h2>Vitória com <span class="gradient-text">confete</span> e troféu pulsante</h2>
+    <p class="demo-desc">
+      Quando o sorteio sai e você ganha, a tela explode em confete dourado-roxo enquanto
+      o card do troféu entra com spring physics. Troféu pulsa, gradient do título anima.
+    </p>
+    <div id="celebration-stage">
+      <button class="trigger-win" onclick="triggerWin()">🏆 Simular vitória</button>
+      <div class="win-modal" id="winModal">
+        <div class="win-card">
+          <div class="trophy">🏆</div>
+          <h3>PARABÉNS!</h3>
+          <p>Você foi sorteado!</p>
+          <div class="win-skin">
+            <div class="win-skin-emoji">🎯</div>
+            <div class="win-skin-name">AWP | Dragon Lore</div>
+          </div>
+          <button class="win-close" onclick="closeWin()">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ DEMO 5 ═══════════════════ -->
+<section class="demo">
+  <div class="container">
+    <div class="demo-label"><span>05</span> · Skeleton Shimmer</div>
+    <h2>Carregamento <span class="gradient-text">elegante</span></h2>
+    <p class="demo-desc">
+      Enquanto a API responde, skeletons com shimmer dourado-roxo dão a impressão
+      de movimento e mantêm o layout estável (zero CLS).
+    </p>
+    <div class="skeleton-grid">
+      <div class="skeleton">
+        <div class="shimmer img"></div>
+        <div class="shimmer line"></div>
+        <div class="shimmer line medium"></div>
+        <div class="shimmer line short"></div>
+      </div>
+      <div class="skeleton">
+        <div class="shimmer img"></div>
+        <div class="shimmer line"></div>
+        <div class="shimmer line medium"></div>
+        <div class="shimmer line short"></div>
+      </div>
+      <div class="skeleton">
+        <div class="shimmer img"></div>
+        <div class="shimmer line"></div>
+        <div class="shimmer line medium"></div>
+        <div class="shimmer line short"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ DEMO 6 ═══════════════════ -->
+<section class="demo">
+  <div class="container">
+    <div class="demo-label"><span>06</span> · Provably Fair Flow</div>
+    <h2>Sorteio como <span class="gradient-text">animação narrativa</span></h2>
+    <p class="demo-desc">
+      Página de verificação anima cada passo da prova matemática: server seed revela,
+      block hash chega, HMAC computa, número sai. Vira "show", não documentação chata.
+    </p>
+    <div class="pf-flow" id="pfFlow">
+      <div class="pf-step"><div class="num">1</div><h4>Server seed commitado</h4><p>SHA-256 público antes da rifa</p></div>
+      <div class="pf-step"><div class="num">2</div><h4>Vendas encerram</h4><p>Lista de números é congelada</p></div>
+      <div class="pf-step"><div class="num">3</div><h4>Bloco BTC chega</h4><p>Hash imprevisível como âncora</p></div>
+      <div class="pf-step"><div class="num">4</div><h4>HMAC computa</h4><p>seed + block_hash → número</p></div>
+      <div class="pf-step"><div class="num">5</div><h4>Vencedor</h4><p>🏆 Resultado verificável</p></div>
+    </div>
+    <button class="btn btn-primary" style="margin-top: 32px;" onclick="runProvablyFair()">
+      Reproduzir sequência
+    </button>
+  </div>
+</section>
+
+<footer>
+  🦆 AhiruDrop · Motion Demo · v0 · 2026-04-29
+</footer>
+
+<script>
+  /* ═══════════════════ PARTICLES ═══════════════════ */
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 50; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3 - 0.1,
+      r: Math.random() * 2 + 0.5,
+      color: Math.random() > 0.7 ? 'rgba(251,191,36,' : 'rgba(167,139,250,',
+      a: Math.random() * 0.5 + 0.2,
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + p.a + ')';
+      ctx.fill();
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  /* ═══════════════════ NUMBER COUNTER ═══════════════════ */
+  let currentBalance = 0;
+  function triggerBalance() {
+    const target = currentBalance + 250;
+    const start = currentBalance;
+    const duration = 1200;
+    const startTime = performance.now();
+    const num = document.getElementById('balance-num');
+    const card = document.getElementById('balance');
+
+    card.classList.remove('balance-flash');
+    void card.offsetWidth; // re-trigger animation
+    card.classList.add('balance-flash');
+
+    function tick(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Easing: cubic out
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.floor(start + (target - start) * eased);
+      num.textContent = value.toLocaleString('pt-BR');
+      if (progress < 1) requestAnimationFrame(tick);
+      else currentBalance = target;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* ═══════════════════ STAGGER REVEAL ═══════════════════ */
+  const cards = document.querySelectorAll('#raffleGrid .raffle-card');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        const index = Array.from(cards).indexOf(entry.target);
+        entry.target.style.animationDelay = (index * 100) + 'ms';
+        entry.target.classList.add('in-view');
+      } else {
+        entry.target.classList.remove('in-view');
+      }
+    });
+  }, { threshold: 0.2 });
+  cards.forEach(c => observer.observe(c));
+
+  /* ═══════════════════ WINNER CELEBRATION ═══════════════════ */
+  const winModal = document.getElementById('winModal');
+  const stage = document.getElementById('celebration-stage');
+
+  function triggerWin() {
+    winModal.classList.add('active');
+
+    // Generate confetti
+    const colors = ['#fbbf24', '#f59e0b', '#7c3aed', '#a78bfa', '#b26bff', '#ffffff'];
+    for (let i = 0; i < 50; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.top = '0';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDelay = Math.random() * 0.5 + 's';
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      stage.appendChild(piece);
+      setTimeout(() => piece.remove(), 3500);
+    }
+  }
+  function closeWin() {
+    winModal.classList.remove('active');
+  }
+
+  /* ═══════════════════ PROVABLY FAIR SEQUENCE ═══════════════════ */
+  function runProvablyFair() {
+    const steps = document.querySelectorAll('#pfFlow .pf-step');
+    steps.forEach(s => s.classList.remove('active'));
+    steps.forEach((step, i) => {
+      setTimeout(() => step.classList.add('active'), i * 600);
+    });
+  }
+  // Run once on first visibility
+  const pfObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      runProvablyFair();
+      pfObserver.disconnect();
+    }
+  }, { threshold: 0.4 });
+  pfObserver.observe(document.getElementById('pfFlow'));
+</script>
+
+</body>
+</html>

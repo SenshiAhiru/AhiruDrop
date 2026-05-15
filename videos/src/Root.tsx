@@ -1,5 +1,6 @@
 import { Composition } from "remotion";
 import { LogoIntro, LogoIntroProps } from "./compositions/LogoIntro";
+import { SiteShowcase, SITE_SHOWCASE_DURATION } from "./compositions/SiteShowcase";
 
 /**
  * Root registry — every composition that can be rendered must be listed
@@ -57,6 +58,38 @@ export const RemotionRoot: React.FC = () => {
           size: "vertical",
           transparentBackground: true,
         } satisfies LogoIntroProps}
+      />
+
+      {/* ═══════════════════════════════════════════════════════════
+          SITE SHOWCASE — 15s institutional video
+          5 scenes: Hook → Browse → Buy → Draw → Win
+          Each scene file lives in src/scenes/
+          ═══════════════════════════════════════════════════════════ */}
+      <Composition
+        id="SiteShowcase"
+        component={SiteShowcase}
+        durationInFrames={SITE_SHOWCASE_DURATION}
+        fps={30}
+        width={1080}
+        height={1920}
+      />
+
+      <Composition
+        id="SiteShowcaseSquare"
+        component={SiteShowcase}
+        durationInFrames={SITE_SHOWCASE_DURATION}
+        fps={30}
+        width={1080}
+        height={1080}
+      />
+
+      <Composition
+        id="SiteShowcaseHorizontal"
+        component={SiteShowcase}
+        durationInFrames={SITE_SHOWCASE_DURATION}
+        fps={30}
+        width={1920}
+        height={1080}
       />
     </>
   );

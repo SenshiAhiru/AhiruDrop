@@ -1,6 +1,7 @@
 import { Composition } from "remotion";
 import { LogoIntro, LogoIntroProps } from "./compositions/LogoIntro";
 import { SiteShowcase, SITE_SHOWCASE_DURATION } from "./compositions/SiteShowcase";
+import { SpotifyStyleDemo, SPOTIFY_DEMO_DURATION } from "./compositions/SpotifyStyleDemo";
 import { SceneHook, sceneHookDuration } from "./scenes/SceneHook";
 import { SceneBrowse, sceneBrowseDuration } from "./scenes/SceneBrowse";
 import { SceneBuy, sceneBuyDuration } from "./scenes/SceneBuy";
@@ -95,6 +96,18 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
+      />
+
+      {/* ═══════════════════════════════════════════════════════════
+          SPOTIFY-STYLE DEMO — kinetic type + 3D card tilt + outro
+          ═══════════════════════════════════════════════════════════ */}
+      <Composition
+        id="SpotifyStyleDemo"
+        component={SpotifyStyleDemo}
+        durationInFrames={SPOTIFY_DEMO_DURATION}
+        fps={30}
+        width={1080}
+        height={1920}
       />
 
       {/* ═══════════════════════════════════════════════════════════

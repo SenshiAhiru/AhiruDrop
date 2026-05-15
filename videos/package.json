@@ -15,6 +15,10 @@
     "render:logo-prores": "remotion render LogoIntro out/logo-intro.mov --codec=prores --prores-profile=hq",
     "render:logo-alpha": "remotion render LogoIntroTransparent out/logo-intro-alpha.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
 
+    "// === Spotify-style demo (9s) === ": "",
+    "render:spotify-demo": "remotion render SpotifyStyleDemo out/spotify-style-demo.mp4",
+    "render:spotify-demo-prores": "remotion render SpotifyStyleDemo out/spotify-style-demo.mov --codec=prores --prores-profile=hq",
+
     "// === Site showcase (15s) === ": "",
     "render:showcase": "remotion render SiteShowcase out/site-showcase.mp4",
     "render:showcase-square": "remotion render SiteShowcaseSquare out/site-showcase-square.mp4",

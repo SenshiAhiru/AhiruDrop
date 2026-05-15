@@ -70,6 +70,76 @@ npx remotion render LogoIntro out/master.mp4 --crf=0
 
 ---
 
+## 🎬 Editar no Adobe Premiere / After Effects
+
+Pra trazer pra edição profissional, use **ProRes** em vez de MP4. ProRes é o
+padrão da indústria — quase lossless, native a Premiere/AE, suporta alpha.
+
+### Opção A · ProRes HQ (fundo opaco, vai como clip de vídeo)
+
+Pro caso comum: jogar a animação numa timeline do Premiere e cortar/juntar
+com outros clips.
+
+```bash
+npm run render:logo-prores
+```
+
+Saída: `out/logo-intro.mov` (~50-80MB). Arrasta pro Premiere e usa normalmente.
+
+### Opção B · ProRes 4444 com alpha (fundo transparente, pra compositing)
+
+Pro caso poderoso: colocar o AhiruDrop **por cima** de gameplay/footage,
+preservando alpha pra ver o vídeo de baixo nos espaços vazios.
+
+```bash
+npm run render:logo-alpha
+```
+
+Saída: `out/logo-intro-alpha.mov` (~200MB). Usa a composição `LogoIntroTransparent`
+que pula o layer de Background.
+
+**No After Effects:**
+1. File → Import → seleciona `logo-intro-alpha.mov`
+2. Arrasta pra timeline acima de qualquer layer de vídeo
+3. As áreas pretas/escuras viram transparentes — o coin, halo, wordmark e tagline
+   ficam por cima
+
+**No Premiere:**
+1. Importa o arquivo .mov
+2. Coloca em V2 (canal acima do V1 que tem o footage de fundo)
+3. Alpha é detectado automaticamente
+
+### Qual usar?
+
+| Caso | Use |
+|------|-----|
+| Vídeo standalone (Reels, Stories puros) | MP4 (`render:logo`) |
+| Cortar/juntar no Premiere com outros clips | ProRes HQ (`render:logo-prores`) |
+| Sobrepor a gameplay/streamer no AE | ProRes 4444 alpha (`render:logo-alpha`) |
+| Postar direto no Insta/TikTok | MP4 (mais leve, é tudo que essas plataformas precisam) |
+
+### Render super customizado (manual)
+
+```bash
+# ProRes profile específico
+npx remotion render LogoIntro out/comp.mov --codec=prores --prores-profile=4444
+
+# Pixel format alpha (transparente)
+npx remotion render LogoIntroTransparent out/alpha.mov \
+  --codec=prores --prores-profile=4444 \
+  --pixel-format=yuva444p10le --image-format=png
+
+# ProRes profiles disponíveis:
+#   proxy       — menor arquivo, qualidade preview
+#   light       — equilíbrio bom
+#   standard    — padrão
+#   hq          — alta qualidade (recomendado pra edição)
+#   4444        — máxima qualidade + alpha channel
+#   4444-xq     — máxima qualidade extrema
+```
+
+---
+
 ## 📁 Estrutura
 
 ```

@@ -6,9 +6,16 @@
   "scripts": {
     "dev": "remotion studio",
     "render": "remotion render",
+
     "render:logo": "remotion render LogoIntro out/logo-intro.mp4",
-    "render:logo-square": "remotion render LogoIntro out/logo-intro-square.mp4 --props='{\"size\":\"square\"}'",
-    "render:all": "npm run render:logo"
+    "render:logo-square": "remotion render LogoIntroSquare out/logo-intro-square.mp4",
+    "render:logo-horizontal": "remotion render LogoIntroHorizontal out/logo-intro-horizontal.mp4",
+
+    "// === Pro formats for editing in Premiere / After Effects === ": "",
+    "render:logo-prores": "remotion render LogoIntro out/logo-intro.mov --codec=prores --prores-profile=hq",
+    "render:logo-alpha": "remotion render LogoIntroTransparent out/logo-intro-alpha.mov --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
+
+    "render:all": "npm run render:logo && npm run render:logo-square && npm run render:logo-horizontal"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.0",

@@ -8,6 +8,13 @@ import { Tagline } from "../components/Tagline";
 
 export type LogoIntroProps = {
   size?: "vertical" | "square" | "horizontal";
+  /**
+   * When true, the Background layer is skipped — useful for exporting
+   * the animation as PNG sequence or ProRes 4444 with alpha channel,
+   * so the duck/halo/wordmark can be composited over other footage in
+   * After Effects / Premiere.
+   */
+  transparentBackground?: boolean;
 };
 
 /**
@@ -30,7 +37,10 @@ export type LogoIntroProps = {
  *
  * Final fade-out for the whole comp is handled at the outer wrapper.
  */
-export const LogoIntro: React.FC<LogoIntroProps> = ({ size = "vertical" }) => {
+export const LogoIntro: React.FC<LogoIntroProps> = ({
+  size = "vertical",
+  transparentBackground = false,
+}) => {
   const frame = useCurrentFrame();
   const { width, height, durationInFrames } = useVideoConfig();
 
@@ -55,10 +65,12 @@ export const LogoIntro: React.FC<LogoIntroProps> = ({ size = "vertical" }) => {
 
   return (
     <AbsoluteFill style={{ opacity: exitOpacity }}>
-      {/* Layer 1 · Background */}
-      <Sequence name="Background" durationInFrames={durationInFrames}>
-        <Background />
-      </Sequence>
+      {/* Layer 1 · Background — skipped when exporting with alpha */}
+      {!transparentBackground && (
+        <Sequence name="Background" durationInFrames={durationInFrames}>
+          <Background />
+        </Sequence>
+      )}
 
       {/* Layer 2 · Particles */}
       <Sequence name="Particles" durationInFrames={durationInFrames}>

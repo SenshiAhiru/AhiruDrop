@@ -42,6 +42,22 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         defaultProps={{ size: "horizontal" } satisfies LogoIntroProps}
       />
+
+      {/* Logo intro — TRANSPARENT (no background, for After Effects /
+          Premiere compositing). Render as PNG sequence or ProRes 4444
+          to preserve the alpha channel. */}
+      <Composition
+        id="LogoIntroTransparent"
+        component={LogoIntro}
+        durationInFrames={150}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          size: "vertical",
+          transparentBackground: true,
+        } satisfies LogoIntroProps}
+      />
     </>
   );
 };

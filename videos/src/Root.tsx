@@ -1,7 +1,7 @@
 import { Composition } from "remotion";
 import { LogoIntro, LogoIntroProps } from "./compositions/LogoIntro";
 import { SiteShowcase, SITE_SHOWCASE_DURATION } from "./compositions/SiteShowcase";
-import { SpotifyStyleDemo, SPOTIFY_DEMO_DURATION } from "./compositions/SpotifyStyleDemo";
+import { SpotifyStyleDemo, SPOTIFY_DEMO_DURATION, SPOTIFY_DEMO_FPS } from "./compositions/SpotifyStyleDemo";
 import { SceneHook, sceneHookDuration } from "./scenes/SceneHook";
 import { SceneBrowse, sceneBrowseDuration } from "./scenes/SceneBrowse";
 import { SceneBuy, sceneBuyDuration } from "./scenes/SceneBuy";
@@ -105,7 +105,7 @@ export const RemotionRoot: React.FC = () => {
         id="SpotifyStyleDemo"
         component={SpotifyStyleDemo}
         durationInFrames={SPOTIFY_DEMO_DURATION}
-        fps={30}
+        fps={SPOTIFY_DEMO_FPS}
         width={1080}
         height={1920}
       />

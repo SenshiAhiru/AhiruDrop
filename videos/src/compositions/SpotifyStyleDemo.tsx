@@ -7,74 +7,142 @@ import {
   interpolate,
   spring,
   Sequence,
+  Easing,
 } from "remotion";
 
 /**
  * SpotifyStyleDemo · ~9s demo no estilo do reel "@spotifybrasil me contrata".
  *
- * 3 micro-cenas:
- *   0–90    KINETIC TYPE   "TODO DIA / NOVA RIFA" passando rápido
- *   90–180  3D CARD        Rifa AK-47 Phantom Disruptor inclinada em
- *                          perspectiva, neon magenta da raridade Classified
- *   180–270 OUTRO          Coin com bloom gigante + wordmark + tagline
+ * v2 polish: 60fps (de 30), easing curves customizadas, camera zoom sutil
+ * na cena do card, crossfades entre cenas, drop-shadows consolidados.
  *
- * Técnicas usadas (todas CSS puro / Remotion, sem plugins):
- *   - Bloom via filter: drop-shadow() stacked 3-4×
- *   - 3D tilt via transform: perspective() rotateY()/rotateX()
- *   - Mask sweep no texto
- *   - Spring entries com Remotion's spring()
- *   - Radial gradients localizados pra emular "luz de palco"
+ * Timeline (em segundos, frames a 60fps):
+ *   0.0–3.0   KINETIC TYPE   "TODO DIA / NOVA RIFA" sweep
+ *   2.7–6.0   3D CARD        AK-47 Phantom Disruptor inclinado
+ *   5.7–9.0   OUTRO          Coin + wordmark + tagline
+ *
+ *   ┌── crossfade 0.3s ──┐         ┌── crossfade 0.3s ──┐
+ *   ░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░
+ *
+ * Técnicas (CSS / Remotion, sem plugins):
+ *   - Bloom via filter: drop-shadow() stacked (consolidado, 2× máx)
+ *   - 3D tilt via perspective() + rotateY/X
+ *   - Easing.out(Easing.cubic) pra entries snappier
+ *   - Spring physics calibrados por massa (card mais lento que chip)
+ *   - Camera zoom Ken Burns sutil (1.0 → 1.06) no card pra dinamismo
+ *   - Sequence overlap pra crossfade automático
  */
 
-export const SPOTIFY_DEMO_DURATION = 270;
+const FPS = 60;
+
+// Cada cena dura 3 segundos = 180 frames a 60fps.
+// Mas damos overlap de 18 frames (0.3s) entre cenas pra crossfade.
+const SCENE_DURATION = 180;
+const SCENE_OVERLAP = 18;
+
+export const SPOTIFY_DEMO_DURATION = SCENE_DURATION * 3 - SCENE_OVERLAP * 2; // 540 - 36 = 504
+export const SPOTIFY_DEMO_FPS = FPS;
 
 export const SpotifyStyleDemo: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: "#07070a" }}>
-      <Sequence name="01 · Kinetic Type" durationInFrames={90}>
+      <Sequence name="01 · Kinetic Type" durationInFrames={SCENE_DURATION}>
         <KineticTypeScene />
       </Sequence>
 
-      <Sequence name="02 · 3D Card" from={90} durationInFrames={90}>
+      <Sequence
+        name="02 · 3D Card"
+        from={SCENE_DURATION - SCENE_OVERLAP}
+        durationInFrames={SCENE_DURATION}
+      >
         <ThreeDCardScene />
       </Sequence>
 
-      <Sequence name="03 · Outro" from={180} durationInFrames={90}>
+      <Sequence
+        name="03 · Outro"
+        from={SCENE_DURATION * 2 - SCENE_OVERLAP * 2}
+        durationInFrames={SCENE_DURATION}
+      >
         <OutroScene />
       </Sequence>
     </AbsoluteFill>
   );
 };
 
+// ────────────────── Shared easing curves ──────────────────
+const easeOutCubic = Easing.out(Easing.cubic);
+const easeOutExpo = Easing.out(Easing.exp);
+const easeInOutCubic = Easing.inOut(Easing.cubic);
+
+/**
+ * Calcula opacidade pra fade in/out automático de cena.
+ * - 12 frames de fade in
+ * - 18 frames de fade out (cobre o overlap pro crossfade)
+ */
+function useSceneFade() {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const fadeIn = interpolate(frame, [0, 12], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: easeOutCubic,
+  });
+  const fadeOut = interpolate(
+    frame,
+    [durationInFrames - 18, durationInFrames],
+    [1, 0],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: easeInOutCubic,
+    }
+  );
+  return Math.min(fadeIn, fadeOut);
+}
+
 /* ═════════════════════════ Scene 01 · Kinetic Type ═══════════════════════ */
 
 const KineticTypeScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
+  const sceneOpacity = useSceneFade();
 
-  // Two-line type. Each line sweeps across with overshoot.
-  // Line 1: "TODO DIA" — frames 0-30
-  // Line 2: "NOVA RIFA" — frames 20-50
-  // Both hold 50-75, then exit at 75-90
-  const line1X = interpolate(frame, [0, 25, 65, 90], [width, 0, 0, -width], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const line2X = interpolate(frame, [15, 40, 65, 90], [width, 0, 0, -width], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  // Frames recalibradas pra 60fps. Sweep mais rápido + easing forte.
+  // Line 1 "TODO DIA": entra 0–50, hold 50–130, sai 130–160
+  const line1X = interpolate(
+    frame,
+    [0, 40, 130, 160],
+    [width * 1.2, 0, 0, -width * 1.2],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: easeOutExpo,
+    }
+  );
 
-  // Bottom glow breathes
-  const glowIntensity = 0.7 + 0.3 * Math.sin((frame / 30) * 2);
-  const glowOpacity = interpolate(frame, [0, 15, 75, 90], [0, 1, 1, 0], {
+  // Line 2 "NOVA RIFA": delay maior, mesmo padrão
+  const line2X = interpolate(
+    frame,
+    [25, 70, 130, 160],
+    [width * 1.2, 0, 0, -width * 1.2],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: easeOutExpo,
+    }
+  );
+
+  // Pulse do glow no rodapé (mais suave a 60fps)
+  const glowIntensity = 0.7 + 0.25 * Math.sin((frame / FPS) * 1.5);
+  const glowOpacity = interpolate(frame, [0, 20, 145, 180], [0, 1, 1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: easeInOutCubic,
   });
 
   return (
-    <AbsoluteFill>
-      {/* Bottom radial glow — purple */}
+    <AbsoluteFill style={{ opacity: sceneOpacity }}>
+      {/* Bottom radial glow — purple, breathing */}
       <div
         style={{
           position: "absolute",
@@ -90,7 +158,7 @@ const KineticTypeScene: React.FC = () => {
         }}
       />
 
-      {/* Subtle film grain via stacked dots */}
+      {/* Subtle grain */}
       <div
         style={{
           position: "absolute",
@@ -119,12 +187,13 @@ const KineticTypeScene: React.FC = () => {
             "Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
           transform: `translateX(${line1X}px)`,
           textShadow: "0 4px 32px rgba(124, 58, 237, 0.6)",
+          willChange: "transform",
         }}
       >
         TODO DIA
       </div>
 
-      {/* Line 2 — NOVA RIFA (accent) */}
+      {/* Line 2 — NOVA RIFA */}
       <div
         style={{
           position: "absolute",
@@ -144,6 +213,7 @@ const KineticTypeScene: React.FC = () => {
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",
           filter: "drop-shadow(0 4px 32px rgba(251, 191, 36, 0.4))",
+          willChange: "transform",
         }}
       >
         NOVA RIFA
@@ -156,53 +226,71 @@ const KineticTypeScene: React.FC = () => {
 
 const ThreeDCardScene: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps, width, height } = useVideoConfig();
+  const { width, height } = useVideoConfig();
+  const sceneOpacity = useSceneFade();
 
-  // Card entry spring
-  const entry = spring({ frame, fps, config: { damping: 14, stiffness: 90 } });
+  // Card entry spring — mais "pesado" (damping menor, stiffness menor)
+  const entry = spring({
+    frame,
+    fps: FPS,
+    config: { damping: 16, stiffness: 80, mass: 1.1 },
+  });
   const scale = interpolate(entry, [0, 1], [0.4, 1]);
   const opacity = entry;
   const tiltY = interpolate(entry, [0, 1], [-30, 12]);
   const tiltX = interpolate(entry, [0, 1], [15, 5]);
   const liftY = interpolate(entry, [0, 1], [200, 0]);
 
-  // Idle subtle motion after settled
-  const idleFrame = Math.max(0, frame - 40);
-  const idleTilt = Math.sin((idleFrame / fps) * 0.8) * 2;
-  const idleY = Math.sin((idleFrame / fps) * 1.1) * 6;
+  // Idle motion contínuo, suavizado a 60fps
+  const idleFrame = Math.max(0, frame - 60);
+  const idleTilt = Math.sin((idleFrame / FPS) * 0.9) * 2.2;
+  const idleY = Math.sin((idleFrame / FPS) * 1.2) * 6;
 
-  // Chip pops in after card
-  const chipSpring = spring({ frame: frame - 25, fps, config: { damping: 12 } });
+  // Ken Burns zoom: camera "aproxima" sutilmente durante o hold
+  const kenBurns = interpolate(frame, [40, 150], [1.0, 1.06], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: easeInOutCubic,
+  });
+
+  // Chip pop-in com easing
+  const chipSpring = spring({
+    frame: frame - 35,
+    fps: FPS,
+    config: { damping: 13, stiffness: 130 },
+  });
   const chipScale = interpolate(chipSpring, [0, 1], [0.5, 1]);
   const chipOpacity = chipSpring;
 
-  // Exit — card slides up + fades at frame 75-90
-  const exitOpacity = interpolate(frame, [75, 88], [1, 0], {
+  // Exit do card no final da cena (cobre o crossfade)
+  const exitOpacity = interpolate(frame, [SCENE_DURATION - 30, SCENE_DURATION - 5], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: easeInOutCubic,
   });
-  const exitY = interpolate(frame, [75, 88], [0, -80], {
+  const exitY = interpolate(frame, [SCENE_DURATION - 30, SCENE_DURATION - 5], [0, -60], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: easeOutCubic,
   });
 
-  const RARITY = "#d32ce6"; // Classified
+  const RARITY = "#d32ce6";
 
   return (
     <AbsoluteFill
       style={{
-        opacity: exitOpacity,
+        opacity: Math.min(sceneOpacity, exitOpacity),
         perspective: width * 1.5,
         perspectiveOrigin: "50% 50%",
       }}
     >
-      {/* Background spotlight on card */}
+      {/* Spotlight on card */}
       <div
         style={{
           position: "absolute",
           top: "50%",
           left: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: `translate(-50%, -50%) scale(${kenBurns})`,
           width: width * 1.3,
           height: width * 1.3,
           background: `radial-gradient(circle, ${RARITY}22 0%, transparent 60%)`,
@@ -211,7 +299,7 @@ const ThreeDCardScene: React.FC = () => {
         }}
       />
 
-      {/* Floating chip "Participar →" — appears above card */}
+      {/* Floating chip */}
       <div
         style={{
           position: "absolute",
@@ -232,13 +320,14 @@ const ThreeDCardScene: React.FC = () => {
           display: "flex",
           alignItems: "center",
           gap: width * 0.02,
+          willChange: "transform",
         }}
       >
         <span style={{ color: RARITY, fontSize: width * 0.03 }}>✕</span>
         Participar agora →
       </div>
 
-      {/* The 3D-tilted card itself */}
+      {/* The 3D card */}
       <div
         style={{
           position: "absolute",
@@ -250,10 +339,11 @@ const ThreeDCardScene: React.FC = () => {
             translateY(${liftY + idleY + exitY}px)
             rotateY(${tiltY + idleTilt}deg)
             rotateX(${tiltX}deg)
-            scale(${scale})
+            scale(${scale * kenBurns})
           `,
           transformStyle: "preserve-3d",
           opacity,
+          willChange: "transform",
         }}
       >
         <CardInner rarityColor={RARITY} />
@@ -273,17 +363,16 @@ const CardInner: React.FC<{ rarityColor: string }> = ({ rarityColor }) => {
         background: "#0f0f12",
         borderRadius: 24,
         overflow: "hidden",
+        // Sombra consolidada — 2 layers em vez de 4
         boxShadow: `
           0 0 0 1.5px ${rarityColor}88,
-          0 0 40px ${rarityColor}44,
-          0 0 100px ${rarityColor}22,
+          0 0 60px ${rarityColor}33,
           0 30px 60px -10px #000000aa
         `,
         fontFamily:
           "Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
       }}
     >
-      {/* Neon top accent line */}
       <div
         style={{
           height: 3,
@@ -291,7 +380,6 @@ const CardInner: React.FC<{ rarityColor: string }> = ({ rarityColor }) => {
         }}
       />
 
-      {/* Skin showcase */}
       <div
         style={{
           height: cardW * 0.65,
@@ -302,7 +390,6 @@ const CardInner: React.FC<{ rarityColor: string }> = ({ rarityColor }) => {
           position: "relative",
         }}
       >
-        {/* MW wear chip top-left */}
         <div
           style={{
             position: "absolute",
@@ -318,7 +405,6 @@ const CardInner: React.FC<{ rarityColor: string }> = ({ rarityColor }) => {
         >
           MW
         </div>
-        {/* ATIVA pill top-right */}
         <div
           style={{
             position: "absolute",
@@ -341,12 +427,12 @@ const CardInner: React.FC<{ rarityColor: string }> = ({ rarityColor }) => {
             maxWidth: "85%",
             maxHeight: "85%",
             objectFit: "contain",
+            // Consolidado em 1 drop-shadow
             filter: `drop-shadow(0 12px 40px ${rarityColor}88)`,
           }}
         />
       </div>
 
-      {/* Body */}
       <div style={{ padding: cardW * 0.06 }}>
         <div
           style={{
@@ -390,13 +476,7 @@ const CardInner: React.FC<{ rarityColor: string }> = ({ rarityColor }) => {
             >
               POR COTA
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                gap: cardW * 0.015,
-              }}
-            >
+            <div style={{ display: "flex", alignItems: "baseline", gap: cardW * 0.015 }}>
               <span
                 style={{
                   color: "#fbbf24",
@@ -438,45 +518,51 @@ const CardInner: React.FC<{ rarityColor: string }> = ({ rarityColor }) => {
 
 const OutroScene: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps, width } = useVideoConfig();
+  const { width } = useVideoConfig();
+  const sceneOpacity = useSceneFade();
 
-  // Coin spring entry
-  const coinSpring = spring({ frame, fps, config: { damping: 13, stiffness: 100 } });
+  // Coin spring entry calibrado pra 60fps (config maior)
+  const coinSpring = spring({
+    frame,
+    fps: FPS,
+    config: { damping: 15, stiffness: 90 },
+  });
   const coinScale = interpolate(coinSpring, [0, 1], [0.2, 1]);
   const coinOpacity = coinSpring;
 
-  // Massive glow expands behind coin
-  const glowSpring = spring({ frame: frame - 5, fps, config: { damping: 20 } });
+  // Glow halo expande
+  const glowSpring = spring({
+    frame: frame - 10,
+    fps: FPS,
+    config: { damping: 22, stiffness: 70 },
+  });
   const glowScale = interpolate(glowSpring, [0, 1], [0.3, 1.4]);
   const glowOpacity = interpolate(glowSpring, [0, 1], [0, 0.8]);
 
-  // Glow breathes after settled
-  const breathe = 1 + Math.sin((Math.max(0, frame - 30) / fps) * 1.5) * 0.05;
+  // Breathing depois que assenta — mais sutil a 60fps
+  const breathe = 1 + Math.sin((Math.max(0, frame - 60) / FPS) * 1.3) * 0.04;
 
-  // Wordmark fades in
-  const wordmarkOpacity = interpolate(frame, [30, 50], [0, 1], {
+  // Wordmark
+  const wordmarkOpacity = interpolate(frame, [55, 90], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: easeOutCubic,
   });
-  const wordmarkY = interpolate(frame, [30, 50], [25, 0], {
+  const wordmarkY = interpolate(frame, [55, 90], [25, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: easeOutCubic,
   });
 
   // Tagline
-  const taglineOpacity = interpolate(frame, [45, 65], [0, 1], {
+  const taglineOpacity = interpolate(frame, [85, 115], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
-  });
-
-  // Final fade
-  const finalFade = interpolate(frame, [80, 90], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+    easing: easeOutCubic,
   });
 
   return (
-    <AbsoluteFill style={{ opacity: finalFade }}>
+    <AbsoluteFill style={{ opacity: sceneOpacity }}>
       {/* Huge glow halo */}
       <div
         style={{
@@ -490,6 +576,7 @@ const OutroScene: React.FC = () => {
             "radial-gradient(circle, #fbbf2499 0%, #7c3aed66 30%, #7c3aed22 50%, transparent 75%)",
           filter: "blur(60px)",
           opacity: glowOpacity,
+          willChange: "transform",
         }}
       />
 
@@ -501,6 +588,7 @@ const OutroScene: React.FC = () => {
           left: "50%",
           transform: `translate(-50%, -50%) scale(${coinScale})`,
           opacity: coinOpacity,
+          willChange: "transform",
         }}
       >
         <Img
@@ -508,10 +596,10 @@ const OutroScene: React.FC = () => {
           style={{
             width: width * 0.42,
             height: width * 0.42,
+            // Consolidado: 2 shadows em vez de 3 (perda visual mínima)
             filter: `
-              drop-shadow(0 0 30px rgba(251, 191, 36, 0.7))
-              drop-shadow(0 0 80px rgba(251, 191, 36, 0.4))
-              drop-shadow(0 0 140px rgba(124, 58, 237, 0.5))
+              drop-shadow(0 0 60px rgba(251, 191, 36, 0.65))
+              drop-shadow(0 0 140px rgba(124, 58, 237, 0.4))
             `,
           }}
         />
@@ -562,7 +650,6 @@ const OutroScene: React.FC = () => {
         RIFAS · SKINS · DIVERSÃO
       </div>
 
-      {/* URL footer */}
       <div
         style={{
           position: "absolute",

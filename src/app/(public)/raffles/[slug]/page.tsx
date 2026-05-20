@@ -351,7 +351,7 @@ export default function RaffleDetailPage() {
                   alt={raffle.title}
                   fill
                   sizes="(max-width: 1024px) 90vw, 512px"
-                  className="relative z-10 object-contain drop-shadow-2xl p-4"
+                  className="animate-skin-float relative z-10 object-contain drop-shadow-2xl p-4"
                   draggable={false}
                   priority
                 />

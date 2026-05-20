@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { usePoll } from "@/hooks/use-poll";
 import { useTranslation } from "@/i18n/provider";
 import { AhcCoin } from "@/components/shared/ahc-coin";
+import { AnimatedNumber } from "@/components/motion/animated-number";
 
 export function AhcBalance({ className }: { className?: string }) {
   const { t } = useTranslation();
@@ -43,9 +44,15 @@ export function AhcBalance({ className }: { className?: string }) {
     >
       {/* AHC icon */}
       <AhcCoin size={24} />
-      <span className="text-sm font-bold text-accent-400">
-        {balance != null ? balance.toFixed(2) : "—"}
-      </span>
+      {balance != null ? (
+        <AnimatedNumber
+          value={balance}
+          decimals={2}
+          className="text-sm font-bold text-accent-400 tabular-nums"
+        />
+      ) : (
+        <span className="text-sm font-bold text-accent-400">—</span>
+      )}
       <span className="text-[10px] text-accent-500/70 font-medium">AHC</span>
     </Link>
   );

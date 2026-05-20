@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useTranslation } from "@/i18n/provider";
+import { StaggerReveal } from "@/components/motion/stagger-reveal";
 
 interface RaffleGridProps {
   children: React.ReactNode;
@@ -78,13 +79,14 @@ export function RaffleGrid({
   }
 
   return (
-    <div
+    <StaggerReveal
+      stagger={80}
       className={cn(
         "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6",
         className
       )}
     >
       {children}
-    </div>
+    </StaggerReveal>
   );
 }

@@ -220,6 +220,37 @@ main {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+/* Stronger pulse for primary CTAs (purple-to-gold sweep) */
+@keyframes pulse-glow-strong {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.55); }
+  50%      { box-shadow: 0 0 32px 8px rgba(251, 191, 36, 0); }
+}
+
+.animate-pulse-glow-strong {
+  animation: pulse-glow-strong 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-glow,
+  .animate-pulse-glow-strong { animation: none; }
+}
+
+/* ─── Skin Float Idle ─── */
+
+@keyframes skin-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+
+.animate-skin-float {
+  animation: skin-float 5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-skin-float { animation: none; }
+}
+
 /* ─── Winner Celebration ─── */
 
 /* Confetti pieces — fall from top with wobble */

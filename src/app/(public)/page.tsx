@@ -5,6 +5,8 @@ import Link from "next/link";
 import { RaffleCard } from "@/components/raffle/raffle-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/i18n/provider";
+import { HeroParticles } from "@/components/motion/hero-particles";
+import { StaggerReveal } from "@/components/motion/stagger-reveal";
 
 /* ── Data ── */
 
@@ -99,6 +101,11 @@ export default function HomePage() {
         {/* Glow accent */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-primary-600/10 blur-[128px]" />
 
+        {/* Floating particles (purple + gold, animated canvas) */}
+        <div className="absolute inset-0 pointer-events-none">
+          <HeroParticles count={30} />
+        </div>
+
         <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-8 px-6 py-28 text-center lg:py-40">
           <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
             <span className="text-gradient">{t("home.hero.title")}</span>
@@ -111,7 +118,7 @@ export default function HomePage() {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/raffles"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-primary-600 px-8 text-base font-semibold text-white shadow-lg shadow-primary-600/25 transition-all hover:bg-primary-700 hover:shadow-xl hover:shadow-primary-600/30"
+              className="animate-pulse-glow-strong inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-primary-600 px-8 text-base font-semibold text-white shadow-lg shadow-primary-600/25 transition-all hover:bg-primary-700 hover:shadow-xl hover:shadow-primary-600/30"
             >
               {t("home.hero.ctaRaffles")}
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
@@ -149,11 +156,11 @@ export default function HomePage() {
             ))}
           </div>
         ) : featuredRaffles.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <StaggerReveal stagger={100} className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {featuredRaffles.map((raffle) => (
               <RaffleCard key={raffle.id} raffle={raffle} />
             ))}
-          </div>
+          </StaggerReveal>
         ) : (
           <div className="flex flex-col items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card)] py-16 text-center">
             <svg className="h-12 w-12 text-[var(--muted-foreground)] mb-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">

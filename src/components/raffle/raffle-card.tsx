@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cn, formatCurrency, calculatePercentage } from "@/lib/utils";
+import { useMouseTilt } from "@/components/motion/use-mouse-tilt";
 import { AhcCoin } from "@/components/shared/ahc-coin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ interface RaffleCardProps {
 
 export function RaffleCard({ raffle, className }: RaffleCardProps) {
   const { t } = useTranslation();
+  const tilt = useMouseTilt({ maxTilt: 5, perspective: 1000, lift: 6 });
 
   const statusConfig: Record<RaffleStatus, { label: string; variant: "default" | "accent" | "success" | "warning" | "danger" }> = {
     DRAFT: { label: "Draft", variant: "default" },
@@ -67,9 +69,11 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
   return (
     <Link
       href={`/raffles/${slug}`}
+      {...tilt.bind}
+      style={tilt.style}
       className={cn(
         "group block w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] shadow-sm",
-        "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-600/10 hover:border-primary-600/30",
+        "hover:shadow-lg hover:shadow-primary-600/10 hover:border-primary-600/30",
         className
       )}
     >

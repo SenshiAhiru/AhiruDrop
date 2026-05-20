@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, Children, cloneElement, isValidElement } from "react";
+import { useEffect, useRef, useState, Children } from "react";
 
 interface StaggerRevealProps {
   children: React.ReactNode;
@@ -73,10 +73,10 @@ export function StaggerReveal({
     return () => observer.disconnect();
   }, [retrigger, reduced]);
 
-  // Wrap each child with stagger styling
+  // Wrap each child in its own div so the reveal transform doesn't
+  // clobber any transform the child applies on itself (e.g. mouse tilt).
+  // Trade-off: extra DOM element per item, but no style merge fragility.
   const wrappedChildren = Children.map(children, (child, i) => {
-    if (!isValidElement(child)) return child;
-
     const delay = initialDelay + i * stagger;
     const style: React.CSSProperties = {
       opacity: visible ? 1 : 0,
@@ -86,14 +86,15 @@ export function StaggerReveal({
         : `opacity ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms,
            transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
       willChange: "opacity, transform",
+      // display:contents would skip the wrapper from layout, but it
+      // also drops grid-item participation. Keep block-level.
     };
 
-    // Merge with any existing style from the child
-    const childProps = child.props as { style?: React.CSSProperties } & Record<string, unknown>;
-    const existingStyle = childProps.style ?? {};
-    return cloneElement(child as React.ReactElement<{ style?: React.CSSProperties }>, {
-      style: { ...existingStyle, ...style },
-    });
+    return (
+      <div key={i} style={style}>
+        {child}
+      </div>
+    );
   });
 
   return (

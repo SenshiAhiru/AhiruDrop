@@ -16,6 +16,7 @@ import {
   FileJson,
 } from "lucide-react";
 import { useTranslation } from "@/i18n/provider";
+import { StaggerReveal } from "@/components/motion/stagger-reveal";
 
 type VerifyData = {
   raffleId: string;
@@ -488,10 +489,12 @@ export default function VerifyPage() {
             </h3>
           </header>
 
-          <div className="p-5 space-y-6 text-sm">
-            <p className="text-surface-400">
+          <div className="p-5 text-sm">
+            <p className="text-surface-400 mb-6">
               {t("verify.externalIntro")}
             </p>
+
+            <StaggerReveal stagger={150} initialDelay={50} className="space-y-6">
 
             {/* Step 1 — SHA-256 commit check */}
             <ExternalStep
@@ -574,6 +577,8 @@ export default function VerifyPage() {
               }}
               onCopy={copy}
             />
+
+            </StaggerReveal>
           </div>
         </section>
       )}

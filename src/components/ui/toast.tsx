@@ -58,6 +58,13 @@ const toastStyles: Record<ToastType, string> = {
   warning: "border-l-4 border-l-warning",
 };
 
+const toastProgressColors: Record<ToastType, string> = {
+  info: "bg-primary-600",
+  success: "bg-success",
+  error: "bg-danger",
+  warning: "bg-warning",
+};
+
 const toastIcons: Record<ToastType, React.ReactNode> = {
   info: (
     <svg className="h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -90,25 +97,35 @@ function ToastContainer() {
         <div
           key={toast.id}
           className={cn(
-            "pointer-events-auto flex items-start gap-3 rounded-lg bg-[var(--card)] p-4 shadow-lg animate-in slide-in-from-right duration-300",
+            "animate-toast-enter pointer-events-auto relative overflow-hidden rounded-lg bg-[var(--card)] shadow-xl shadow-black/30",
             toastStyles[toast.type]
           )}
         >
-          <div className="flex-shrink-0 mt-0.5">{toastIcons[toast.type]}</div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[var(--foreground)]">{toast.message}</p>
-            {toast.description && (
-              <p className="mt-1 text-xs text-[var(--muted-foreground)]">{toast.description}</p>
-            )}
+          <div className="flex items-start gap-3 p-4">
+            <div className="flex-shrink-0 mt-0.5">{toastIcons[toast.type]}</div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-[var(--foreground)]">{toast.message}</p>
+              {toast.description && (
+                <p className="mt-1 text-xs text-[var(--muted-foreground)]">{toast.description}</p>
+              )}
+            </div>
+            <button
+              onClick={() => removeToast(toast.id)}
+              className="flex-shrink-0 rounded-md p-1 opacity-70 hover:opacity-100 transition-opacity"
+              aria-label="Fechar notificação"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <button
-            onClick={() => removeToast(toast.id)}
-            className="flex-shrink-0 rounded-md p-1 opacity-70 hover:opacity-100 transition-opacity"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          {/* Progress bar countdown */}
+          <div
+            className={cn(
+              "toast-progress-bar absolute bottom-0 left-0 right-0 h-0.5 opacity-60",
+              toastProgressColors[toast.type]
+            )}
+          />
         </div>
       ))}
     </div>

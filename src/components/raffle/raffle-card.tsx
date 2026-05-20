@@ -144,13 +144,13 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
         <div className="absolute right-2 top-2 flex items-center gap-1.5">
           {skinWear && (
             <Badge
-              className="shadow-md text-[10px] uppercase tracking-wider text-white"
+              className="badge-hover shadow-md text-[10px] uppercase tracking-wider text-white"
               style={{ backgroundColor: getWearColor(skinWear) }}
             >
               {getWearShortName(skinWear)}
             </Badge>
           )}
-          <Badge variant={statusInfo.variant} className="shadow-md text-[10px] uppercase tracking-wider">
+          <Badge variant={statusInfo.variant} className="badge-hover shadow-md text-[10px] uppercase tracking-wider">
             {statusInfo.label}
           </Badge>
         </div>

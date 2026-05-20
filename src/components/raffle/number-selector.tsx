@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ShoppingCart, X, CheckCircle, Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "@/i18n/provider";
 import { AhcCoin } from "@/components/shared/ahc-coin";
+import { useSparkleBurst } from "@/components/motion/sparkle-burst";
 
 interface NumberInfo {
   number: number;
@@ -49,6 +50,9 @@ export function NumberSelector({
     spent: number;
     balance: number;
   } | null>(null);
+
+  // Sparkle burst feedback when user picks a number
+  const sparkle = useSparkleBurst({ count: 10, distance: 32 });
 
   async function handleConfirmPurchase() {
     if (buying) return;
@@ -189,15 +193,21 @@ export function NumberSelector({
       </div>
 
       {/* Number grid */}
-      <div className="max-h-[420px] overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 scrollbar-thin">
+      <div
+        ref={sparkle.wrapper.ref}
+        style={sparkle.wrapper.style}
+        className="max-h-[420px] overflow-y-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 scrollbar-thin"
+      >
         <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-1.5">
           {filteredNumbers.map(({ number, status, mine }) => (
             <button
               key={number}
               type="button"
               disabled={status !== "AVAILABLE" && !selectedNumbers.includes(number)}
-              onClick={() => {
+              onClick={(e) => {
                 if (status === "AVAILABLE" || selectedNumbers.includes(number)) {
+                  // Only sparkle on ADD (not when deselecting)
+                  if (!selectedNumbers.includes(number)) sparkle.fire(e);
                   onToggle(number);
                 }
               }}
@@ -212,6 +222,7 @@ export function NumberSelector({
             </button>
           ))}
         </div>
+        {sparkle.overlay}
 
         {filteredNumbers.length === 0 && (
           <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">

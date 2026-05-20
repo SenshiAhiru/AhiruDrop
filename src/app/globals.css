@@ -130,6 +130,15 @@ body {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
 
+/* Sitewide smooth scroll for in-page anchors + JS scrollIntoView calls.
+   Respect reduced-motion (browsers auto-disable when set). */
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
 /* ─── Page Transition ─── */
 
 @keyframes fade-in {
@@ -249,6 +258,80 @@ main {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-skin-float { animation: none; }
+}
+
+/* ─── Page Transition (template.tsx) ─── */
+/*
+  Runs on every route change because Next.js remounts the wrapping
+  Template component. Fast fade + small slide-up. Anything longer
+  starts to feel laggy on quick navigation.
+*/
+@keyframes page-transition-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition-enter {
+  animation: page-transition-enter 280ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition-enter { animation: none; }
+}
+
+/* ─── Badge Hover Lift ─── */
+/*
+  Subtle scale + brightness on hover for rarity / wear chips.
+  Apply with `data-hover` so it doesn't auto-trigger on every Badge.
+*/
+.badge-hover {
+  transition: transform 200ms ease-out, filter 200ms ease-out;
+}
+.badge-hover:hover {
+  transform: scale(1.06);
+  filter: brightness(1.15);
+}
+@media (prefers-reduced-motion: reduce) {
+  .badge-hover:hover { transform: none; filter: none; }
+}
+
+/* ─── Sparkle Burst ─── */
+/*
+  Each particle gets `.sparkle-particle` and CSS variables `--dx`
+  + `--dy` (final translate in px). JS computes the angle so we
+  don't depend on CSS trig functions.
+*/
+@keyframes sparkle-burst {
+  0% {
+    transform: translate(0, 0) scale(0.4) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(1) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+.sparkle-particle {
+  position: absolute;
+  pointer-events: none;
+  animation: sparkle-burst 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--delay, 0ms);
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sparkle-particle { display: none; }
 }
 
 /* ─── Toast Entry ─── */

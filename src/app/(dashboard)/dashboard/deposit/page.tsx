@@ -99,7 +99,10 @@ function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () 
       )}
       <Button type="submit" className="w-full" size="lg" disabled={!stripe || paying}>
         {paying ? (
-          <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> {t("deposit.processing")}</>
+          <>
+            <AhcCoin size={20} decorative className="animate-coin-spin mr-2" />
+            {t("deposit.processing")}
+          </>
         ) : (
           <>
             <AhcCoin size={20} decorative className="mr-2" />
@@ -213,7 +216,7 @@ function PixPanel({
 
         {/* Status indicator */}
         <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 flex items-start gap-3">
-          <Loader2 className="h-4 w-4 text-emerald-400 animate-spin mt-0.5 flex-shrink-0" />
+          <AhcCoin size={20} decorative className="animate-coin-spin mt-0.5 flex-shrink-0" />
           <div className="text-sm">
             <p className="font-semibold text-emerald-400">Aguardando pagamento…</p>
             <p className="text-xs text-emerald-400/70 mt-0.5">
@@ -815,7 +818,10 @@ export default function DepositPage() {
                 onClick={handleStartCheckout}
               >
                 {creating ? (
-                  <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> {t("deposit.preparingPayment")}</>
+                  <>
+                    <AhcCoin size={20} decorative className="animate-coin-spin mr-2" />
+                    {t("deposit.preparingPayment")}
+                  </>
                 ) : method === "pix" ? (
                   <><QrCode className="h-5 w-5 mr-2" /> Gerar QR Code PIX</>
                 ) : (

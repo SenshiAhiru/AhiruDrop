@@ -11,6 +11,7 @@ import { CheckCircle, Loader2, Tag, X, Sparkles, QrCode, Copy, CreditCard, Clock
 import { useToast } from "@/components/ui/toast";
 import { useTranslation } from "@/i18n/provider";
 import { AhcCoin } from "@/components/shared/ahc-coin";
+import { BrandSpinner } from "@/components/motion/brand-spinner";
 
 const CURRENCIES = [
   { code: "BRL", symbol: "R$", flag: "🇧🇷", name: "Real" },
@@ -667,7 +668,7 @@ export default function DepositPage() {
                   value={ahcAmount}
                   onChange={(e) => setAhcAmount(e.target.value)}
                   placeholder={t("deposit.amountCustom")}
-                  className="pr-16"
+                  className="focus-pulse pr-16"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-bold text-accent-500">AHC</span>
               </div>
@@ -892,7 +893,7 @@ export default function DepositPage() {
               </Elements>
             ) : (
               <div className="flex items-center justify-center py-10">
-                <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+                <BrandSpinner size={48} label="Preparando pagamento…" />
               </div>
             )}
           </CardContent>

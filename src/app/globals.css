@@ -302,6 +302,114 @@ main {
   .badge-hover:hover { transform: none; filter: none; }
 }
 
+/* ─── Progress Bar Shimmer ─── */
+/*
+  A subtle highlight that sweeps across the filled portion of a
+  progress bar — signals "live / in-progress" without screaming.
+*/
+@keyframes progress-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.progress-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 100%
+  );
+  animation: progress-shimmer 2.4s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-shimmer { animation: none; opacity: 0; }
+}
+
+/* ─── Modal Entry Spring ─── */
+/*
+  Pop-in spring with overshoot for confirmation modals, deposit
+  modal, winner popup. Replace generic CSS transitions on modal
+  panels with className="animate-modal-enter".
+*/
+@keyframes modal-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.02) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-enter {
+  animation: modal-enter 360ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-modal-enter { animation: none; }
+}
+
+/* ─── Brand Spinner (coin spin) ─── */
+/*
+  Replaces the generic Loader2 spinner. The coin rotates continuously
+  with a subtle dual-axis effect (Y rotation + brightness pulse for
+  the "shining" feel). Wraps around an <img> of the AHC coin.
+*/
+@keyframes coin-spin {
+  0%, 100% {
+    transform: rotateY(0deg);
+    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.4)) brightness(1);
+  }
+  50% {
+    transform: rotateY(360deg);
+    filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.7)) brightness(1.15);
+  }
+}
+
+.animate-coin-spin {
+  animation: coin-spin 1.6s ease-in-out infinite;
+  will-change: transform, filter;
+  transform-style: preserve-3d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-coin-spin { animation: none; }
+}
+
+/* ─── Focus Ring Pulse ─── */
+/*
+  Soft pulse around focused inputs/textareas. Communicates "this
+  field is active" without the harsh default browser outline.
+  Apply with className="focus-pulse" on the input itself.
+*/
+@keyframes focus-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.35); }
+  50%      { box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15); }
+}
+
+.focus-pulse:focus,
+.focus-pulse:focus-visible {
+  outline: none;
+  animation: focus-pulse 1.6s ease-in-out infinite;
+  border-color: rgb(124, 58, 237) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .focus-pulse:focus,
+  .focus-pulse:focus-visible {
+    animation: none;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.4);
+  }
+}
+
 /* ─── Sparkle Burst ─── */
 /*
   Each particle gets `.sparkle-particle` and CSS variables `--dx`

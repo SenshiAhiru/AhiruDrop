@@ -87,13 +87,17 @@ export default function EditRafflePage() {
 
   const [form, setForm] = useState({
     title: "",
+    titleEn: "",
     description: "",
+    descriptionEn: "",
     shortDescription: "",
+    shortDescriptionEn: "",
     pricePerNumber: "",
     totalNumbers: "",
     minPerPurchase: "",
     maxPerPurchase: "",
     regulation: "",
+    regulationEn: "",
     scheduledDrawAt: "",
     isFeatured: false,
   });
@@ -108,13 +112,17 @@ export default function EditRafflePage() {
           setRaffle(data);
           setForm({
             title: data.title || "",
+            titleEn: data.titleEn || "",
             description: data.description || "",
+            descriptionEn: data.descriptionEn || "",
             shortDescription: data.shortDescription || "",
+            shortDescriptionEn: data.shortDescriptionEn || "",
             pricePerNumber: String(data.pricePerNumber || ""),
             totalNumbers: String(data.totalNumbers || ""),
             minPerPurchase: String(data.minPerPurchase || "1"),
             maxPerPurchase: String(data.maxPerPurchase || "100"),
             regulation: data.regulation || "",
+            regulationEn: data.regulationEn || "",
             scheduledDrawAt: data.scheduledDrawAt ? data.scheduledDrawAt.slice(0, 16) : "",
             isFeatured: data.isFeatured || false,
           });
@@ -361,14 +369,31 @@ export default function EditRafflePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Título</label>
+            <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+              Título
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold">🇧🇷 PT</span>
+            </label>
             <Input
               value={form.title}
               onChange={(e) => updateField("title", e.target.value)}
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Descrição</label>
+            <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+              Title
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-bold">🇺🇸 EN</span>
+              <span className="text-[10px] text-surface-500 font-normal">(usa PT se vazio)</span>
+            </label>
+            <Input
+              value={form.titleEn}
+              onChange={(e) => updateField("titleEn", e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+              Descrição
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold">🇧🇷 PT</span>
+            </label>
             <Textarea
               value={form.description}
               onChange={(e) => updateField("description", e.target.value)}
@@ -376,10 +401,36 @@ export default function EditRafflePage() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Descrição Curta</label>
+            <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+              Description
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-bold">🇺🇸 EN</span>
+              <span className="text-[10px] text-surface-500 font-normal">(usa PT se vazio)</span>
+            </label>
+            <Textarea
+              value={form.descriptionEn}
+              onChange={(e) => updateField("descriptionEn", e.target.value)}
+              rows={4}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+              Descrição Curta
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold">🇧🇷 PT</span>
+            </label>
             <Input
               value={form.shortDescription}
               onChange={(e) => updateField("shortDescription", e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+              Short Description
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-bold">🇺🇸 EN</span>
+              <span className="text-[10px] text-surface-500 font-normal">(usa PT se vazio)</span>
+            </label>
+            <Input
+              value={form.shortDescriptionEn}
+              onChange={(e) => updateField("shortDescriptionEn", e.target.value)}
             />
           </div>
         </CardContent>
@@ -434,12 +485,30 @@ export default function EditRafflePage() {
         <CardHeader>
           <CardTitle>Regulamento</CardTitle>
         </CardHeader>
-        <CardContent>
-          <Textarea
-            value={form.regulation}
-            onChange={(e) => updateField("regulation", e.target.value)}
-            rows={5}
-          />
+        <CardContent className="space-y-4">
+          <div>
+            <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+              Regulamento
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold">🇧🇷 PT</span>
+            </label>
+            <Textarea
+              value={form.regulation}
+              onChange={(e) => updateField("regulation", e.target.value)}
+              rows={5}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+              Regulation
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-bold">🇺🇸 EN</span>
+              <span className="text-[10px] text-surface-500 font-normal">(usa PT se vazio)</span>
+            </label>
+            <Textarea
+              value={form.regulationEn}
+              onChange={(e) => updateField("regulationEn", e.target.value)}
+              rows={5}
+            />
+          </div>
         </CardContent>
       </Card>
 

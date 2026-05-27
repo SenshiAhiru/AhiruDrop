@@ -25,7 +25,9 @@ interface Raffle {
   id: string;
   slug: string;
   title: string;
+  titleEn: string | null;
   description: string | null;
+  descriptionEn: string | null;
   status: string;
   pricePerNumber: number;
   totalNumbers: number;
@@ -92,7 +94,7 @@ function useCountdown(targetDate: string | null) {
 }
 
 export default function RaffleDetailPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const params = useParams();
   const slug = params.slug as string;
 
@@ -264,6 +266,10 @@ export default function RaffleDetailPage() {
 
   const imageSrc = raffle.skinImage || raffle.featuredImage || "/placeholder-skin.png";
   const rarityColor = raffle.skinRarityColor || getRarityColor(raffle.skinRarity || "");
+  // Locale-aware display fields with PT fallback when EN translation is empty
+  const displayTitle = locale === "en" && raffle.titleEn ? raffle.titleEn : raffle.title;
+  const displayDescription =
+    locale === "en" && raffle.descriptionEn ? raffle.descriptionEn : raffle.description;
   const paidPercentage = calculatePercentage(raffle.stats.paid, raffle.totalNumbers);
   const statusKey =
     raffle.status === "ACTIVE"
@@ -348,7 +354,7 @@ export default function RaffleDetailPage() {
                 />
                 <Image
                   src={imageSrc}
-                  alt={raffle.title}
+                  alt={displayTitle}
                   fill
                   sizes="(max-width: 1024px) 90vw, 512px"
                   className="animate-skin-float relative z-10 object-contain drop-shadow-2xl p-4"
@@ -405,7 +411,7 @@ export default function RaffleDetailPage() {
                   </p>
                 )}
                 <h1 className="text-3xl sm:text-4xl font-bold text-[var(--foreground)] mt-1">
-                  {raffle.title}
+                  {displayTitle}
                 </h1>
               </div>
 
@@ -509,11 +515,11 @@ export default function RaffleDetailPage() {
               )}
 
               {/* Description */}
-              {raffle.description && (
+              {displayDescription && (
                 <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
                   <h3 className="text-sm font-semibold text-[var(--foreground)] mb-2">{t("raffleDetail.description")}</h3>
                   <p className="text-sm text-[var(--muted-foreground)] whitespace-pre-wrap leading-relaxed">
-                    {raffle.description}
+                    {displayDescription}
                   </p>
                 </div>
               )}

@@ -35,13 +35,16 @@ export default function NewRafflePage() {
   const [skin, setSkin] = useState<SkinSelection | null>(null);
   const [form, setForm] = useState({
     title: "",
+    titleEn: "",
     description: "",
+    descriptionEn: "",
     pricePerNumber: "",
     totalNumbers: "",
     minPerPurchase: "1",
     maxPerPurchase: "100",
     imageUrl: "",
     regulation: "",
+    regulationEn: "",
     scheduledDrawAt: "",
     isFeatured: false,
   });
@@ -55,11 +58,18 @@ export default function NewRafflePage() {
     const description = wearLabel
       ? `Concorra a um(a) ${skin.skinName} (${wearLabel}) no CS2!`
       : `Concorra a um(a) ${skin.skinName} no CS2!`;
+    // English defaults — admin can edit on the EN tab
+    const titleEn = title; // skin names are universal
+    const descriptionEn = wearLabel
+      ? `Win a ${skin.skinName} (${wearLabel}) for CS2!`
+      : `Win a ${skin.skinName} for CS2!`;
 
     setForm((prev) => ({
       ...prev,
       title,
+      titleEn,
       description,
+      descriptionEn,
       imageUrl: skin.skinImage || prev.imageUrl,
     }));
   }, [skin]);
@@ -142,12 +152,15 @@ export default function NewRafflePage() {
     try {
       const body: Record<string, unknown> = {
         title: form.title,
+        titleEn: form.titleEn || undefined,
         description: form.description,
+        descriptionEn: form.descriptionEn || undefined,
         pricePerNumber: Number(form.pricePerNumber),
         totalNumbers: Number(form.totalNumbers),
         minPerPurchase: Number(form.minPerPurchase),
         maxPerPurchase: Number(form.maxPerPurchase),
         regulation: form.regulation || undefined,
+        regulationEn: form.regulationEn || undefined,
         imageUrl: form.imageUrl || undefined,
         isFeatured: form.isFeatured,
         status: activate ? "ACTIVE" : "DRAFT",
@@ -319,7 +332,10 @@ export default function NewRafflePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Título</label>
+                  <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+                    Título
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold">🇧🇷 PT</span>
+                  </label>
                   <Input
                     value={form.title}
                     onChange={(e) => updateField("title", e.target.value)}
@@ -331,7 +347,23 @@ export default function NewRafflePage() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Descrição</label>
+                  <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+                    Title
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-bold">🇺🇸 EN</span>
+                    <span className="text-[10px] text-surface-500 font-normal">(opcional — usa PT se vazio)</span>
+                  </label>
+                  <Input
+                    value={form.titleEn}
+                    onChange={(e) => updateField("titleEn", e.target.value)}
+                    placeholder="e.g. AK-47 | Asiimov (Field-Tested)"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+                    Descrição
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold">🇧🇷 PT</span>
+                  </label>
                   <Textarea
                     value={form.description}
                     onChange={(e) => updateField("description", e.target.value)}
@@ -341,6 +373,20 @@ export default function NewRafflePage() {
                   {errors.description && (
                     <p className="mt-1 text-xs text-red-400">{errors.description}</p>
                   )}
+                </div>
+
+                <div>
+                  <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+                    Description
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-bold">🇺🇸 EN</span>
+                    <span className="text-[10px] text-surface-500 font-normal">(opcional — usa PT se vazio)</span>
+                  </label>
+                  <Textarea
+                    value={form.descriptionEn}
+                    onChange={(e) => updateField("descriptionEn", e.target.value)}
+                    placeholder="Raffle description and prize..."
+                    rows={3}
+                  />
                 </div>
 
                 {/* Pricing calculator */}
@@ -417,11 +463,28 @@ export default function NewRafflePage() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Regulamento (opcional)</label>
+                  <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+                    Regulamento (opcional)
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold">🇧🇷 PT</span>
+                  </label>
                   <Textarea
                     value={form.regulation}
                     onChange={(e) => updateField("regulation", e.target.value)}
                     placeholder="Termos e regulamento da rifa..."
+                    rows={4}
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+                    Regulation (optional)
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-bold">🇺🇸 EN</span>
+                    <span className="text-[10px] text-surface-500 font-normal">(uses PT if empty)</span>
+                  </label>
+                  <Textarea
+                    value={form.regulationEn}
+                    onChange={(e) => updateField("regulationEn", e.target.value)}
+                    placeholder="Raffle terms and rules..."
                     rows={4}
                   />
                 </div>

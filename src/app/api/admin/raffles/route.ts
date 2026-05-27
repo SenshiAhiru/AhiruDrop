@@ -62,7 +62,11 @@ export async function POST(req: NextRequest) {
     // Map form fields to service fields
     const createData = {
       title: String(body.title),
+      titleEn: body.titleEn ? String(body.titleEn) : undefined,
       description: String(body.description),
+      descriptionEn: body.descriptionEn ? String(body.descriptionEn) : undefined,
+      shortDescription: body.shortDescription ? String(body.shortDescription) : undefined,
+      shortDescriptionEn: body.shortDescriptionEn ? String(body.shortDescriptionEn) : undefined,
       pricePerNumber: Number(body.pricePerNumber),
       totalNumbers: Number(body.totalNumbers),
       minPerPurchase: Number(body.minPerPurchase || 1),
@@ -75,6 +79,7 @@ export async function POST(req: NextRequest) {
         : undefined,
       isFeatured: Boolean(body.isFeatured),
       regulation: body.regulation || undefined,
+      regulationEn: body.regulationEn || undefined,
       category: body.skinCategory || body.category || undefined,
       prizeType: body.prizeType || "skin",
       // CS2 Skin fields

@@ -18,6 +18,7 @@ interface RaffleCardProps {
   raffle: {
     id: string;
     title: string;
+    titleEn?: string | null;
     slug: string;
     featuredImage: string | null;
     pricePerNumber: number;
@@ -37,7 +38,7 @@ interface RaffleCardProps {
 }
 
 export function RaffleCard({ raffle, className }: RaffleCardProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const tilt = useMouseTilt({ maxTilt: 5, perspective: 1000, lift: 6 });
 
   const statusConfig: Record<RaffleStatus, { label: string; variant: "default" | "accent" | "success" | "warning" | "danger" }> = {
@@ -49,7 +50,6 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
     CANCELLED: { label: t("raffles.status.active"), variant: "danger" },
   };
   const {
-    title,
     slug,
     featuredImage,
     pricePerNumber,
@@ -61,6 +61,8 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
     skinWear,
     skinWeapon,
   } = raffle;
+  // Locale-aware title with PT fallback
+  const title = locale === "en" && raffle.titleEn ? raffle.titleEn : raffle.title;
   const percentage = calculatePercentage(stats.paid, stats.total);
   const statusInfo = statusConfig[status] ?? statusConfig.ACTIVE;
   const isDrawn = status === "DRAWN";

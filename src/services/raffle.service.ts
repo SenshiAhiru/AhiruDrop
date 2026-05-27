@@ -52,7 +52,11 @@ export const raffleService = {
 
   async create(data: {
     title: string;
+    titleEn?: string;
     description: string;
+    descriptionEn?: string;
+    shortDescription?: string;
+    shortDescriptionEn?: string;
     pricePerNumber: number;
     totalNumbers: number;
     minPerPurchase?: number;
@@ -60,6 +64,7 @@ export const raffleService = {
     category?: string;
     prizeType?: string;
     regulation?: string;
+    regulationEn?: string;
     featuredImage?: string;
     scheduledDrawAt?: Date;
     isFeatured?: boolean;

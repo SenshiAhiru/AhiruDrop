@@ -88,7 +88,7 @@ export default function WinnersPage() {
             href="/raffles"
             className="inline-block mt-4 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
           >
-            Ver rifas ativas
+            {t("winners.browseRaffles")}
           </Link>
         </div>
       )}
@@ -116,7 +116,7 @@ export default function WinnersPage() {
                 )}
                 <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-accent-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
                   <Trophy className="h-3 w-3" />
-                  Sorteada
+                  {t("winners.drawnBadge")}
                 </div>
               </div>
 

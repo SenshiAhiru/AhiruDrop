@@ -122,7 +122,7 @@ export function PublicHeader() {
               <button
                 onClick={() => setMenuOpen(false)}
                 className="p-2 rounded-lg text-surface-400 hover:text-white hover:bg-surface-800"
-                aria-label="Fechar"
+                aria-label={t("header.closeMenu")}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -166,7 +166,7 @@ export function PublicHeader() {
             {/* Nav pública */}
             <nav className="px-3 py-3 space-y-1">
               <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-surface-500">
-                Navegação
+                {t("header.navigation")}
               </p>
               {navLinks.map((link) => (
                 <Link
@@ -191,7 +191,7 @@ export function PublicHeader() {
                 <hr className="border-surface-800" />
                 <nav className="px-3 py-3 space-y-1">
                   <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-surface-500">
-                    Minha Conta
+                    {t("header.myAccount")}
                   </p>
                   {accountLinks.map((link) => {
                     const Icon = link.icon;
@@ -221,7 +221,7 @@ export function PublicHeader() {
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-accent-400 hover:bg-accent-500/10 transition-colors"
                     >
                       <Shield className="h-4 w-4 shrink-0" />
-                      Painel Admin
+                      {t("header.adminPanel")}
                     </Link>
                   )}
 
@@ -231,7 +231,7 @@ export function PublicHeader() {
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors mt-2"
                   >
                     <LogOut className="h-4 w-4 shrink-0" />
-                    Sair
+                    {t("nav.logout")}
                   </Link>
                 </nav>
               </>

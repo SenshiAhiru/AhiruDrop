@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/i18n/provider";
+
 export default function DashboardError({
   error,
   reset,
@@ -7,6 +9,7 @@ export default function DashboardError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center px-6 py-20 text-center">
       <div className="rounded-2xl bg-danger/10 p-4 mb-6">
@@ -15,24 +18,23 @@ export default function DashboardError({
         </svg>
       </div>
       <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">
-        Algo deu errado
+        {t("error.dashboardTitle")}
       </h2>
       <p className="text-sm text-[var(--muted-foreground)] mb-6 max-w-md">
-        Ocorreu um erro inesperado ao carregar esta página.
-        Tente novamente ou volte ao início.
+        {t("error.dashboardMessage")}
       </p>
       <div className="flex gap-3">
         <button
           onClick={reset}
           className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary-600 px-6 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
         >
-          Tentar novamente
+          {t("error.dashboardRetry")}
         </button>
         <a
           href="/"
           className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border)] px-6 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
         >
-          Voltar ao início
+          {t("error.dashboardHome")}
         </a>
       </div>
     </div>

@@ -263,6 +263,7 @@ function TrophyIcon() {
 // section entirely if the env isn't set so devs/preview deployments
 // don't render a broken CTA.
 function DiscordCta() {
+  const { t } = useTranslation();
   const invite = process.env.NEXT_PUBLIC_DISCORD_INVITE;
   if (!invite) return null;
 
@@ -288,11 +289,10 @@ function DiscordCta() {
 
           <div className="flex-1 text-center sm:text-left">
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-              Junte-se à comunidade no Discord
+              {t("discord.ctaTitle")}
             </h2>
             <p className="text-sm sm:text-base text-surface-300 max-w-xl mb-4 sm:mb-0">
-              Sorteios em tempo real, anúncios de novas rifas, drops exclusivos e papo
-              com outros caçadores de skin. Bem-vindo ao bando 🦆
+              {t("discord.ctaDesc")}
             </p>
           </div>
 
@@ -302,7 +302,7 @@ function DiscordCta() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl bg-[#5865F2] px-6 py-3 text-base font-semibold text-white shadow-lg shadow-[#5865F2]/30 hover:bg-[#4752c4] hover:shadow-[#5865F2]/50 transition-all whitespace-nowrap"
           >
-            Entrar no Discord
+            {t("discord.ctaButton")}
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>

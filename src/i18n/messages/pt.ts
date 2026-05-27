@@ -592,6 +592,82 @@ export const pt = {
   "results.winningNumber": "Número sorteado",
   "results.drawnAt": "Sorteado em",
 
+  // ─── Translation gap fixes (2026-05-16 audit) ───────────
+  // Strings that were hardcoded PT in components; now centralized.
+
+  // Raffle detail · countdown fallback
+  "raffleDetail.drawSoon": "Sorteio em breve!",
+  "raffleDetail.statusDrawnPill": "Rifa Sorteada",
+
+  // Raffles list · empty states
+  "rafflesList.noResultsFiltered": "Nenhuma skin encontrada com os filtros selecionados.",
+  "rafflesList.emptyTitle": "Nenhuma rifa disponível no momento",
+  "rafflesList.emptyHint": "Volte em breve para conferir novas rifas de skins CS2.",
+
+  // Winners page
+  "winners.browseRaffles": "Ver rifas ativas",
+  "winners.drawnBadge": "Sorteada",
+
+  // Contact page · login prompt
+  "contact.loginRequired": "Entre para abrir um ticket",
+  "contact.loginHint": "Pra acompanharmos o atendimento direitinho, você precisa estar logado.",
+  "contact.loggedInAs": "Logado como",
+  "contact.afterSubmit": "Depois de enviar, você será redirecionado pro seu ticket no dashboard.",
+
+  // Dashboard error boundary
+  "error.dashboardTitle": "Algo deu errado",
+  "error.dashboardMessage": "Ocorreu um erro inesperado. Tente novamente em alguns instantes.",
+  "error.dashboardRetry": "Tentar novamente",
+  "error.dashboardHome": "Voltar ao início",
+
+  // Support · toasts + nav
+  "support.ticketCreated": "Ticket criado",
+  "support.ticketWillReply": "Responderemos em breve.",
+  "support.backToTickets": "Voltar para meus tickets",
+
+  // Deposit · status messages
+  "deposit.awaitingPayment": "Aguardando pagamento…",
+  "deposit.awaitingPaymentHint": "Esta tela atualiza sozinha assim que o banco confirmar o pagamento. Você também pode fechar e voltar depois — o saldo será creditado.",
+  "deposit.pixGenerateBtn": "Gerar QR Code PIX",
+  "deposit.pixCopyLabel": "Ou use PIX Copia e Cola",
+  "deposit.pixCopyButton": "Copiar",
+  "deposit.pixExpired": "QR Code expirado — gere um novo",
+  "deposit.pixExpiresIn": "Expira em {time}",
+  "deposit.pixReceipt": "Abrir comprovante do Mercado Pago →",
+  "deposit.pixPayWith": "Pague com PIX",
+  "deposit.methodLabel": "Forma de pagamento",
+  "deposit.methodCard": "Cartão",
+
+  // Public header · drawer sections + admin link
+  "header.navigation": "Navegação",
+  "header.myAccount": "Minha Conta",
+  "header.adminPanel": "Painel Admin",
+  "header.closeMenu": "Fechar",
+
+  // Onboarding wizard · skip + step nav
+  "onboarding.skip": "Pular tutorial",
+  "onboarding.skipShort": "Pular",
+  "onboarding.goToStep": "Ir para passo {n}",
+  "onboarding.stepCounter": "Passo {current} de {total}",
+  "onboarding.exploreRaffles": "Explorar rifas",
+  "onboarding.next": "Próximo",
+  "onboarding.back": "Voltar",
+  "onboarding.welcome": "Bem-vindo, {firstName}! 🦆",
+  "onboarding.welcomeDesc": "O AhiruDrop é uma plataforma de rifas de skins de CS2 com sorteios 100% verificáveis via Bitcoin. Em 30 segundos te mostro como participar.",
+  "onboarding.ahcTitle": "AhiruCoins (AHC) — nossa moeda",
+  "onboarding.ahcDesc": "Pra comprar tickets de rifa você usa AHC. É a moeda interna do site com paridade fixa: 1 AHC = US$ 1,00 (em reais, segue o câmbio do dia). Você deposita via cartão (Stripe) ou PIX (Mercado Pago) e recebe o saldo instantaneamente.",
+  "onboarding.pickTitle": "Escolha uma rifa, compre tickets",
+  "onboarding.pickDesc": "Cada rifa tem uma skin CS2 real com imagem, raridade e desgaste. Você escolhe quantos números quer comprar — quanto mais, maior a chance. A compra é instantânea: AHC debita, números ficam seus.",
+  "onboarding.fairTitle": "Provably Fair — sorteio verificável",
+  "onboarding.fairDesc": "Nosso diferencial: cada sorteio usa o hash de um bloco Bitcoin futuro + um seed commitado antes das vendas. É matematicamente impossível a gente trapacear. Qualquer um pode conferir na página de prova.",
+  "onboarding.winTitle": "Ganhou? A skin é sua",
+  "onboarding.winDesc": "Quando o sorteio rola, o ganhador recebe notificação e um popup especial. Basta ir em Minhas Vitórias, colar sua Trade URL do Steam, e a gente envia a skin via trade offer. Você aceita no Steam e pronto!",
+
+  // Discord CTA section on home
+  "discord.ctaTitle": "Junte-se à comunidade no Discord",
+  "discord.ctaDesc": "Sorteios em tempo real, anúncios de novas rifas, drops exclusivos e papo com outros caçadores de skin. Bem-vindo ao bando 🦆",
+  "discord.ctaButton": "Entrar no Discord",
+
   // ─── Admin (minimal — most kept in pt by default) ───────
   "admin.dashboard": "Dashboard",
   "admin.raffles": "Rifas",

@@ -7,6 +7,7 @@ import {
   Shield, Trophy, Check, Ticket,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n/provider";
 
 interface Props {
   userName: string;
@@ -22,6 +23,7 @@ type Step = {
 };
 
 export function OnboardingWizard({ userName, onDismiss }: Props) {
+  const { t } = useTranslation();
   const firstName = userName?.split(" ")[0] ?? "você";
   const [visible, setVisible] = useState(false);
   const [index, setIndex] = useState(0);
@@ -31,68 +33,36 @@ export function OnboardingWizard({ userName, onDismiss }: Props) {
     {
       icon: Sparkles,
       iconColor: "text-primary-400",
-      title: `Bem-vindo, ${firstName}! 🦆`,
-      description: (
-        <>
-          O <strong className="text-primary-400">AhiruDrop</strong> é uma plataforma de
-          rifas de <strong>skins de CS2</strong> com sorteios 100% verificáveis via
-          Bitcoin. Em 30 segundos te mostro como participar.
-        </>
-      ),
+      title: t("onboarding.welcome", { firstName }),
+      description: <>{t("onboarding.welcomeDesc")}</>,
       accent: "from-primary-500/20 via-primary-500/10 to-transparent",
     },
     {
       icon: Coins,
       iconColor: "text-accent-400",
-      title: "AhiruCoins (AHC) — nossa moeda",
-      description: (
-        <>
-          Pra comprar tickets de rifa você usa <strong className="text-accent-400">AHC</strong>.
-          É a moeda interna do site com paridade fixa: <strong>1 AHC = US$ 1,00</strong>{" "}
-          (em reais, segue o câmbio do dia). Você deposita via{" "}
-          <strong>cartão (Stripe)</strong> ou <strong>PIX (Mercado Pago)</strong> e recebe
-          o saldo instantaneamente.
-        </>
-      ),
+      title: t("onboarding.ahcTitle"),
+      description: <>{t("onboarding.ahcDesc")}</>,
       accent: "from-accent-500/20 via-accent-500/10 to-transparent",
     },
     {
       icon: Ticket,
       iconColor: "text-emerald-400",
-      title: "Escolha uma rifa, compre tickets",
-      description: (
-        <>
-          Cada rifa tem uma skin CS2 real com imagem, raridade e desgaste.
-          Você escolhe <strong>quantos números</strong> quer comprar — quanto mais,
-          maior a chance. A compra é instantânea: AHC debita, números ficam seus.
-        </>
-      ),
+      title: t("onboarding.pickTitle"),
+      description: <>{t("onboarding.pickDesc")}</>,
       accent: "from-emerald-500/20 via-emerald-500/10 to-transparent",
     },
     {
       icon: Shield,
       iconColor: "text-blue-400",
-      title: "Provably Fair — sorteio verificável",
-      description: (
-        <>
-          Nosso diferencial: cada sorteio usa o <strong>hash de um bloco Bitcoin futuro</strong> +
-          um seed commitado antes das vendas. É <strong>matematicamente impossível</strong> a gente
-          trapacear. Qualquer um pode conferir na página de prova.
-        </>
-      ),
+      title: t("onboarding.fairTitle"),
+      description: <>{t("onboarding.fairDesc")}</>,
       accent: "from-blue-500/20 via-blue-500/10 to-transparent",
     },
     {
       icon: Trophy,
       iconColor: "text-amber-400",
-      title: "Ganhou? A skin é sua",
-      description: (
-        <>
-          Quando o sorteio rola, o ganhador recebe notificação e um popup especial.
-          Basta ir em <strong>Minhas Vitórias</strong>, colar sua Trade URL do Steam, e a gente
-          envia a skin via trade offer. Você aceita no Steam e pronto!
-        </>
-      ),
+      title: t("onboarding.winTitle"),
+      description: <>{t("onboarding.winDesc")}</>,
       accent: "from-amber-500/20 via-amber-500/10 to-transparent",
     },
   ];
@@ -156,7 +126,7 @@ export function OnboardingWizard({ userName, onDismiss }: Props) {
         <button
           onClick={handleClose}
           className="absolute top-3 right-3 z-20 p-1.5 rounded-lg text-surface-400 hover:text-white hover:bg-surface-800/50 transition-colors"
-          aria-label="Pular tutorial"
+          aria-label={t("onboarding.skip")}
         >
           <X className="h-4 w-4" />
         </button>
@@ -194,7 +164,7 @@ export function OnboardingWizard({ userName, onDismiss }: Props) {
                     ? "w-1.5 bg-primary-500/50"
                     : "w-1.5 bg-surface-700"
                 )}
-                aria-label={`Ir para passo ${i + 1}`}
+                aria-label={t("onboarding.goToStep", { n: i + 1 })}
               />
             ))}
           </div>
@@ -207,14 +177,14 @@ export function OnboardingWizard({ userName, onDismiss }: Props) {
                 className="flex items-center gap-1 rounded-lg border border-surface-700 px-3 py-2 text-sm text-surface-300 hover:bg-surface-800 transition-colors"
               >
                 <ChevronLeft className="h-4 w-4" />
-                Voltar
+                {t("onboarding.back")}
               </button>
             ) : (
               <button
                 onClick={handleClose}
                 className="rounded-lg border border-surface-700 px-3 py-2 text-sm text-surface-400 hover:text-white transition-colors"
               >
-                Pular
+                {t("onboarding.skipShort")}
               </button>
             )}
 
@@ -225,14 +195,14 @@ export function OnboardingWizard({ userName, onDismiss }: Props) {
                 className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-primary-600 to-accent-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-primary-600/30 hover:shadow-primary-600/50 transition-shadow"
               >
                 <ShoppingCart className="h-4 w-4" />
-                Explorar rifas
+                {t("onboarding.exploreRaffles")}
               </Link>
             ) : (
               <button
                 onClick={next}
                 className="flex-1 flex items-center justify-center gap-1 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
               >
-                Próximo
+                {t("onboarding.next")}
                 <ChevronRight className="h-4 w-4" />
               </button>
             )}
@@ -240,7 +210,7 @@ export function OnboardingWizard({ userName, onDismiss }: Props) {
 
           {/* Step counter */}
           <p className="mt-4 text-center text-[10px] uppercase tracking-wider text-surface-500">
-            Passo {index + 1} de {STEPS.length}
+            {t("onboarding.stepCounter", { current: index + 1, total: STEPS.length })}
           </p>
         </div>
       </div>

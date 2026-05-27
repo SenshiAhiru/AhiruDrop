@@ -592,6 +592,82 @@ export const en: Record<MessageKey, string> = {
   "results.winningNumber": "Winning number",
   "results.drawnAt": "Drawn on",
 
+  // ─── Translation gap fixes (2026-05-16 audit) ───────────
+  // Mirrors the new block in pt.ts so EN users no longer see PT strings.
+
+  // Raffle detail · countdown fallback
+  "raffleDetail.drawSoon": "Drawing soon!",
+  "raffleDetail.statusDrawnPill": "Raffle Drawn",
+
+  // Raffles list · empty states
+  "rafflesList.noResultsFiltered": "No skins found matching the selected filters.",
+  "rafflesList.emptyTitle": "No raffles available right now",
+  "rafflesList.emptyHint": "Come back soon to check out new CS2 skin raffles.",
+
+  // Winners page
+  "winners.browseRaffles": "View active raffles",
+  "winners.drawnBadge": "Drawn",
+
+  // Contact page · login prompt
+  "contact.loginRequired": "Sign in to open a ticket",
+  "contact.loginHint": "So we can keep your support conversation organised, you need to be signed in.",
+  "contact.loggedInAs": "Signed in as",
+  "contact.afterSubmit": "Once you submit, you'll be redirected to your ticket in the dashboard.",
+
+  // Dashboard error boundary
+  "error.dashboardTitle": "Something went wrong",
+  "error.dashboardMessage": "An unexpected error occurred. Please try again in a moment.",
+  "error.dashboardRetry": "Try again",
+  "error.dashboardHome": "Back to home",
+
+  // Support · toasts + nav
+  "support.ticketCreated": "Ticket created",
+  "support.ticketWillReply": "We'll reply soon.",
+  "support.backToTickets": "Back to my tickets",
+
+  // Deposit · status messages
+  "deposit.awaitingPayment": "Waiting for payment…",
+  "deposit.awaitingPaymentHint": "This screen updates itself the moment the bank confirms the payment. You can also close it and come back later — the balance will be credited.",
+  "deposit.pixGenerateBtn": "Generate PIX QR code",
+  "deposit.pixCopyLabel": "Or use PIX Copy and Paste",
+  "deposit.pixCopyButton": "Copy",
+  "deposit.pixExpired": "QR code expired — please generate a new one",
+  "deposit.pixExpiresIn": "Expires in {time}",
+  "deposit.pixReceipt": "Open Mercado Pago receipt →",
+  "deposit.pixPayWith": "Pay with PIX",
+  "deposit.methodLabel": "Payment method",
+  "deposit.methodCard": "Card",
+
+  // Public header · drawer sections + admin link
+  "header.navigation": "Navigation",
+  "header.myAccount": "My Account",
+  "header.adminPanel": "Admin Panel",
+  "header.closeMenu": "Close",
+
+  // Onboarding wizard · skip + step nav
+  "onboarding.skip": "Skip tutorial",
+  "onboarding.skipShort": "Skip",
+  "onboarding.goToStep": "Go to step {n}",
+  "onboarding.stepCounter": "Step {current} of {total}",
+  "onboarding.exploreRaffles": "Explore raffles",
+  "onboarding.next": "Next",
+  "onboarding.back": "Back",
+  "onboarding.welcome": "Welcome, {firstName}! 🦆",
+  "onboarding.welcomeDesc": "AhiruDrop is a CS2 skin raffle platform with draws that are 100% verifiable via Bitcoin. In 30 seconds I'll show you how to join.",
+  "onboarding.ahcTitle": "AhiruCoins (AHC) — our currency",
+  "onboarding.ahcDesc": "To buy raffle tickets you use AHC. It's the platform's internal currency, fixed-pegged at 1 AHC = $1 USD (in BRL it tracks the live FX). Deposit by card (Stripe) or PIX (Mercado Pago) and the balance is credited instantly.",
+  "onboarding.pickTitle": "Pick a raffle, buy tickets",
+  "onboarding.pickDesc": "Each raffle features a real CS2 skin with image, rarity and wear. You choose how many numbers to buy — the more, the better your odds. Purchase is instant: AHC debits, the numbers are yours.",
+  "onboarding.fairTitle": "Provably Fair — verifiable draws",
+  "onboarding.fairDesc": "Our edge: every draw uses a future Bitcoin block hash + a seed committed before sales open. It's mathematically impossible for us to cheat. Anyone can verify on the proof page.",
+  "onboarding.winTitle": "Won? The skin is yours",
+  "onboarding.winDesc": "When the draw happens, the winner gets a notification and a celebration popup. Just go to My Wins, paste your Steam Trade URL, and we send the skin via trade offer. You accept on Steam — done!",
+
+  // Discord CTA section on home
+  "discord.ctaTitle": "Join the Discord community",
+  "discord.ctaDesc": "Real-time draws, new-raffle announcements, exclusive drops and chat with other skin hunters. Welcome to the flock 🦆",
+  "discord.ctaButton": "Enter Discord",
+
   // Admin
   "admin.dashboard": "Dashboard",
   "admin.raffles": "Raffles",

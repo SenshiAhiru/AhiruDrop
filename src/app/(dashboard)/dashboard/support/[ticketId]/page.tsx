@@ -112,7 +112,7 @@ export default function UserTicketDetailPage() {
   return (
     <div className="space-y-4 max-w-4xl">
       <Link href="/dashboard/support" className="inline-flex items-center gap-1 text-sm text-surface-400 hover:text-white">
-        <ArrowLeft className="h-4 w-4" /> Voltar para meus tickets
+        <ArrowLeft className="h-4 w-4" /> {t("support.backToTickets")}
       </Link>
 
       <div className="flex items-start justify-between gap-3 flex-wrap">

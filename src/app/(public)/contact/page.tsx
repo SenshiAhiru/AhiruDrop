@@ -86,25 +86,23 @@ export default function ContactPage() {
                 <LogIn className="h-7 w-7 text-primary-400" />
               </div>
               <h2 className="mt-4 text-xl font-bold text-[var(--foreground)]">
-                Entre para abrir um ticket
+                {t("contact.loginRequired")}
               </h2>
               <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-                Pra acompanharmos o histórico da sua conversa com o suporte, você precisa
-                estar logado. Depois de entrar você abre o ticket e pode acompanhar as
-                respostas direto no seu painel.
+                {t("contact.loginHint")}
               </p>
               <div className="mt-5 flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
                 <Link
                   href={`/login?callbackUrl=${encodeURIComponent("/contact")}`}
                   className="rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
                 >
-                  Entrar
+                  {t("nav.login")}
                 </Link>
                 <Link
                   href="/register"
                   className="rounded-lg border border-primary-500/50 px-5 py-2.5 text-sm font-semibold text-primary-400 hover:bg-primary-600/10 transition-colors"
                 >
-                  Criar conta
+                  {t("nav.register")}
                 </Link>
               </div>
             </div>
@@ -113,8 +111,7 @@ export default function ContactPage() {
               <div className="rounded-lg border border-primary-500/20 bg-primary-600/5 p-3 text-xs text-surface-300 flex items-start gap-2">
                 <MessageSquare className="h-4 w-4 text-primary-400 mt-0.5 flex-shrink-0" />
                 <span>
-                  Logado como <strong className="text-white">{session.user.name}</strong>. Depois
-                  de enviar, você será redirecionado ao chat do ticket.
+                  {t("contact.loggedInAs")} <strong className="text-white">{session.user.name}</strong>. {t("contact.afterSubmit")}
                 </span>
               </div>
 

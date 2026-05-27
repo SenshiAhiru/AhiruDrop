@@ -136,6 +136,7 @@ function PixPanel({
   onCopy: () => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation();
   // Live countdown to expiration
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -155,7 +156,7 @@ function PixPanel({
           <div>
             <CardTitle className="text-base flex items-center gap-2">
               <QrCode className="h-4 w-4 text-emerald-400" />
-              Pague com PIX
+              {t("deposit.pixPayWith")}
             </CardTitle>
             <CardDescription>
               {totalAhc.toFixed(2)} AHC • {currencyInfo.flag} {currencyInfo.symbol}{" "}
@@ -166,7 +167,7 @@ function PixPanel({
             onClick={onCancel}
             className="text-sm text-surface-400 hover:text-white transition-colors"
           >
-            ← Voltar
+            ← {t("common.back")}
           </button>
         </div>
       </CardHeader>
@@ -191,15 +192,15 @@ function PixPanel({
           >
             <Clock className="h-3.5 w-3.5" />
             {expired
-              ? "QR Code expirado — gere um novo"
-              : `Expira em ${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`}
+              ? t("deposit.pixExpired")
+              : t("deposit.pixExpiresIn", { time: `${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}` })}
           </div>
         </div>
 
         {/* Copia e cola */}
         <div className="space-y-2">
           <label className="text-xs font-semibold text-surface-300">
-            Ou use PIX Copia e Cola
+            {t("deposit.pixCopyLabel")}
           </label>
           <div className="flex gap-2">
             <Input
@@ -208,7 +209,7 @@ function PixPanel({
               className="font-mono text-xs"
               onFocus={(e) => e.currentTarget.select()}
             />
-            <Button type="button" variant="outline" onClick={onCopy} title="Copiar">
+            <Button type="button" variant="outline" onClick={onCopy} title={t("deposit.pixCopyButton")}>
               <Copy className="h-4 w-4" />
             </Button>
           </div>
@@ -218,10 +219,9 @@ function PixPanel({
         <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 flex items-start gap-3">
           <AhcCoin size={20} decorative className="animate-coin-spin mt-0.5 flex-shrink-0" />
           <div className="text-sm">
-            <p className="font-semibold text-emerald-400">Aguardando pagamento…</p>
+            <p className="font-semibold text-emerald-400">{t("deposit.awaitingPayment")}</p>
             <p className="text-xs text-emerald-400/70 mt-0.5">
-              Esta tela atualiza sozinha assim que o banco confirmar o pagamento. Você
-              também pode fechar e voltar depois — o saldo será creditado.
+              {t("deposit.awaitingPaymentHint")}
             </p>
           </div>
         </div>
@@ -233,7 +233,7 @@ function PixPanel({
             rel="noopener noreferrer"
             className="block text-center text-xs text-surface-400 hover:text-white transition-colors"
           >
-            Abrir comprovante do Mercado Pago →
+            {t("deposit.pixReceipt")}
           </a>
         )}
       </CardContent>
@@ -780,7 +780,7 @@ export default function DepositPage() {
               {currency === "BRL" && pixAvailable && (
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-surface-300">
-                    Forma de pagamento
+                    {t("deposit.methodLabel")}
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
@@ -793,7 +793,7 @@ export default function DepositPage() {
                       }`}
                     >
                       <CreditCard className="h-4 w-4" />
-                      Cartão
+                      {t("deposit.methodCard")}
                     </button>
                     <button
                       type="button"
@@ -823,7 +823,7 @@ export default function DepositPage() {
                     {t("deposit.preparingPayment")}
                   </>
                 ) : method === "pix" ? (
-                  <><QrCode className="h-5 w-5 mr-2" /> Gerar QR Code PIX</>
+                  <><QrCode className="h-5 w-5 mr-2" /> {t("deposit.pixGenerateBtn")}</>
                 ) : (
                   t("deposit.continueToPayment")
                 )}

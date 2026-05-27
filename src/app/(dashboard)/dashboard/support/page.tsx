@@ -92,7 +92,7 @@ export default function UserSupportPage() {
         setFormError(json.error || "Falha ao criar ticket");
         return;
       }
-      addToast({ type: "success", message: "Ticket criado", description: "Responderemos em breve." });
+      addToast({ type: "success", message: tr("support.ticketCreated"), description: tr("support.ticketWillReply") });
       setNewOpen(false);
       setForm({ subject: "", category: "duvida", message: "" });
       load();

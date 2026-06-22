@@ -1,11 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useSearchParams } from "next/navigation";
 import {
   Card,
   CardHeader,
@@ -14,44 +10,27 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { useTranslation } from "@/i18n/provider";
 
+/**
+ * Steam-only login.
+ *
+ * There is no email/password path anymore — every account is a Steam
+ * account (Steam is required to receive skin prizes anyway). Clicking
+ * the button hits /api/auth/steam, which redirects to Steam OpenID and
+ * comes back through /api/auth/steam/callback → /auth/steam-complete.
+ */
 export default function LoginPage() {
   const { t } = useTranslation();
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const errorParam = searchParams.get("error");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
+  function handleSteamLogin() {
     setIsLoading(true);
-
-    try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError("Email ou senha incorretos. Tente novamente.");
-      } else {
-        router.push(callbackUrl);
-        router.refresh();
-      }
-    } catch {
-      setError("Ocorreu um erro inesperado. Tente novamente.");
-    } finally {
-      setIsLoading(false);
-    }
+    // Steam OpenID round-trip; callback lands the user on /dashboard.
+    window.location.href = "/api/auth/steam";
   }
 
   return (
@@ -60,88 +39,40 @@ export default function LoginPage() {
         <CardTitle className="text-2xl font-bold text-[var(--foreground)]">
           {t("auth.login.title")}
         </CardTitle>
-        <CardDescription>
-          {t("auth.login.subtitle")}
-        </CardDescription>
+        <CardDescription>{t("auth.login.steamSubtitle")}</CardDescription>
       </CardHeader>
 
-      <CardContent>
-        {error && (
-          <div className="mb-4 flex items-center gap-2 rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+      <CardContent className="space-y-4">
+        {errorParam && (
+          <div className="flex items-center gap-2 rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
             <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
-            {error}
+            {t("auth.login.steamError")}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-[var(--foreground)]">
-              {t("auth.login.email")}
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
-              <Input
-                id="email"
-                type="email"
-                placeholder={t("auth.login.emailPlaceholder")}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-10"
-                required
-                autoComplete="email"
-              />
-            </div>
-          </div>
+        <button
+          onClick={handleSteamLogin}
+          disabled={isLoading}
+          className="flex w-full items-center justify-center gap-3 rounded-lg bg-[#171a21] px-6 py-4 text-base font-semibold text-white shadow-lg transition-all hover:bg-[#2a3f5a] disabled:opacity-60"
+        >
+          {/* Steam logo */}
+          <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273-.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z" />
+          </svg>
+          {isLoading ? t("auth.login.steamRedirecting") : t("auth.login.steamButton")}
+        </button>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="text-sm font-medium text-[var(--foreground)]">
-                {t("auth.login.password")}
-              </label>
-              <Link
-                href="/forgot-password"
-                className="text-xs text-primary-400 hover:text-primary-300 transition-colors"
-              >
-                {t("auth.login.forgotPassword")}
-              </Link>
-            </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder={t("auth.login.passwordPlaceholder")}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 pr-10"
-                required
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-          </div>
-
-          <Button type="submit" className="w-full" size="lg" isLoading={isLoading}>
-            {isLoading ? t("auth.login.submitting") : t("auth.login.submit")}
-          </Button>
-        </form>
-
+        <div className="flex items-start gap-2 rounded-lg border border-surface-800 bg-surface-800/30 px-3 py-2.5 text-xs text-surface-400">
+          <ShieldCheck className="h-4 w-4 flex-shrink-0 text-emerald-400 mt-0.5" />
+          <span>{t("auth.login.steamWhy")}</span>
+        </div>
       </CardContent>
 
       <CardFooter className="justify-center">
-        <p className="text-sm text-[var(--muted-foreground)]">
-          {t("auth.login.noAccount")}{" "}
-          <Link href="/register" className="text-primary-400 hover:text-primary-300 font-medium transition-colors">
-            {t("auth.login.signUp")}
-          </Link>
+        <p className="text-center text-xs text-surface-500">
+          {t("auth.login.steamTerms")}
         </p>
       </CardFooter>
     </Card>

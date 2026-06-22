@@ -95,7 +95,9 @@ export async function POST(req: NextRequest) {
       pix = await mercadopagoService.createPix({
         amountBRL: quote.payAmount,
         description: `AhiruDrop — ${ahcAmount} AHC`,
-        payerEmail: user.email,
+        // MP requires a payer email but doesn't verify it exists. Steam-only
+        // accounts may have no email, so fall back to a synthetic address.
+        payerEmail: user.email || `user_${session.user.id}@ahirudrop.app`,
         externalReference,
         metadata,
       });

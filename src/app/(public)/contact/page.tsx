@@ -98,12 +98,6 @@ export default function ContactPage() {
                 >
                   {t("nav.login")}
                 </Link>
-                <Link
-                  href="/register"
-                  className="rounded-lg border border-primary-500/50 px-5 py-2.5 text-sm font-semibold text-primary-400 hover:bg-primary-600/10 transition-colors"
-                >
-                  {t("nav.register")}
-                </Link>
               </div>
             </div>
           ) : (

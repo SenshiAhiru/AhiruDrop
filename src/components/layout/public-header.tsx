@@ -92,11 +92,8 @@ export function PublicHeader() {
                 </div>
               ) : (
                 <div className="hidden md:flex items-center gap-2">
-                  <Link href="/login" className="px-3 py-1.5 text-sm font-medium text-surface-400 hover:text-white transition-colors">
+                  <Link href="/login" className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors">
                     {t("nav.login")}
-                  </Link>
-                  <Link href="/register" className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors">
-                    {t("nav.register")}
                   </Link>
                 </div>
               )}
@@ -238,20 +235,13 @@ export function PublicHeader() {
             ) : (
               <>
                 <hr className="border-surface-800" />
-                <div className="px-4 py-4 space-y-2">
+                <div className="px-4 py-4">
                   <Link
                     href="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="block w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold border border-surface-700 text-surface-300 hover:text-white hover:bg-surface-800"
-                  >
-                    {t("nav.login")}
-                  </Link>
-                  <Link
-                    href="/register"
-                    onClick={() => setMenuOpen(false)}
                     className="block w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-primary-600 text-white hover:bg-primary-700"
                   >
-                    {t("nav.register")}
+                    {t("nav.login")}
                   </Link>
                 </div>
               </>

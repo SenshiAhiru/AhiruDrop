@@ -48,7 +48,7 @@ export const paymentService = {
       currency: "BRL",
       description: `Pedido #${order.id}`,
       method,
-      customerEmail: user.email,
+      customerEmail: user.email ?? `user_${order.userId}@ahirudrop.app`,
       customerName: user.name,
       customerDocument: user.cpf ?? undefined,
     });

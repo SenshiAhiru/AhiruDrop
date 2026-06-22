@@ -40,7 +40,7 @@ export async function GET(
     // Aggregate by user
     const byUser = new Map<
       string,
-      { userId: string; name: string; email: string; avatarUrl: string | null; ticketCount: number; numbers: number[] }
+      { userId: string; name: string; email: string | null; avatarUrl: string | null; ticketCount: number; numbers: number[] }
     >();
 
     for (const n of paidNumbers) {
@@ -55,7 +55,7 @@ export async function GET(
         byUser.set(key, {
           userId: order.user.id,
           name: order.user.name ?? "Anônimo",
-          email: order.user.email,
+          email: order.user.email ?? null,
           avatarUrl: order.user.avatarUrl ?? null,
           ticketCount: 1,
           numbers: [n.number],

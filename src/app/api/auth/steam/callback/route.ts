@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySteamLogin, getSteamProfile } from "@/lib/steam-provider";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
 const STEAM_TOKEN_TTL_MS = 60 * 1000; // 60s window for /auth/steam-complete
@@ -40,30 +39,18 @@ export async function GET(req: NextRequest) {
     });
 
     if (!user) {
-      // Check if there's a user with the same email pattern
-      const steamEmail = `steam_${steamId}@ahirudrop.steam`;
-
-      user = await prisma.user.findUnique({
-        where: { email: steamEmail },
+      // New Steam account. No synthetic email, no password — Steam OpenID
+      // is the only login method now. email/passwordHash stay NULL; the
+      // user can opt in to add an email later for win notifications.
+      user = await prisma.user.create({
+        data: {
+          name: profile.personaname,
+          role: "USER",
+          avatarUrl: profile.avatarfull,
+          steamId: steamId,
+          isActive: true,
+        },
       });
-
-      if (!user) {
-        // Create new user from Steam profile
-        const randomPassword = crypto.randomBytes(32).toString("hex");
-        const passwordHash = await bcrypt.hash(randomPassword, 12);
-
-        user = await prisma.user.create({
-          data: {
-            name: profile.personaname,
-            email: steamEmail,
-            passwordHash,
-            role: "USER",
-            avatarUrl: profile.avatarfull,
-            steamId: steamId,
-            isActive: true,
-          },
-        });
-      }
     }
 
     // Refresh avatar from Steam each login (lightweight, expected by users).

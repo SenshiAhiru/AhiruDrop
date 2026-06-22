@@ -152,14 +152,14 @@ export const pt = {
 
   // ─── Auth ───────────────────────────────────────────────
   "auth.login.title": "Entrar",
-  "auth.login.email": "E-mail",
-  "auth.login.password": "Senha",
-  "auth.login.submit": "Entrar",
-  "auth.login.forgotPassword": "Esqueceu a senha?",
-  "auth.login.noAccount": "Não tem conta?",
-  "auth.login.signUp": "Cadastre-se",
   "auth.login.loginWithSteam": "Entrar com Steam",
-  "auth.login.or": "ou",
+  // Steam-only login
+  "auth.login.steamSubtitle": "Entre com sua conta Steam pra começar",
+  "auth.login.steamButton": "Entrar com Steam",
+  "auth.login.steamRedirecting": "Redirecionando pro Steam...",
+  "auth.login.steamWhy": "Usamos o Steam porque é por ele que você recebe as skins ganhas. Sem senha pra lembrar, sem cadastro.",
+  "auth.login.steamTerms": "Ao entrar, você concorda com os Termos de Uso e confirma ter 18+ anos.",
+  "auth.login.steamError": "Não foi possível entrar com o Steam. Tente novamente.",
   "auth.register.title": "Criar conta",
   "auth.register.name": "Nome",
   "auth.register.email": "E-mail",

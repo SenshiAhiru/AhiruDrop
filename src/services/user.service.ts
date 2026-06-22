@@ -100,6 +100,11 @@ export const userService = {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new Error("Usuário não encontrado");
 
+    // Steam-only accounts have no password to change.
+    if (!user.passwordHash) {
+      throw new Error("Esta conta usa login via Steam e não tem senha");
+    }
+
     const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
     if (!isValid) {
       throw new Error("Senha atual incorreta");

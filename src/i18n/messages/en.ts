@@ -152,14 +152,14 @@ export const en: Record<MessageKey, string> = {
 
   // Auth
   "auth.login.title": "Log in",
-  "auth.login.email": "Email",
-  "auth.login.password": "Password",
-  "auth.login.submit": "Log in",
-  "auth.login.forgotPassword": "Forgot password?",
-  "auth.login.noAccount": "No account?",
-  "auth.login.signUp": "Sign up",
   "auth.login.loginWithSteam": "Sign in with Steam",
-  "auth.login.or": "or",
+  // Steam-only login
+  "auth.login.steamSubtitle": "Sign in with your Steam account to get started",
+  "auth.login.steamButton": "Sign in with Steam",
+  "auth.login.steamRedirecting": "Redirecting to Steam...",
+  "auth.login.steamWhy": "We use Steam because that's how you receive the skins you win. No password to remember, no signup.",
+  "auth.login.steamTerms": "By signing in you agree to the Terms of Use and confirm you're 18+.",
+  "auth.login.steamError": "Couldn't sign in with Steam. Please try again.",
   "auth.register.title": "Create account",
   "auth.register.name": "Name",
   "auth.register.email": "Email",

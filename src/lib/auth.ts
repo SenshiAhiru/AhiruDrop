@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -12,100 +11,46 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   providers: [
     Credentials({
-      name: "credentials",
+      name: "steam",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Senha", type: "password" },
         steamToken: { label: "Steam Token", type: "text" },
       },
-      async authorize(credentials, request) {
-        // ── Steam OIDC path ──────────────────────────────────────────
-        // The /auth/steam-complete page calls signIn with `steamToken` only.
+      async authorize(credentials) {
+        // ── Steam OIDC path (the only login method) ──────────────────
+        // The /auth/steam-complete page calls signIn with `steamToken`.
         // Token is single-use, expires in 60s, and is created by
         // /api/auth/steam/callback after Steam OpenID validation.
         const steamToken = credentials?.steamToken as string | undefined;
-        if (steamToken && steamToken.length > 0) {
-          const now = new Date();
-          const tokenRow = await prisma.steamLoginToken.findUnique({
-            where: { token: steamToken },
-          });
-          if (
-            !tokenRow ||
-            tokenRow.consumedAt !== null ||
-            tokenRow.expiresAt <= now
-          ) {
-            return null;
-          }
-          // Atomic consume: only one signIn can win the token.
-          const consumed = await prisma.steamLoginToken.updateMany({
-            where: { token: steamToken, consumedAt: null },
-            data: { consumedAt: now },
-          });
-          if (consumed.count !== 1) return null;
+        if (!steamToken || steamToken.length === 0) return null;
 
-          const u = await prisma.user.findUnique({
-            where: { id: tokenRow.userId },
-          });
-          if (!u || !u.isActive) return null;
-          return {
-            id: u.id,
-            name: u.name,
-            email: u.email,
-            role: u.role,
-            image: u.avatarUrl,
-          };
-        }
-
-        // ── Email + password path ────────────────────────────────────
-        if (!credentials?.email || !credentials?.password) return null;
-
-        const email = (credentials.email as string).toLowerCase().trim();
-        const password = credentials.password as string;
-
-        // Rate limit por email (impede brute force em conta específica)
-        const { rateLimit, getClientIp } = await import("@/lib/rate-limit");
-        const emailCheck = rateLimit(email, {
-          key: "login-by-email",
-          limit: 5,
-          windowMs: 15 * 60 * 1000,
+        const now = new Date();
+        const tokenRow = await prisma.steamLoginToken.findUnique({
+          where: { token: steamToken },
         });
-        if (!emailCheck.ok) {
-          throw new Error(`Muitas tentativas. Tente novamente em ${emailCheck.resetInSec}s.`);
+        if (
+          !tokenRow ||
+          tokenRow.consumedAt !== null ||
+          tokenRow.expiresAt <= now
+        ) {
+          return null;
         }
-
-        // Rate limit por IP (impede brute force massivo)
-        const ip = (request as any)?.headers?.get?.("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-        const ipCheck = rateLimit(ip, {
-          key: "login-by-ip",
-          limit: 20,
-          windowMs: 15 * 60 * 1000,
+        // Atomic consume: only one signIn can win the token.
+        const consumed = await prisma.steamLoginToken.updateMany({
+          where: { token: steamToken, consumedAt: null },
+          data: { consumedAt: now },
         });
-        if (!ipCheck.ok) {
-          throw new Error(`Muitas tentativas. Tente novamente em ${ipCheck.resetInSec}s.`);
-        }
+        if (consumed.count !== 1) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email },
+        const u = await prisma.user.findUnique({
+          where: { id: tokenRow.userId },
         });
-
-        if (!user || !user.isActive) return null;
-
-        // Steam-linked accounts MUST authenticate via the Steam OIDC flow
-        // (/api/auth/steam/callback → /api/auth/steam/verify with one-shot token).
-        // Block password login for these accounts entirely — there is no shared
-        // password to verify (passwordHash holds a random value at sign-up time).
-        if (email.endsWith("@ahirudrop.steam")) return null;
-
-        // Normal password check
-        const isValid = await bcrypt.compare(password, user.passwordHash);
-        if (!isValid) return null;
-
+        if (!u || !u.isActive) return null;
         return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          image: user.avatarUrl,
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          role: u.role,
+          image: u.avatarUrl,
         };
       },
     }),
@@ -148,7 +93,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (path.startsWith("/admin")) return isAdmin;
       if (path.startsWith("/dashboard")) return isLoggedIn;
 
-      if (path.startsWith("/login") || path.startsWith("/register")) {
+      if (path.startsWith("/login")) {
         if (isLoggedIn) return Response.redirect(new URL("/dashboard", nextUrl));
         return true;
       }

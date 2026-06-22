@@ -73,13 +73,19 @@ enum TicketStatus {
 model User {
   id             String         @id @default(cuid())
   name           String
-  email          String         @unique
+  // Email is now OPTIONAL — Steam OpenID is the only login method and
+  // doesn't provide an email. Users may add one later (opt-in) just to
+  // receive win notifications. Postgres allows multiple NULLs under a
+  // unique constraint, so @unique still holds for the rows that have one.
+  email          String?        @unique
   emailVerified  DateTime?
   phone          String?        @unique
   cpf            String?        @unique
   steamId        String?        @unique
   steamTradeUrl  String?
-  passwordHash   String
+  // Optional — Steam-only accounts have no password. Kept for any
+  // legacy/admin accounts that still carry a hash.
+  passwordHash   String?
   role           Role           @default(USER)
   avatarUrl      String?
   balance        Decimal        @default(0) @db.Decimal(10, 2)

@@ -5,6 +5,11 @@ export const updateProfileSchema = z.object({
     .string()
     .min(2, "Nome deve ter no mínimo 2 caracteres")
     .optional(),
+  // Optional email — Steam-only accounts have none. "" or null clears it;
+  // a non-empty value must be a valid address.
+  email: z
+    .union([z.string().email("E-mail inválido"), z.literal(""), z.null()])
+    .optional(),
   phone: z
     .string()
     .min(10, "Telefone inválido")

@@ -475,6 +475,9 @@ export const pt = {
 
   // ─── Profile extras ─────────────────────────────────────
   "profile.email": "E-mail",
+  "profile.emailOptional": "(opcional)",
+  "profile.emailPlaceholder": "seu@email.com",
+  "profile.emailHint": "Adicione um e-mail pra ser avisado quando ganhar uma rifa. Não é obrigatório.",
   "profile.steamSubtitle": "Vincule sua conta Steam para receber skins",
   "profile.steamLinked": "Steam vinculada",
   "profile.steamId": "Steam ID:",

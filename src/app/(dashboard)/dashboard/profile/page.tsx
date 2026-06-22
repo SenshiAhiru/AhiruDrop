@@ -13,7 +13,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { User, Lock, Eye, EyeOff, Save, Link2, CheckCircle, ExternalLink } from "lucide-react";
+import { User, Save, Link2, CheckCircle, ExternalLink } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useTranslation } from "@/i18n/provider";
 
@@ -22,16 +22,9 @@ export default function ProfilePage() {
   const { data: session, status } = useSession();
 
   const [name, setName] = useState(session?.user?.name || "");
+  const [email, setEmail] = useState("");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [isSavingPassword, setIsSavingPassword] = useState(false);
-  const [passwordMessage, setPasswordMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showWelcome, setShowWelcome] = useState(false);
@@ -53,6 +46,7 @@ export default function ProfilePage() {
           setSteamName(data.steamId);
         }
         if (data.name) setName(data.name);
+        if (data.email) setEmail(data.email);
         if (data.avatarUrl) setAvatarUrl(data.avatarUrl);
       })
       .catch(() => {});
@@ -116,6 +110,7 @@ export default function ProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
+          email: email.trim() || null,
         }),
       });
 
@@ -130,51 +125,6 @@ export default function ProfilePage() {
       setProfileMessage({ type: "error", text: "Erro ao salvar perfil." });
     } finally {
       setIsSavingProfile(false);
-    }
-  }
-
-  async function handleChangePassword(e: React.FormEvent) {
-    e.preventDefault();
-    setPasswordMessage(null);
-
-    if (newPassword !== confirmPassword) {
-      setPasswordMessage({ type: "error", text: "As senhas não coincidem." });
-      return;
-    }
-
-    const { validatePasswordStrength } = await import("@/lib/password-policy");
-    const policy = validatePasswordStrength(newPassword);
-    if (!policy.ok) {
-      setPasswordMessage({ type: "error", text: policy.message });
-      return;
-    }
-
-    setIsSavingPassword(true);
-
-    try {
-      const res = await fetch("/api/user/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          currentPassword,
-          newPassword,
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        setPasswordMessage({ type: "error", text: data.error || "Erro ao alterar senha." });
-        return;
-      }
-
-      setPasswordMessage({ type: "success", text: "Senha alterada com sucesso!" });
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch {
-      setPasswordMessage({ type: "error", text: "Erro ao alterar senha." });
-    } finally {
-      setIsSavingPassword(false);
     }
   }
 
@@ -253,9 +203,9 @@ export default function ProfilePage() {
                 <p className="text-sm font-medium text-[var(--foreground)]">
                   {session?.user?.name || "Usuário"}
                 </p>
-                <p className="text-xs text-[var(--muted-foreground)]">
-                  {session?.user?.email || ""}
-                </p>
+                {email && (
+                  <p className="text-xs text-[var(--muted-foreground)]">{email}</p>
+                )}
               </div>
             </div>
 
@@ -274,14 +224,22 @@ export default function ProfilePage() {
               </div>
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-[var(--foreground)]">
-                  {t("profile.email")}
+                  {t("profile.email")}{" "}
+                  <span className="text-xs font-normal text-[var(--muted-foreground)]">
+                    {t("profile.emailOptional")}
+                  </span>
                 </label>
                 <Input
                   id="email"
-                  value={session?.user?.email || ""}
-                  disabled
-                  className="opacity-60"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t("profile.emailPlaceholder")}
+                  autoComplete="email"
                 />
+                <p className="text-xs text-[var(--muted-foreground)]">
+                  {t("profile.emailHint")}
+                </p>
               </div>
             </div>
 
@@ -350,108 +308,6 @@ export default function ProfilePage() {
               </a>
             </div>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Change Password */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-500/10">
-              <Lock className="h-5 w-5 text-accent-400" />
-            </div>
-            <div>
-              <CardTitle className="text-base">{t("profile.changePassword")}</CardTitle>
-              <CardDescription>{t("profile.changePasswordSub")}</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleChangePassword} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="currentPassword" className="text-sm font-medium text-[var(--foreground)]">
-                {t("profile.currentPassword")}
-              </label>
-              <div className="relative">
-                <Input
-                  id="currentPassword"
-                  type={showCurrentPassword ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder={t("profile.currentPasswordPlaceholder")}
-                  required
-                  className="pr-10"
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-                >
-                  {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label htmlFor="newPassword" className="text-sm font-medium text-[var(--foreground)]">
-                  {t("profile.newPassword")}
-                </label>
-                <div className="relative">
-                  <Input
-                    id="newPassword"
-                    type={showNewPassword ? "text" : "password"}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder={t("profile.newPasswordPlaceholder")}
-                    required
-                    minLength={6}
-                    className="pr-10"
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-                  >
-                    {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="confirmNewPassword" className="text-sm font-medium text-[var(--foreground)]">
-                  {t("profile.confirmNewPassword")}
-                </label>
-                <Input
-                  id="confirmNewPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder={t("profile.confirmNewPasswordPlaceholder")}
-                  required
-                  autoComplete="new-password"
-                />
-              </div>
-            </div>
-
-            {passwordMessage && (
-              <div
-                className={`flex items-center gap-2 rounded-lg px-4 py-3 text-sm ${
-                  passwordMessage.type === "success"
-                    ? "border border-success/30 bg-success/10 text-success"
-                    : "border border-danger/30 bg-danger/10 text-danger"
-                }`}
-              >
-                {passwordMessage.text}
-              </div>
-            )}
-
-            <Button type="submit" variant="accent" isLoading={isSavingPassword}>
-              <Lock className="h-4 w-4 mr-2" />
-              {t("profile.changePassword")}
-            </Button>
-          </form>
         </CardContent>
       </Card>
 

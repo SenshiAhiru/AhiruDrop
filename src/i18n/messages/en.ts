@@ -420,6 +420,9 @@ export const en: Record<MessageKey, string> = {
 
   // Profile extras
   "profile.email": "Email",
+  "profile.emailOptional": "(optional)",
+  "profile.emailPlaceholder": "you@email.com",
+  "profile.emailHint": "Add an email to get notified when you win a raffle. Not required.",
   "profile.steamSubtitle": "Link your Steam account to receive skins",
   "profile.steamLinked": "Steam linked",
   "profile.steamId": "Steam ID:",

@@ -58,6 +58,7 @@ export const userService = {
     userId: string,
     data: {
       name?: string;
+      email?: string | null;
       phone?: string;
       cpf?: string;
       avatarUrl?: string;
@@ -65,6 +66,20 @@ export const userService = {
   ) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new Error("Usuário não encontrado");
+
+    // Normalize email: "" → null (cleared). Check uniqueness when setting.
+    const { email, ...rest } = data;
+    const normalizedEmail =
+      email === undefined ? undefined : email && email.trim() ? email.trim().toLowerCase() : null;
+
+    if (normalizedEmail && normalizedEmail !== user.email) {
+      const emailExists = await prisma.user.findUnique({
+        where: { email: normalizedEmail },
+      });
+      if (emailExists) {
+        throw new Error("Este e-mail já está cadastrado");
+      }
+    }
 
     // Check phone uniqueness if changing
     if (data.phone && data.phone !== user.phone) {
@@ -87,7 +102,10 @@ export const userService = {
 
     return prisma.user.update({
       where: { id: userId },
-      data,
+      data: {
+        ...rest,
+        ...(normalizedEmail !== undefined ? { email: normalizedEmail } : {}),
+      },
       select: userSelect,
     });
   },

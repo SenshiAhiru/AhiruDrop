@@ -25,28 +25,11 @@ export default function DashboardPage() {
   const { t } = useTranslation();
   const { data: session, status } = useSession();
 
-  if (status === "loading") {
-    return <DashboardSkeleton />;
-  }
-
-  const firstName = session?.user?.name?.split(" ")[0] || "Usuário";
-
-  // Real data will come from API
-  const stats = {
-    activeRaffles: 0,
-    totalOrders: 0,
-    pendingPayments: 0,
-  };
-
-  const recentOrders: {
-    id: string;
-    raffleName: string;
-    quantity: number;
-    total: number;
-    status: "pending" | "confirmed" | "cancelled";
-    date: string;
-  }[] = [];
-
+  // NOTE: every hook MUST run on every render — keep them above any
+  // conditional `return`. The early `status === "loading"` bail-out used to
+  // sit before useState/useEffect, so the first (loading) render registered
+  // fewer hooks than the second (authenticated) render → "Rendered more hooks
+  // than during the previous render" crash right after login.
   const [activeRaffles, setActiveRaffles] = useState<{
     id: string;
     name: string;
@@ -77,6 +60,28 @@ export default function DashboardPage() {
       })
       .catch(() => {});
   }, []);
+
+  if (status === "loading") {
+    return <DashboardSkeleton />;
+  }
+
+  const firstName = session?.user?.name?.split(" ")[0] || "Usuário";
+
+  // Real data will come from API
+  const stats = {
+    activeRaffles: 0,
+    totalOrders: 0,
+    pendingPayments: 0,
+  };
+
+  const recentOrders: {
+    id: string;
+    raffleName: string;
+    quantity: number;
+    total: number;
+    status: "pending" | "confirmed" | "cancelled";
+    date: string;
+  }[] = [];
 
   return (
     <div className="space-y-6">

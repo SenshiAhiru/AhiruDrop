@@ -71,7 +71,10 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
       <div
         ref={containerRef}
         className={cn(
-          "relative h-3 w-full overflow-hidden rounded-full bg-surface-200 dark:bg-surface-800",
+          // Track uses surface-700 in dark so the unfilled portion stays
+          // clearly visible all the way to the right edge — surface-800 was
+          // too close to the page background and faded out under the hero glow.
+          "relative h-3 w-full overflow-hidden rounded-full bg-surface-200 dark:bg-surface-700/70",
           className
         )}
         {...props}

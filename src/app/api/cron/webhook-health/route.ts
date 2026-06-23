@@ -12,14 +12,26 @@ import { warn, error as logError } from "@/lib/logger";
  * to pay but their AHC balance is never credited. There's no in-product
  * signal — the deposit just sits in PENDING. This cron flags that.
  *
- * Logic: any Deposit row stuck in PENDING for more than 15 minutes
- * indicates a delivery/processing problem worth investigating. We notify
- * admins (in-app) and log a warn so the Vercel dashboard surfaces it.
+ * Logic: a Deposit stuck in PENDING between 15min and 24h old indicates a
+ * delivery/processing problem worth investigating. We notify admins (in-app)
+ * and log a warn so the Vercel dashboard surfaces it.
  *
- * Recommended schedule: every 10 minutes.
+ * Why the 24h upper bound: a PENDING deposit just means "no COMPLETED webhook
+ * yet" — which also describes an *abandoned* checkout (user generated a PIX/
+ * Stripe intent and never paid). Those sit in PENDING forever and are NOT a
+ * webhook failure. Without the upper bound the cron re-flagged the same old
+ * abandoned deposits every single day. A genuine webhook outage shows up as
+ * *fresh* stuck deposits, so the recent window still catches it.
+ *
+ * Dedup: we skip any admin who already has an unread alert, so an ongoing
+ * issue doesn't pile up one notification per daily run.
+ *
+ * Schedule: daily (see vercel.json). The 24h window matches that cadence.
  */
 
 const STALE_THRESHOLD_MS = 15 * 60 * 1000;
+const RECENT_WINDOW_MS = 24 * 60 * 60 * 1000;
+const WEBHOOK_ALERT_TITLE = "Webhook Stripe possivelmente fora do ar";
 
 export async function GET(req: NextRequest) {
   try {
@@ -37,9 +49,14 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const cutoff = new Date(Date.now() - STALE_THRESHOLD_MS);
+    const now = Date.now();
+    const staleCutoff = new Date(now - STALE_THRESHOLD_MS); // older than 15min
+    const recentCutoff = new Date(now - RECENT_WINDOW_MS); // but younger than 24h
     const stale = await prisma.deposit.findMany({
-      where: { status: "PENDING", createdAt: { lt: cutoff } },
+      where: {
+        status: "PENDING",
+        createdAt: { lt: staleCutoff, gte: recentCutoff },
+      },
       select: {
         id: true,
         userId: true,
@@ -90,11 +107,22 @@ export async function GET(req: NextRequest) {
         select: { id: true },
       });
       for (const a of admins) {
+        // Dedup: if this admin still has an unread webhook alert, don't stack
+        // another one. Re-alerts only after they've read/cleared the last.
+        const existingUnread = await prisma.notification.count({
+          where: {
+            userId: a.id,
+            type: "SYSTEM",
+            title: WEBHOOK_ALERT_TITLE,
+            readAt: null,
+          },
+        });
+        if (existingUnread > 0) continue;
         try {
           await notificationService.create(
             a.id,
             "SYSTEM",
-            "Webhook Stripe possivelmente fora do ar",
+            WEBHOOK_ALERT_TITLE,
             `${stale.length} depósito(s) parado(s) em PENDING há mais de ${STALE_THRESHOLD_MS / 60000} minutos. Verifique a configuração do webhook no painel do Stripe.`,
             { staleCount: stale.length, link: "/admin/orders" }
           );

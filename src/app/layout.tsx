@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
@@ -132,6 +133,8 @@ export default async function RootLayout({
             No consent banner needed (no cookies, no PII). Auto no-ops
             outside Vercel-hosted production. */}
         <Analytics />
+        {/* Vercel Speed Insights — real-user Core Web Vitals (LCP, CLS, INP). */}
+        <SpeedInsights />
       </body>
     </html>
   );

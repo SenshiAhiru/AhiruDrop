@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   typescript: {
@@ -44,4 +45,21 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Sentry org/project — used for source-map upload at build time.
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+
+  // Upload source maps so stack traces in the dashboard point at real source
+  // lines instead of minified bundles. Needs SENTRY_AUTH_TOKEN at build time
+  // (set in Vercel). Silent in CI, verbose locally.
+  silent: !process.env.CI,
+
+  // Strip uploaded source maps from the client bundle so they aren't publicly
+  // served — they still reach Sentry for symbolication.
+  sourcemaps: { deleteSourcemapsAfterUpload: true },
+
+  // Tunnel browser→Sentry requests through this same-origin route so ad/track
+  // blockers don't drop client error reports.
+  tunnelRoute: "/monitoring",
+});

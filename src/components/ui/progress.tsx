@@ -76,11 +76,15 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
         )}
         {...props}
       >
+        {/* Fill is full-width and revealed via scaleX (compositor-only,
+            no per-frame layout). transform-origin left so it grows from
+            the start edge. */}
         <div
-          className="relative h-full rounded-full bg-gradient-to-r from-primary-600 to-accent-500"
+          className="absolute inset-0 h-full rounded-full bg-gradient-to-r from-primary-600 to-accent-500 origin-left"
           style={{
-            width: `${displayValue}%`,
-            transition: "width 800ms cubic-bezier(0.16, 1, 0.3, 1)",
+            transform: `scaleX(${displayValue / 100})`,
+            transition: "transform 800ms cubic-bezier(0.16, 1, 0.3, 1)",
+            willChange: "transform",
           }}
         >
           {/* Shimmer sweep — only visible when filled but not complete */}

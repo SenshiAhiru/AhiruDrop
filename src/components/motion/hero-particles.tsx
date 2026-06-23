@@ -134,9 +134,25 @@ export function HeroParticles({ count = 30, className }: HeroParticlesProps) {
     };
     window.addEventListener("resize", onResize);
 
+    // Pause the loop when the tab is hidden — no point burning CPU/battery
+    // animating particles nobody can see. Resume (rebasing the clock so the
+    // twinkle doesn't jump) when the tab comes back.
+    const onVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      } else if (rafId === 0) {
+        // Rebase the clock so twinkle resumes smoothly instead of jumping.
+        startTime = performance.now();
+        rafId = requestAnimationFrame(tick);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
     return () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
       particles = [];
     };
   }, [count]);

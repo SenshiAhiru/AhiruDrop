@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
 import { Button } from "@/components/ui/button";
 
 export default function ErrorPage({
@@ -12,6 +13,10 @@ export default function ErrorPage({
 }) {
   useEffect(() => {
     console.error("[AhiruDrop Error]", error);
+    // Route error boundaries "handle" the error, so it never reaches Sentry's
+    // global handlers — report it explicitly or these user-facing crashes stay
+    // invisible in the dashboard.
+    Sentry.captureException(error);
   }, [error]);
 
   return (

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
 import { useTranslation } from "@/i18n/provider";
 
 export default function DashboardError({
@@ -10,6 +12,12 @@ export default function DashboardError({
   reset: () => void;
 }) {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    // Report to Sentry — route error boundaries swallow the error before it
+    // reaches the SDK's global handlers.
+    Sentry.captureException(error);
+  }, [error]);
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center px-6 py-20 text-center">
       <div className="rounded-2xl bg-danger/10 p-4 mb-6">

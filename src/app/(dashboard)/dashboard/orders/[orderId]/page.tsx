@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   Package,
 } from "lucide-react";
+import { useTranslation } from "@/i18n/provider";
 
 export default function OrderDetailPage({
   params,
@@ -18,6 +19,7 @@ export default function OrderDetailPage({
   params: Promise<{ orderId: string }>;
 }) {
   const { orderId } = use(params);
+  const { t } = useTranslation();
 
   // TODO: Replace with real data fetching
   const order = null;
@@ -32,7 +34,7 @@ export default function OrderDetailPage({
             className="flex items-center gap-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Pedidos
+            {t("orders.title")}
           </Link>
           <span className="text-[var(--muted-foreground)]">/</span>
           <span className="text-[var(--foreground)] font-medium font-mono">
@@ -47,15 +49,15 @@ export default function OrderDetailPage({
                 <Package className="h-8 w-8 text-[var(--muted-foreground)]" />
               </div>
               <h3 className="text-lg font-semibold text-[var(--foreground)]">
-                Pedido não encontrado
+                {t("orders.notFoundTitle")}
               </h3>
               <p className="text-sm text-[var(--muted-foreground)] max-w-xs">
-                O pedido que você procura não existe ou foi removido.
+                {t("orders.notFoundMessage")}
               </p>
               <Link href="/dashboard/orders">
                 <Button variant="outline" className="mt-2">
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Voltar para pedidos
+                  {t("orders.backToOrders")}
                 </Button>
               </Link>
             </div>

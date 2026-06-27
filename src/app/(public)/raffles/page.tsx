@@ -126,11 +126,11 @@ export default function RafflesPage() {
           className="w-full sm:w-48"
         >
           <option value="ALL">{t("rafflesList.allCategories")}</option>
-          <option value="Rifle">Rifles</option>
-          <option value="Pistol">Pistolas</option>
-          <option value="Sniper Rifle">Snipers</option>
-          <option value="Knife">Facas</option>
-          <option value="Gloves">Luvas</option>
+          <option value="Rifle">{t("category.rifles")}</option>
+          <option value="Pistol">{t("category.pistols")}</option>
+          <option value="Sniper Rifle">{t("category.snipers")}</option>
+          <option value="Knife">{t("category.knives")}</option>
+          <option value="Gloves">{t("category.gloves")}</option>
         </Select>
       </div>
 

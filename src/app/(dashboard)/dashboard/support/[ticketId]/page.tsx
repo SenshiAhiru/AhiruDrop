@@ -11,6 +11,8 @@ import { useToast } from "@/components/ui/toast";
 import { SUPPORT_CATEGORIES } from "@/constants/support";
 import { usePoll } from "@/hooks/use-poll";
 import { useTranslation } from "@/i18n/provider";
+import { formatDate } from "@/i18n/format";
+import type { MessageKey } from "@/i18n/types";
 
 type TicketDetail = {
   id: string;
@@ -22,11 +24,11 @@ type TicketDetail = {
   messages: ChatMessage[];
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  OPEN: "Aberto",
-  IN_PROGRESS: "Em andamento",
-  RESOLVED: "Resolvido",
-  CLOSED: "Fechado",
+const STATUS_LABEL: Record<string, MessageKey> = {
+  OPEN: "ticketStatus.open",
+  IN_PROGRESS: "ticketStatus.inProgress",
+  RESOLVED: "ticketStatus.resolved",
+  CLOSED: "ticketStatus.closed",
 };
 
 const STATUS_VARIANT: Record<string, "default" | "warning" | "success" | "danger"> = {
@@ -37,7 +39,7 @@ const STATUS_VARIANT: Record<string, "default" | "warning" | "success" | "danger
 };
 
 export default function UserTicketDetailPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const params = useParams();
   const ticketId = params.ticketId as string;
   const { data: session } = useSession();
@@ -52,16 +54,17 @@ export default function UserTicketDetailPage() {
       const res = await fetch(`/api/support/tickets/${ticketId}`, { cache: "no-store" });
       const json = await res.json();
       if (!json.success) {
-        if (!opts?.silent) setError(json.error || "Falha ao carregar");
+        if (!opts?.silent) setError(json.error || t("support.loadFailed"));
         return;
       }
       setTicket(json.data);
       setError(null);
     } catch {
-      if (!opts?.silent) setError("Erro de conexão");
+      if (!opts?.silent) setError(t("common.connectionError"));
     } finally {
       if (!opts?.silent) setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketId]);
 
   useEffect(() => {
@@ -79,7 +82,7 @@ export default function UserTicketDetailPage() {
     });
     const json = await res.json();
     if (!json.success) {
-      addToast({ type: "error", message: json.error || "Falha ao enviar" });
+      addToast({ type: "error", message: json.error || t("support.sendFailed") });
       throw new Error(json.error);
     }
     await load();
@@ -100,7 +103,7 @@ export default function UserTicketDetailPage() {
           <ArrowLeft className="h-4 w-4" /> {t("common.back")}
         </Link>
         <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-400">
-          {error || "Ticket não encontrado"}
+          {error || t("support.ticketNotFound")}
         </div>
       </div>
     );
@@ -121,17 +124,17 @@ export default function UserTicketDetailPage() {
           <div className="mt-1 flex items-center gap-2 text-xs text-surface-500">
             <span className="font-mono">#{ticket.id.slice(-8)}</span>
             {category && <span>· {category.label}</span>}
-            <span>· aberto em {new Date(ticket.createdAt).toLocaleDateString("pt-BR")}</span>
+            <span>· {t("support.openedAt")} {formatDate(ticket.createdAt, locale)}</span>
           </div>
         </div>
-        <Badge variant={STATUS_VARIANT[ticket.status]}>{STATUS_LABEL[ticket.status]}</Badge>
+        <Badge variant={STATUS_VARIANT[ticket.status]}>{t(STATUS_LABEL[ticket.status])}</Badge>
       </div>
 
       <TicketChat
         messages={ticket.messages}
         currentUserId={session?.user?.id ?? ""}
         canSend={canSend}
-        disabledReason={!canSend ? "Este ticket está fechado. Abra um novo ticket para continuar." : null}
+        disabledReason={!canSend ? t("support.ticketClosed") : null}
         onSend={handleSend}
       />
     </div>

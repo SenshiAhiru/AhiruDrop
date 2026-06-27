@@ -42,7 +42,7 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
   const tilt = useMouseTilt({ maxTilt: 5, perspective: 1000, lift: 6 });
 
   const statusConfig: Record<RaffleStatus, { label: string; variant: "default" | "accent" | "success" | "warning" | "danger" }> = {
-    DRAFT: { label: "Draft", variant: "default" },
+    DRAFT: { label: t("raffles.status.draft"), variant: "default" },
     ACTIVE: { label: t("raffles.status.active"), variant: "success" },
     PAUSED: { label: t("raffles.status.paused"), variant: "warning" },
     CLOSED: { label: t("raffles.status.closed"), variant: "warning" },

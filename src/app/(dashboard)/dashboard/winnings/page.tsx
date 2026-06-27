@@ -15,6 +15,8 @@ import {
 import { useToast } from "@/components/ui/toast";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/provider";
+import { formatDate } from "@/i18n/format";
+import type { MessageKey } from "@/i18n/types";
 
 type TradeInfo = {
   id: string;
@@ -43,12 +45,12 @@ type WinningItem = {
   } | null;
 };
 
-const TRADE_STATUS_LABEL: Record<string, string> = {
-  PENDING: "Trade solicitado",
-  SENT: "Trade enviado — aceite no Steam",
-  COMPLETED: "Skin entregue",
-  FAILED: "Trade falhou",
-  CANCELLED: "Trade cancelado",
+const TRADE_STATUS_LABEL: Record<string, MessageKey> = {
+  PENDING: "tradeStatus.requested",
+  SENT: "tradeStatus.sent",
+  COMPLETED: "tradeStatus.delivered",
+  FAILED: "tradeStatus.failed",
+  CANCELLED: "tradeStatus.cancelled",
 };
 
 const TRADE_STATUS_VARIANT: Record<string, "warning" | "default" | "success" | "danger"> = {
@@ -62,7 +64,7 @@ const TRADE_STATUS_VARIANT: Record<string, "warning" | "default" | "success" | "
 const TRADE_URL_REGEX = /^https:\/\/steamcommunity\.com\/tradeoffer\/new\/\?partner=\d+&token=[\w-]+$/;
 
 export default function WinningsPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { addToast } = useToast();
   const [items, setItems] = useState<WinningItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,10 +94,11 @@ export default function WinningsPage() {
         }
       }
     } catch {
-      setError("Erro de conexão");
+      setError(t("common.connectionError"));
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -114,7 +117,7 @@ export default function WinningsPage() {
     setTradeError(null);
 
     if (!TRADE_URL_REGEX.test(tradeUrl.trim())) {
-      setTradeError("Trade URL inválida. Exemplo: https://steamcommunity.com/tradeoffer/new/?partner=123&token=abc");
+      setTradeError(t("winnings.tradeUrlInvalid"));
       return;
     }
 
@@ -127,15 +130,15 @@ export default function WinningsPage() {
       });
       const json = await res.json();
       if (!json.success) {
-        setTradeError(json.error || "Falha ao solicitar");
+        setTradeError(json.error || t("winnings.requestFailed"));
         return;
       }
-      addToast({ type: "success", message: "Trade solicitado!", description: "O admin será notificado." });
+      addToast({ type: "success", message: t("winnings.tradeRequested"), description: t("winnings.tradeRequestedDesc") });
       setTradeOpen(false);
       setSavedTradeUrl(tradeUrl.trim());
       await load();
     } catch {
-      setTradeError("Erro de conexão");
+      setTradeError(t("common.connectionError"));
     } finally {
       setTradeSending(false);
     }
@@ -175,7 +178,7 @@ export default function WinningsPage() {
             const r = item.raffle;
             const trade = item.tradeRequest;
             const canRequestTrade = !item.claimedAt && !trade;
-            const tradeLabel = trade ? TRADE_STATUS_LABEL[trade.status] : null;
+            const tradeLabel = trade ? t(TRADE_STATUS_LABEL[trade.status]) : null;
             const tradeVariant = trade ? TRADE_STATUS_VARIANT[trade.status] : null;
 
             return (
@@ -231,7 +234,7 @@ export default function WinningsPage() {
                       <div className="rounded-lg border border-surface-700 bg-surface-800/60 p-3">
                         <p className="text-[10px] text-surface-500 uppercase">{t("myWins.drawnAt")}</p>
                         <p className="text-sm font-semibold text-white">
-                          {new Date(item.drawnAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}
+                          {formatDate(item.drawnAt, locale, { day: "2-digit", month: "short", year: "numeric" })}
                         </p>
                       </div>
                     </div>
@@ -240,7 +243,7 @@ export default function WinningsPage() {
                     {item.claimedAt ? (
                       <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2.5 text-sm text-emerald-400">
                         <CheckCircle className="h-4 w-4" />
-                        <span>Skin entregue em {new Date(item.claimedAt).toLocaleDateString("pt-BR")}</span>
+                        <span>{t("winnings.deliveredAt")} {formatDate(item.claimedAt, locale)}</span>
                       </div>
                     ) : trade ? (
                       <div className="flex items-center gap-2 rounded-lg border p-2.5 text-sm" style={{
@@ -264,7 +267,7 @@ export default function WinningsPage() {
                         onClick={() => openTradeDialog(item.id)}
                       >
                         <ArrowRightLeft className="h-4 w-4" />
-                        Solicitar trade da skin
+                        {t("winnings.requestTradeButton")}
                       </Button>
                     )}
 
@@ -289,15 +292,15 @@ export default function WinningsPage() {
       <Dialog open={tradeOpen} onOpenChange={setTradeOpen}>
         <DialogClose onClick={() => setTradeOpen(false)} />
         <DialogHeader>
-          <DialogTitle>Solicitar trade da skin</DialogTitle>
+          <DialogTitle>{t("winnings.requestTradeButton")}</DialogTitle>
           <DialogDescription>
-            Cole sua Steam Trade URL abaixo. O admin enviará a trade offer pra você aceitar no Steam.
+            {t("winnings.dialogDesc")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div>
-            <label className="text-xs text-surface-400 mb-1 block">Steam Trade URL</label>
+            <label className="text-xs text-surface-400 mb-1 block">{t("winnings.tradeUrlLabel")}</label>
             <Input
               value={tradeUrl}
               onChange={(e) => setTradeUrl(e.target.value)}
@@ -309,17 +312,17 @@ export default function WinningsPage() {
               rel="noreferrer"
               className="mt-1.5 inline-flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300"
             >
-              Onde encontro minha Trade URL?
+              {t("winnings.whereTradeUrl")}
               <ExternalLink className="h-3 w-3" />
             </a>
           </div>
 
           <div className="rounded-lg border border-surface-700 bg-surface-800/40 p-3 text-xs text-surface-400 space-y-1">
-            <p className="font-semibold text-surface-300">Como funciona:</p>
-            <p>1. Cole sua Trade URL acima</p>
-            <p>2. O admin será notificado e enviará a trade offer</p>
-            <p>3. Aceite a trade no app Steam (Steam Guard)</p>
-            <p>4. A skin será transferida para sua conta</p>
+            <p className="font-semibold text-surface-300">{t("winnings.howItWorks")}</p>
+            <p>{t("winnings.step1")}</p>
+            <p>{t("winnings.step2")}</p>
+            <p>{t("winnings.step3")}</p>
+            <p>{t("winnings.step4")}</p>
           </div>
 
           {tradeError && (
@@ -336,7 +339,7 @@ export default function WinningsPage() {
           </Button>
           <Button onClick={submitTrade} disabled={tradeSending} variant="accent">
             {tradeSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRightLeft className="h-4 w-4" />}
-            Solicitar trade
+            {t("winnings.submitTrade")}
           </Button>
         </DialogFooter>
       </Dialog>

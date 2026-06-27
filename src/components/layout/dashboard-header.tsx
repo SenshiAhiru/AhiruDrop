@@ -19,7 +19,7 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
         <button
           onClick={onMenuToggle}
           className="lg:hidden p-2 rounded-lg text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
-          aria-label="Menu"
+          aria-label={t("common.menu")}
         >
           <Menu className="h-5 w-5" />
         </button>

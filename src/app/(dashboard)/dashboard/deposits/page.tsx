@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Wallet, Sparkles, ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import { useTranslation } from "@/i18n/provider";
+import { formatDateTime } from "@/i18n/format";
 
 type Deposit = {
   id: string;
@@ -39,7 +40,7 @@ const CURRENCY_SYMBOL: Record<string, string> = {
 };
 
 export default function DepositsHistoryPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const STATUS_LABEL: Record<string, string> = {
     PENDING: t("myDeposits.statusPending"),
     COMPLETED: t("myDeposits.statusCompleted"),
@@ -152,7 +153,7 @@ export default function DepositsHistoryPage() {
                         )}
                       </div>
                       <p className="text-xs text-surface-500">
-                        {new Date(d.createdAt).toLocaleString("pt-BR")}
+                        {formatDateTime(d.createdAt, locale)}
                       </p>
                       <p className="text-[10px] text-surface-600 font-mono truncate">
                         {d.paymentIntentId}

@@ -29,11 +29,11 @@ export default function ContactPage() {
     if (loading) return;
 
     if (subject.trim().length < 3) {
-      addToast({ type: "error", message: "Assunto muito curto (mínimo 3 caracteres)" });
+      addToast({ type: "error", message: t("support.subjectTooShort") });
       return;
     }
     if (message.trim().length < 5) {
-      addToast({ type: "error", message: "Mensagem muito curta (mínimo 5 caracteres)" });
+      addToast({ type: "error", message: t("support.messageTooShort") });
       return;
     }
 
@@ -46,17 +46,17 @@ export default function ContactPage() {
       });
       const json = await res.json();
       if (!json.success) {
-        addToast({ type: "error", message: json.error || "Falha ao enviar" });
+        addToast({ type: "error", message: json.error || t("support.sendFailed") });
         return;
       }
       addToast({
         type: "success",
-        message: "Ticket criado!",
-        description: "Você será redirecionado para o chat.",
+        message: t("contact.ticketCreated"),
+        description: t("contact.ticketCreatedDesc"),
       });
       router.push(`/dashboard/support/${json.data.id}`);
     } catch {
-      addToast({ type: "error", message: "Erro de conexão" });
+      addToast({ type: "error", message: t("common.connectionError") });
     } finally {
       setLoading(false);
     }
@@ -110,7 +110,7 @@ export default function ContactPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[var(--foreground)]">Categoria</label>
+                <label className="text-sm font-medium text-[var(--foreground)]">{t("support.category")}</label>
                 <Select value={category} onChange={(e) => setCategory(e.target.value)} required>
                   {SUPPORT_CATEGORIES.map((c) => (
                     <option key={c.value} value={c.value}>
@@ -125,7 +125,7 @@ export default function ContactPage() {
                 <Input
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Resumo curto do problema"
+                  placeholder={t("support.subjectPlaceholder")}
                   maxLength={200}
                   required
                 />
@@ -136,7 +136,7 @@ export default function ContactPage() {
                 <Textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Descreva sua dúvida ou problema em detalhes..."
+                  placeholder={t("contact.messagePlaceholder")}
                   className="min-h-[140px]"
                   maxLength={5000}
                   required
@@ -152,9 +152,9 @@ export default function ContactPage() {
 
           {session?.user && (
             <div className="mt-5 text-sm text-surface-400">
-              Acompanhe suas mensagens em{" "}
+              {t("contact.followUp")}{" "}
               <Link href="/dashboard/support" className="text-primary-400 hover:underline">
-                Minha Conta → Suporte
+                {t("contact.myAccountSupport")}
               </Link>
               .
             </div>
@@ -164,7 +164,7 @@ export default function ContactPage() {
         {/* Contact info sidebar */}
         <div className="space-y-6 lg:col-span-2">
           <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6">
-            <h3 className="text-lg font-bold text-[var(--foreground)]">Informações de Contato</h3>
+            <h3 className="text-lg font-bold text-[var(--foreground)]">{t("contact.infoTitle")}</h3>
 
             <div className="mt-5 space-y-5">
               <div className="flex items-start gap-3">
@@ -174,7 +174,7 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[var(--foreground)]">E-mail</p>
+                  <p className="text-sm font-medium text-[var(--foreground)]">{t("contact.emailLabel")}</p>
                   <a href="mailto:suporte@ahirudrop.com" className="text-sm text-primary-500 hover:underline break-all">
                     suporte@ahirudrop.com
                   </a>
@@ -188,10 +188,10 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[var(--foreground)]">Horário de Atendimento</p>
+                  <p className="text-sm font-medium text-[var(--foreground)]">{t("contact.hoursTitle")}</p>
                   <p className="text-sm text-[var(--muted-foreground)]">
-                    Segunda a Sexta<br />
-                    09:00 - 18:00 (Horário de Brasília)
+                    {t("contact.hoursDays")}<br />
+                    {t("contact.hoursTime")}
                   </p>
                 </div>
               </div>
@@ -203,7 +203,7 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[var(--foreground)]">Redes Sociais</p>
+                  <p className="text-sm font-medium text-[var(--foreground)]">{t("contact.socialTitle")}</p>
                   <div className="mt-1 flex items-center gap-3">
                     <a href="#" className="text-[var(--muted-foreground)] hover:text-primary-500 transition-colors" aria-label="Instagram">
                       <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
@@ -219,10 +219,10 @@ export default function ContactPage() {
 
           <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 text-center">
             <p className="text-sm text-[var(--muted-foreground)]">
-              Muitas perguntas já foram respondidas na nossa
+              {t("contact.faqHint")}
             </p>
             <Link href="/faq" className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-500 hover:text-primary-400 transition-colors">
-              Página de FAQ
+              {t("contact.faqPageLink")}
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>

@@ -47,7 +47,7 @@ function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () 
       });
 
       if (result.error) {
-        setError(result.error.message || "Erro no pagamento");
+        setError(result.error.message || t("deposit.payError"));
         setPaying(false);
         return;
       }
@@ -61,25 +61,21 @@ function PaymentForm({ totalAhc, onSuccess }: { totalAhc: number; onSuccess: () 
       // Any other status (requires_action, processing, requires_capture…)
       // means the payment isn't complete. Surface it instead of looping forever.
       if (status === "processing") {
-        setError(
-          "Pagamento está sendo processado pelo banco. Aguarde alguns segundos e recarregue a página — o saldo será creditado assim que confirmar."
-        );
+        setError(t("deposit.processingBank"));
       } else if (status === "requires_action") {
-        setError(
-          "O banco exigiu autenticação adicional que não foi concluída. Tente novamente."
-        );
+        setError(t("deposit.authIncomplete"));
       } else if (status) {
-        setError(`Pagamento retornou status inesperado: ${status}`);
+        setError(t("deposit.unexpectedStatus", { status }));
       } else {
-        setError("Resposta inesperada do Stripe. Tente novamente.");
+        setError(t("deposit.unexpectedStripe"));
       }
       setPaying(false);
     } catch (err) {
       console.error("confirmPayment threw:", err);
       setError(
         err instanceof Error
-          ? `Erro: ${err.message}`
-          : "Falha ao confirmar pagamento. Verifique sua conexão e tente novamente."
+          ? t("deposit.genericError", { message: err.message })
+          : t("deposit.confirmFailed")
       );
       setPaying(false);
     }
@@ -178,7 +174,7 @@ function PixPanel({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`data:image/png;base64,${pix.qrCodeBase64}`}
-              alt="QR Code PIX"
+              alt={t("deposit.qrAlt")}
               className="h-56 w-56"
             />
           </div>
@@ -421,10 +417,10 @@ export default function DepositPage() {
         });
         setCouponInput("");
       } else {
-        setCouponError(json.error || "Cupom inválido");
+        setCouponError(json.error || t("deposit.couponInvalid"));
       }
     } catch {
-      setCouponError("Erro ao validar cupom");
+      setCouponError(t("deposit.couponValidateError"));
     } finally {
       setValidatingCoupon(false);
     }
@@ -456,10 +452,10 @@ export default function DepositPage() {
         setClientSecret(json.data.clientSecret);
         setShowPayment(true);
       } else {
-        addToast({ type: "error", message: json.error || "Erro ao iniciar pagamento" });
+        addToast({ type: "error", message: json.error || t("deposit.startPaymentError") });
       }
     } catch {
-      addToast({ type: "error", message: "Erro ao conectar com gateway" });
+      addToast({ type: "error", message: t("deposit.gatewayError") });
     } finally {
       setCreating(false);
     }
@@ -487,10 +483,10 @@ export default function DepositPage() {
           expiresAt: json.data.expiresAt,
         });
       } else {
-        addToast({ type: "error", message: json.error || "Erro ao gerar PIX" });
+        addToast({ type: "error", message: json.error || t("deposit.pixGenError") });
       }
     } catch {
-      addToast({ type: "error", message: "Erro ao conectar com gateway" });
+      addToast({ type: "error", message: t("deposit.gatewayError") });
     } finally {
       setCreating(false);
     }
@@ -505,9 +501,9 @@ export default function DepositPage() {
     if (!pix) return;
     try {
       await navigator.clipboard.writeText(pix.qrCode);
-      addToast({ type: "success", message: "Código PIX copiado!" });
+      addToast({ type: "success", message: t("deposit.pixCopied") });
     } catch {
-      addToast({ type: "error", message: "Não foi possível copiar" });
+      addToast({ type: "error", message: t("deposit.copyFailed") });
     }
   };
 
@@ -616,10 +612,10 @@ export default function DepositPage() {
               </div>
               <p className="mt-2 text-xs text-surface-500">
                 {currency === "USD"
-                  ? "1 AHC = $1 USD (taxa fixa)"
+                  ? t("deposit.rateFixedUsd")
                   : usdToBrl !== null
-                  ? `1 AHC = $1 USD ≈ R$ ${(USD_PER_AHC * usdToBrl).toFixed(2)} · câmbio ao vivo`
-                  : "1 AHC = $1 USD · câmbio ao vivo"}
+                  ? t("deposit.rateLiveBrl", { brl: (USD_PER_AHC * usdToBrl).toFixed(2) })
+                  : t("deposit.rateLiveGeneric")}
               </p>
             </CardContent>
           </Card>
@@ -704,7 +700,7 @@ export default function DepositPage() {
                       </div>
                       {currency === "BRL" && usdToBrl !== null && (
                         <div className="text-[10px] text-surface-500 mt-0.5">
-                          ≈ ${usdAmount.toFixed(2)} USD · taxa 1 USD = R$ {usdToBrl.toFixed(2)}
+                          {t("deposit.rateApproxUsd", { usd: usdAmount.toFixed(2), brl: usdToBrl.toFixed(2) })}
                         </div>
                       )}
                     </div>
@@ -731,7 +727,7 @@ export default function DepositPage() {
                       <div className="text-sm">
                         <span className="font-bold text-emerald-400">{couponApplied.code}</span>
                         <span className="text-surface-400 ml-2">
-                          +{couponApplied.bonusAhc.toFixed(2)} AHC de bônus
+                          {t("deposit.bonusPlus", { amount: couponApplied.bonusAhc.toFixed(2) })}
                         </span>
                       </div>
                     </div>
@@ -739,7 +735,7 @@ export default function DepositPage() {
                       type="button"
                       onClick={handleRemoveCoupon}
                       className="text-surface-400 hover:text-red-400 transition-colors"
-                      aria-label="Remover cupom"
+                      aria-label={t("deposit.removeCoupon")}
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -899,7 +895,7 @@ export default function DepositPage() {
               </Elements>
             ) : (
               <div className="flex items-center justify-center py-10">
-                <BrandSpinner size={48} label="Preparando pagamento…" />
+                <BrandSpinner size={48} label={t("deposit.preparingPaymentFull")} />
               </div>
             )}
           </CardContent>

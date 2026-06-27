@@ -3,6 +3,7 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n/provider";
 
 interface DialogProps {
   open: boolean;
@@ -102,7 +103,9 @@ interface DialogCloseProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
 }
 
 const DialogClose = React.forwardRef<HTMLButtonElement, DialogCloseProps>(
-  ({ className, onClick, ...props }, ref) => (
+  ({ className, onClick, ...props }, ref) => {
+    const { t } = useTranslation();
+    return (
     <button
       ref={ref}
       className={cn(
@@ -126,9 +129,10 @@ const DialogClose = React.forwardRef<HTMLButtonElement, DialogCloseProps>(
         <path d="M18 6 6 18" />
         <path d="m6 6 12 12" />
       </svg>
-      <span className="sr-only">Fechar</span>
+      <span className="sr-only">{t("common.close")}</span>
     </button>
-  )
+    );
+  }
 );
 DialogClose.displayName = "DialogClose";
 

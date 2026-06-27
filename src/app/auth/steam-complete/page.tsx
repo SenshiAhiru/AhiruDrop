@@ -4,15 +4,17 @@ import { useEffect, useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Logo } from "@/components/shared/logo";
+import { useTranslation } from "@/i18n/provider";
 
 function SteamCompleteInner() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState("Conectando com Steam...");
+  const [status, setStatus] = useState(t("steamComplete.connecting"));
 
   useEffect(() => {
     const token = searchParams.get("token");
     if (!token) {
-      setStatus("Token inválido");
+      setStatus(t("steamComplete.invalidToken"));
       return;
     }
 
@@ -27,20 +29,20 @@ function SteamCompleteInner() {
         });
 
         if (result?.ok) {
-          setStatus("Login realizado! Redirecionando...");
+          setStatus(t("steamComplete.success"));
           window.location.href = "/dashboard";
         } else {
-          setStatus("Token inválido ou expirado. Tente entrar novamente.");
+          setStatus(t("steamComplete.expired"));
           setTimeout(() => (window.location.href = "/login"), 2000);
         }
       } catch {
-        setStatus("Erro na conexão. Redirecionando...");
+        setStatus(t("steamComplete.connError"));
         setTimeout(() => (window.location.href = "/login"), 2000);
       }
     }
 
     completeSteamLogin();
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   return <p className="text-surface-400">{status}</p>;
 }

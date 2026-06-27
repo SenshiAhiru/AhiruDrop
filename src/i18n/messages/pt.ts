@@ -683,6 +683,219 @@ export const pt = {
   "admin.audit": "Auditoria",
   "admin.settings": "Configurações",
   "admin.support": "Suporte",
+
+  // ─── i18n pass: common additions ────────────────────────
+  "common.tryAgain": "Tentar novamente",
+  "common.backToHome": "Voltar ao início",
+  "common.open": "Abrir",
+  "common.connectionError": "Erro de conexão",
+  "common.loadFailed": "Falha ao carregar",
+  "common.unexpectedError": "Ocorreu um erro inesperado. Tente novamente em alguns instantes.",
+  "common.you": "Você",
+  "common.youLower": "você",
+  "common.user": "Usuário",
+  "common.menu": "Menu",
+  "common.closeMenu": "Fechar menu",
+  "common.remove": "Remover",
+  "common.quotas": "cotas",
+
+  // ─── Accessibility (aria-labels) ────────────────────────
+  "a11y.notifications": "Notificações",
+  "a11y.closeNotification": "Fechar notificação",
+
+  // ─── Generic status (orders) ────────────────────────────
+  "status.pending": "Pendente",
+  "status.confirmed": "Confirmado",
+  "status.cancelled": "Cancelado",
+
+  // ─── Relative time ──────────────────────────────────────
+  "time.now": "agora",
+  "time.minutesAgo": "{mins} min atrás",
+  "time.hoursAgo": "{hours}h atrás",
+  "time.daysAgo": "{days}d atrás",
+
+  // ─── Sign out ───────────────────────────────────────────
+  "signout.title": "Sair da conta",
+  "signout.confirm": "Tem certeza que deseja sair da sua conta?",
+  "signout.yes": "Sim, sair",
+
+  // ─── Generic error / not-found pages ────────────────────
+  "error.title": "Algo deu errado",
+  "error.message": "Ocorreu um erro inesperado ao carregar esta página. Tente novamente ou volte ao início.",
+  "notFound.title": "Página não encontrada",
+  "notFound.message": "A página que você está procurando não existe ou foi movida. Verifique o endereço ou volte ao início.",
+
+  // ─── Steam auth completion ──────────────────────────────
+  "steamComplete.connecting": "Conectando com Steam...",
+  "steamComplete.invalidToken": "Token inválido",
+  "steamComplete.success": "Login realizado! Redirecionando...",
+  "steamComplete.expired": "Token inválido ou expirado. Tente entrar novamente.",
+  "steamComplete.connError": "Erro na conexão. Redirecionando...",
+
+  // ─── Results page (additions) ───────────────────────────
+  "results.notFoundTitle": "Resultado não encontrado",
+  "results.notFoundMessage": "O sorteio solicitado não existe ou ainda não foi realizado.",
+  "results.viewOtherRaffles": "Ver outras rifas",
+
+  // ─── Deposit page (toasts / errors / helpers) ───────────
+  "deposit.payError": "Erro no pagamento",
+  "deposit.processingBank": "Pagamento está sendo processado pelo banco. Aguarde alguns segundos e recarregue a página — o saldo será creditado assim que confirmar.",
+  "deposit.authIncomplete": "O banco exigiu autenticação adicional que não foi concluída. Tente novamente.",
+  "deposit.unexpectedStatus": "Pagamento retornou status inesperado: {status}",
+  "deposit.unexpectedStripe": "Resposta inesperada do Stripe. Tente novamente.",
+  "deposit.genericError": "Erro: {message}",
+  "deposit.confirmFailed": "Falha ao confirmar pagamento. Verifique sua conexão e tente novamente.",
+  "deposit.qrAlt": "QR Code PIX",
+  "deposit.couponInvalid": "Cupom inválido",
+  "deposit.couponValidateError": "Erro ao validar cupom",
+  "deposit.startPaymentError": "Erro ao iniciar pagamento",
+  "deposit.gatewayError": "Erro ao conectar com gateway",
+  "deposit.pixGenError": "Erro ao gerar PIX",
+  "deposit.pixCopied": "Código PIX copiado!",
+  "deposit.copyFailed": "Não foi possível copiar",
+  "deposit.rateApproxUsd": "≈ ${usd} USD · taxa 1 USD = R$ {brl}",
+  "deposit.bonusPlus": "+{amount} AHC de bônus",
+  "deposit.removeCoupon": "Remover cupom",
+  "deposit.preparingPaymentFull": "Preparando pagamento…",
+
+  // ─── Notifications page (additions) ─────────────────────
+  "notifications.unreadOne": "1 não lida",
+  "notifications.unreadMany": "{count} não lidas",
+  "notifications.allRead": "Tudo lido!",
+
+  // ─── Orders (list + detail) ─────────────────────────────
+  "orders.title": "Pedidos",
+  "orders.showing": "Mostrando {from}-{to} de {total}",
+  "orders.notFoundTitle": "Pedido não encontrado",
+  "orders.notFoundMessage": "O pedido que você procura não existe ou foi removido.",
+  "orders.backToOrders": "Voltar para pedidos",
+
+  // ─── Dashboard home (additions) ─────────────────────────
+  "dashboardHome.noRafflesJoined": "Você não está participando de nenhuma rifa",
+
+  // ─── Ticket status ──────────────────────────────────────
+  "ticketStatus.open": "Aberto",
+  "ticketStatus.inProgress": "Em andamento",
+  "ticketStatus.resolved": "Resolvido",
+  "ticketStatus.closed": "Fechado",
+
+  // ─── Support (list / detail / chat) ─────────────────────
+  "support.subjectTooShort": "Assunto muito curto (mínimo 3 caracteres)",
+  "support.messageTooShort": "Mensagem muito curta (mínimo 5 caracteres)",
+  "support.createFailed": "Falha ao criar ticket",
+  "support.newReplyOne": "1 nova",
+  "support.newReplyMany": "{count} novas",
+  "support.updatedAt": "atualizado em",
+  "support.openedAt": "aberto em",
+  "support.senderSupport": "Suporte",
+  "support.newTicket": "Novo ticket de suporte",
+  "support.newTicketDesc": "Descreva sua dúvida ou problema. Respondemos em até 24 horas úteis.",
+  "support.category": "Categoria",
+  "support.subject": "Assunto",
+  "support.subjectPlaceholder": "Resumo curto do problema",
+  "support.messageLabel": "Mensagem",
+  "support.messagePlaceholder": "Descreva o problema em detalhes...",
+  "support.openTicket": "Abrir ticket",
+  "support.loadFailed": "Falha ao carregar",
+  "support.sendFailed": "Falha ao enviar",
+  "support.ticketNotFound": "Ticket não encontrado",
+  "support.ticketClosed": "Este ticket está fechado. Abra um novo ticket para continuar.",
+  "support.noMessages": "Nenhuma mensagem ainda.",
+  "support.cantSend": "Não é possível enviar mensagens neste ticket.",
+  "support.composerPlaceholder": "Digite sua mensagem... (Enter envia, Shift+Enter quebra linha)",
+  "support.send": "Enviar",
+
+  // ─── Profile (steam link + toasts + banner) ─────────────
+  "profile.steamLinkedSuccess": "Steam vinculada com sucesso! ({name})",
+  "profile.steamAlreadyLinked": "Esta conta Steam já está vinculada a outro usuário.",
+  "profile.steamVerifyFailed": "Falha na verificação do Steam. Tente novamente.",
+  "profile.steamNotConfigured": "Login Steam não está configurado.",
+  "profile.steamMustLogin": "Você precisa estar logado para vincular.",
+  "profile.steamUnknownError": "Erro desconhecido. Tente novamente.",
+  "profile.saveError": "Erro ao salvar perfil.",
+  "profile.saveSuccess": "Perfil atualizado com sucesso!",
+  "profile.welcomeTitle": "Bem-vindo ao AhiruDrop!",
+  "profile.welcomeBanner": "Para participar das rifas e garantir a legitimidade da sua conta, vincule sua conta Steam abaixo.",
+  "profile.avatarAlt": "Avatar",
+  "profile.namePlaceholder": "Seu nome",
+  "profile.steamLinkPrompt": "Vincule sua conta Steam para que possamos enviar as skins diretamente para seu inventário quando você ganhar uma rifa.",
+  "profile.linkSteamButton": "Vincular conta Steam",
+
+  // ─── Trade status (winnings) ────────────────────────────
+  "tradeStatus.requested": "Trade solicitado",
+  "tradeStatus.sent": "Trade enviado — aceite no Steam",
+  "tradeStatus.delivered": "Skin entregue",
+  "tradeStatus.failed": "Trade falhou",
+  "tradeStatus.cancelled": "Trade cancelado",
+
+  // ─── Winnings (trade flow) ──────────────────────────────
+  "winnings.tradeUrlInvalid": "Trade URL inválida. Exemplo: https://...",
+  "winnings.tradeRequested": "Trade solicitado!",
+  "winnings.tradeRequestedDesc": "O admin será notificado.",
+  "winnings.requestFailed": "Falha ao solicitar",
+  "winnings.deliveredAt": "Skin entregue em",
+  "winnings.requestTradeButton": "Solicitar trade da skin",
+  "winnings.dialogDesc": "Cole sua Steam Trade URL abaixo. O admin enviará a trade offer pra você aceitar no Steam.",
+  "winnings.tradeUrlLabel": "Steam Trade URL",
+  "winnings.whereTradeUrl": "Onde encontro minha Trade URL?",
+  "winnings.howItWorks": "Como funciona:",
+  "winnings.step1": "1. Cole sua Trade URL acima",
+  "winnings.step2": "2. O admin será notificado e enviará a trade offer",
+  "winnings.step3": "3. Aceite a trade no app Steam (Steam Guard)",
+  "winnings.step4": "4. A skin será transferida para sua conta",
+  "winnings.submitTrade": "Solicitar trade",
+
+  // ─── Contact (additions) ────────────────────────────────
+  "contact.ticketCreated": "Ticket criado!",
+  "contact.ticketCreatedDesc": "Você será redirecionado para o chat.",
+  "contact.messagePlaceholder": "Descreva sua dúvida ou problema em detalhes...",
+  "contact.followUp": "Acompanhe suas mensagens em",
+  "contact.myAccountSupport": "Minha Conta → Suporte",
+  "contact.infoTitle": "Informações de Contato",
+  "contact.emailLabel": "E-mail",
+  "contact.hoursTitle": "Horário de Atendimento",
+  "contact.hoursDays": "Segunda a Sexta",
+  "contact.hoursTime": "09:00 - 18:00 (Horário de Brasília)",
+  "contact.socialTitle": "Redes Sociais",
+  "contact.faqHint": "Muitas perguntas já foram respondidas na nossa",
+  "contact.faqPageLink": "Página de FAQ",
+
+  // ─── Skin categories (raffle filter) ────────────────────
+  "category.rifles": "Rifles",
+  "category.pistols": "Pistolas",
+  "category.snipers": "Snipers",
+  "category.knives": "Facas",
+  "category.gloves": "Luvas",
+
+  // ─── Verify page (additions) ────────────────────────────
+  "verify.verifyError": "Erro na verificação",
+  "verify.dataNotFound": "Dados não encontrados",
+  "verify.openTool": "Abrir {tool}",
+
+  // ─── Winners page (additions) ───────────────────────────
+  "winners.winnerLabel": "Ganhador",
+  "winners.numberLabel": "Número",
+  "winners.verify": "Verificar",
+
+  // ─── Date picker ────────────────────────────────────────
+  "datePicker.placeholder": "Selecione data e hora",
+  "datePicker.timeLabel": "Horário:",
+
+  // ─── Number selector (raffle) ───────────────────────────
+  "raffleDetail.purchaseError": "Erro ao processar compra",
+  "raffleDetail.purchaseConnError": "Erro de conexão. Tente novamente.",
+  "raffleDetail.yourNumberTitle": "Seu número",
+
+  // ─── Winner celebration popup ───────────────────────────
+  "winnerCelebration.congrats": "PARABÉNS!",
+  "winnerCelebration.subtitle": "Você foi sorteado e ganhou uma rifa!",
+  "winnerCelebration.raffleFallback": "Rifa",
+  "winnerCelebration.drawnNumber": "Número sorteado",
+  "winnerCelebration.viewWin": "Ver minha vitória",
+  "winnerCelebration.proof": "Prova do sorteio",
+
+  // ─── Raffle card ────────────────────────────────────────
+  "raffles.status.draft": "Rascunho",
 } as const;
 
 export type MessageKey = keyof typeof pt;

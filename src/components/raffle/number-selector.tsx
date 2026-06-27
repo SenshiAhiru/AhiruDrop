@@ -68,7 +68,7 @@ export function NumberSelector({
       const json = await res.json();
 
       if (!json.success) {
-        setError(json.error || "Erro ao processar compra");
+        setError(json.error || t("raffleDetail.purchaseError"));
         setBuying(false);
         return;
       }
@@ -81,7 +81,7 @@ export function NumberSelector({
       setBuyModal(false);
       setBuying(false);
     } catch {
-      setError("Erro de conexão. Tente novamente.");
+      setError(t("raffleDetail.purchaseConnError"));
       setBuying(false);
     }
   }
@@ -211,7 +211,7 @@ export function NumberSelector({
                   onToggle(number);
                 }
               }}
-              title={mine ? "Seu número" : undefined}
+              title={mine ? t("raffleDetail.yourNumberTitle") : undefined}
               className={cn(
                 "h-11 w-full rounded-lg text-xs sm:text-sm font-mono transition-all duration-150",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",

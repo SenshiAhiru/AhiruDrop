@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n/provider";
 
 interface BrandSpinnerProps {
   /** Pixel size of the spinner (also the image render size). Default 32. */
@@ -25,11 +26,12 @@ interface BrandSpinnerProps {
  * Respects prefers-reduced-motion (CSS class auto-disables anim).
  */
 export function BrandSpinner({ size = 32, className, label }: BrandSpinnerProps) {
+  const { t } = useTranslation();
   return (
     <div
       className={cn("inline-flex flex-col items-center justify-center gap-3", className)}
       role="status"
-      aria-label={label ?? "Carregando"}
+      aria-label={label ?? t("common.loading")}
     >
       <Image
         src="/ahc-coin.png"

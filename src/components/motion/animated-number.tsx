@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "@/i18n/provider";
+import { intlLocale } from "@/i18n/format";
 
 interface AnimatedNumberProps {
   value: number;
@@ -8,7 +10,10 @@ interface AnimatedNumberProps {
   durationMs?: number;
   /** Decimal places to display. Default 2. */
   decimals?: number;
-  /** Locale for number formatting. Default pt-BR. */
+  /**
+   * Optional Intl locale override for number formatting. When omitted,
+   * uses the active app locale from useTranslation.
+   */
   locale?: string;
   className?: string;
   /** Add a brief scale/flash effect when value increases. Default true. */
@@ -30,10 +35,12 @@ export function AnimatedNumber({
   value,
   durationMs = 800,
   decimals = 2,
-  locale = "pt-BR",
+  locale,
   className,
   flashOnIncrease = true,
 }: AnimatedNumberProps) {
+  const { locale: activeLocale } = useTranslation();
+  const numberLocale = locale ?? intlLocale(activeLocale);
   const [displayValue, setDisplayValue] = useState(value);
   const [flashing, setFlashing] = useState(false);
   const previousRef = useRef(value);
@@ -106,7 +113,7 @@ export function AnimatedNumber({
         willChange: "transform",
       }}
     >
-      {displayValue.toLocaleString(locale, {
+      {displayValue.toLocaleString(numberLocale, {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
       })}

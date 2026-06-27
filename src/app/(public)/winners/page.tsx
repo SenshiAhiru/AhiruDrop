@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Trophy, Shield, Loader2, ExternalLink } from "lucide-react";
 import { useTranslation } from "@/i18n/provider";
+import { formatDate } from "@/i18n/format";
 
 type WinnerItem = {
   id: string;
@@ -27,7 +28,7 @@ type WinnerItem = {
 };
 
 export default function WinnersPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [items, setItems] = useState<WinnerItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,12 +39,12 @@ export default function WinnersPage() {
         const res = await fetch("/api/winners", { cache: "no-store" });
         const json = await res.json();
         if (!json.success) {
-          setError(json.error || "Falha ao carregar");
+          setError(json.error || t("common.loadFailed"));
           return;
         }
         setItems(json.data.data);
       } catch {
-        setError("Erro de conexão");
+        setError(t("common.connectionError"));
       } finally {
         setLoading(false);
       }
@@ -166,14 +167,14 @@ export default function WinnersPage() {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] text-surface-500">Ganhador</p>
+                      <p className="text-[10px] text-surface-500">{t("winners.winnerLabel")}</p>
                       <p className="text-xs font-semibold text-white truncate">
                         {item.winner.name}
                       </p>
                     </div>
                     {item.winningNumber !== null && (
                       <div className="text-right">
-                        <p className="text-[10px] text-surface-500">Número</p>
+                        <p className="text-[10px] text-surface-500">{t("winners.numberLabel")}</p>
                         <p className="text-xs font-mono font-bold text-accent-400">
                           #{item.winningNumber}
                         </p>
@@ -185,11 +186,11 @@ export default function WinnersPage() {
                 {/* Date + verify link */}
                 <div className="flex items-center justify-between text-[10px]">
                   <span className="text-surface-500">
-                    {new Date(item.drawnAt).toLocaleDateString("pt-BR")}
+                    {formatDate(item.drawnAt, locale)}
                   </span>
                   <span className="flex items-center gap-1 text-emerald-400 font-semibold">
                     <Shield className="h-3 w-3" />
-                    Verificar
+                    {t("winners.verify")}
                     <ExternalLink className="h-2.5 w-2.5" />
                   </span>
                 </div>

@@ -5,8 +5,10 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle } from "lucide-react";
 import { AhcCoin } from "@/components/shared/ahc-coin";
+import { useTranslation } from "@/i18n/provider";
 
 function SuccessContent() {
+  const { t } = useTranslation();
   const params = useSearchParams();
   const amount = params.get("amount") || "0";
 
@@ -16,9 +18,9 @@ function SuccessContent() {
         <CheckCircle className="h-10 w-10 text-success" />
       </div>
 
-      <h1 className="text-2xl font-bold text-white mb-2">Depósito realizado!</h1>
+      <h1 className="text-2xl font-bold text-white mb-2">{t("deposit.successTitle")}</h1>
       <p className="text-surface-400 mb-4">
-        Seu saldo foi creditado com sucesso.
+        {t("deposit.successSubtitle")}
       </p>
 
       <div className="flex items-center gap-2 mb-8">
@@ -31,13 +33,13 @@ function SuccessContent() {
           href="/dashboard/deposit"
           className="rounded-lg border border-surface-700 px-6 py-2.5 text-sm font-medium text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
         >
-          Depositar mais
+          {t("deposit.depositMore")}
         </Link>
         <Link
           href="/raffles"
           className="rounded-lg bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
         >
-          Ver rifas
+          {t("deposit.viewRaffles")}
         </Link>
       </div>
     </div>

@@ -3,8 +3,10 @@
 import { signOut } from "next-auth/react";
 import { LogOut, ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
+import { useTranslation } from "@/i18n/provider";
 
 export default function SignOutPage() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-surface-950 px-4">
       <div className="mb-8">
@@ -16,9 +18,9 @@ export default function SignOutPage() {
           <LogOut className="h-7 w-7 text-red-400" />
         </div>
 
-        <h1 className="text-xl font-bold text-white mb-2">Sair da conta</h1>
+        <h1 className="text-xl font-bold text-white mb-2">{t("signout.title")}</h1>
         <p className="text-sm text-surface-400 mb-6">
-          Tem certeza que deseja sair da sua conta?
+          {t("signout.confirm")}
         </p>
 
         <div className="space-y-3">
@@ -27,7 +29,7 @@ export default function SignOutPage() {
             className="w-full flex items-center justify-center gap-2 h-11 rounded-lg bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors"
           >
             <LogOut className="h-4 w-4" />
-            Sim, sair
+            {t("signout.yes")}
           </button>
 
           <button
@@ -35,7 +37,7 @@ export default function SignOutPage() {
             className="w-full flex items-center justify-center gap-2 h-11 rounded-lg border border-surface-700 text-surface-400 font-medium hover:text-white hover:bg-surface-800 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Voltar
+            {t("common.back")}
           </button>
         </div>
       </div>

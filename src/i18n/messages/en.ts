@@ -683,4 +683,217 @@ export const en: Record<MessageKey, string> = {
   "admin.audit": "Audit log",
   "admin.settings": "Settings",
   "admin.support": "Support",
+
+  // ─── i18n pass: common additions ────────────────────────
+  "common.tryAgain": "Try again",
+  "common.backToHome": "Back to home",
+  "common.open": "Open",
+  "common.connectionError": "Connection error",
+  "common.loadFailed": "Failed to load",
+  "common.unexpectedError": "An unexpected error occurred. Please try again in a moment.",
+  "common.you": "You",
+  "common.youLower": "you",
+  "common.user": "User",
+  "common.menu": "Menu",
+  "common.closeMenu": "Close menu",
+  "common.remove": "Remove",
+  "common.quotas": "tickets",
+
+  // ─── Accessibility (aria-labels) ────────────────────────
+  "a11y.notifications": "Notifications",
+  "a11y.closeNotification": "Close notification",
+
+  // ─── Generic status (orders) ────────────────────────────
+  "status.pending": "Pending",
+  "status.confirmed": "Confirmed",
+  "status.cancelled": "Cancelled",
+
+  // ─── Relative time ──────────────────────────────────────
+  "time.now": "now",
+  "time.minutesAgo": "{mins} min ago",
+  "time.hoursAgo": "{hours}h ago",
+  "time.daysAgo": "{days}d ago",
+
+  // ─── Sign out ───────────────────────────────────────────
+  "signout.title": "Sign out",
+  "signout.confirm": "Are you sure you want to sign out?",
+  "signout.yes": "Yes, sign out",
+
+  // ─── Generic error / not-found pages ────────────────────
+  "error.title": "Something went wrong",
+  "error.message": "An unexpected error occurred while loading this page. Try again or go back home.",
+  "notFound.title": "Page not found",
+  "notFound.message": "The page you're looking for doesn't exist or was moved. Check the address or go back home.",
+
+  // ─── Steam auth completion ──────────────────────────────
+  "steamComplete.connecting": "Connecting to Steam...",
+  "steamComplete.invalidToken": "Invalid token",
+  "steamComplete.success": "Signed in! Redirecting...",
+  "steamComplete.expired": "Invalid or expired token. Please sign in again.",
+  "steamComplete.connError": "Connection error. Redirecting...",
+
+  // ─── Results page (additions) ───────────────────────────
+  "results.notFoundTitle": "Result not found",
+  "results.notFoundMessage": "The requested draw doesn't exist or hasn't happened yet.",
+  "results.viewOtherRaffles": "View other raffles",
+
+  // ─── Deposit page (toasts / errors / helpers) ───────────
+  "deposit.payError": "Payment error",
+  "deposit.processingBank": "Your payment is being processed by the bank. Wait a few seconds and reload the page — your balance will be credited once it confirms.",
+  "deposit.authIncomplete": "The bank required additional authentication that wasn't completed. Please try again.",
+  "deposit.unexpectedStatus": "Payment returned an unexpected status: {status}",
+  "deposit.unexpectedStripe": "Unexpected response from Stripe. Please try again.",
+  "deposit.genericError": "Error: {message}",
+  "deposit.confirmFailed": "Failed to confirm payment. Check your connection and try again.",
+  "deposit.qrAlt": "PIX QR code",
+  "deposit.couponInvalid": "Invalid coupon",
+  "deposit.couponValidateError": "Error validating coupon",
+  "deposit.startPaymentError": "Error starting payment",
+  "deposit.gatewayError": "Error connecting to gateway",
+  "deposit.pixGenError": "Error generating PIX",
+  "deposit.pixCopied": "PIX code copied!",
+  "deposit.copyFailed": "Couldn't copy",
+  "deposit.rateApproxUsd": "≈ ${usd} USD · rate 1 USD = R$ {brl}",
+  "deposit.bonusPlus": "+{amount} AHC bonus",
+  "deposit.removeCoupon": "Remove coupon",
+  "deposit.preparingPaymentFull": "Preparing payment…",
+
+  // ─── Notifications page (additions) ─────────────────────
+  "notifications.unreadOne": "1 unread",
+  "notifications.unreadMany": "{count} unread",
+  "notifications.allRead": "All read!",
+
+  // ─── Orders (list + detail) ─────────────────────────────
+  "orders.title": "Orders",
+  "orders.showing": "Showing {from}-{to} of {total}",
+  "orders.notFoundTitle": "Order not found",
+  "orders.notFoundMessage": "The order you're looking for doesn't exist or was removed.",
+  "orders.backToOrders": "Back to orders",
+
+  // ─── Dashboard home (additions) ─────────────────────────
+  "dashboardHome.noRafflesJoined": "You're not in any raffle yet",
+
+  // ─── Ticket status ──────────────────────────────────────
+  "ticketStatus.open": "Open",
+  "ticketStatus.inProgress": "In progress",
+  "ticketStatus.resolved": "Resolved",
+  "ticketStatus.closed": "Closed",
+
+  // ─── Support (list / detail / chat) ─────────────────────
+  "support.subjectTooShort": "Subject too short (minimum 3 characters)",
+  "support.messageTooShort": "Message too short (minimum 5 characters)",
+  "support.createFailed": "Failed to create ticket",
+  "support.newReplyOne": "1 new",
+  "support.newReplyMany": "{count} new",
+  "support.updatedAt": "updated",
+  "support.openedAt": "opened",
+  "support.senderSupport": "Support",
+  "support.newTicket": "New support ticket",
+  "support.newTicketDesc": "Describe your question or problem. We reply within 24 business hours.",
+  "support.category": "Category",
+  "support.subject": "Subject",
+  "support.subjectPlaceholder": "Short summary of the issue",
+  "support.messageLabel": "Message",
+  "support.messagePlaceholder": "Describe the issue in detail...",
+  "support.openTicket": "Open ticket",
+  "support.loadFailed": "Failed to load",
+  "support.sendFailed": "Failed to send",
+  "support.ticketNotFound": "Ticket not found",
+  "support.ticketClosed": "This ticket is closed. Open a new ticket to continue.",
+  "support.noMessages": "No messages yet.",
+  "support.cantSend": "You can't send messages on this ticket.",
+  "support.composerPlaceholder": "Type your message... (Enter sends, Shift+Enter for a new line)",
+  "support.send": "Send",
+
+  // ─── Profile (steam link + toasts + banner) ─────────────
+  "profile.steamLinkedSuccess": "Steam linked successfully! ({name})",
+  "profile.steamAlreadyLinked": "This Steam account is already linked to another user.",
+  "profile.steamVerifyFailed": "Steam verification failed. Please try again.",
+  "profile.steamNotConfigured": "Steam login is not configured.",
+  "profile.steamMustLogin": "You need to be signed in to link.",
+  "profile.steamUnknownError": "Unknown error. Please try again.",
+  "profile.saveError": "Error saving profile.",
+  "profile.saveSuccess": "Profile updated successfully!",
+  "profile.welcomeTitle": "Welcome to AhiruDrop!",
+  "profile.welcomeBanner": "To enter raffles and verify your account, link your Steam account below.",
+  "profile.avatarAlt": "Avatar",
+  "profile.namePlaceholder": "Your name",
+  "profile.steamLinkPrompt": "Link your Steam account so we can send skins directly to your inventory when you win a raffle.",
+  "profile.linkSteamButton": "Link Steam account",
+
+  // ─── Trade status (winnings) ────────────────────────────
+  "tradeStatus.requested": "Trade requested",
+  "tradeStatus.sent": "Trade sent — accept on Steam",
+  "tradeStatus.delivered": "Skin delivered",
+  "tradeStatus.failed": "Trade failed",
+  "tradeStatus.cancelled": "Trade cancelled",
+
+  // ─── Winnings (trade flow) ──────────────────────────────
+  "winnings.tradeUrlInvalid": "Invalid Trade URL. Example: https://...",
+  "winnings.tradeRequested": "Trade requested!",
+  "winnings.tradeRequestedDesc": "The admin will be notified.",
+  "winnings.requestFailed": "Request failed",
+  "winnings.deliveredAt": "Skin delivered on",
+  "winnings.requestTradeButton": "Request skin trade",
+  "winnings.dialogDesc": "Paste your Steam Trade URL below. The admin will send the trade offer for you to accept on Steam.",
+  "winnings.tradeUrlLabel": "Steam Trade URL",
+  "winnings.whereTradeUrl": "Where do I find my Trade URL?",
+  "winnings.howItWorks": "How it works:",
+  "winnings.step1": "1. Paste your Trade URL above",
+  "winnings.step2": "2. The admin will be notified and send the trade offer",
+  "winnings.step3": "3. Accept the trade in the Steam app (Steam Guard)",
+  "winnings.step4": "4. The skin will be transferred to your account",
+  "winnings.submitTrade": "Request trade",
+
+  // ─── Contact (additions) ────────────────────────────────
+  "contact.ticketCreated": "Ticket created!",
+  "contact.ticketCreatedDesc": "You'll be redirected to the chat.",
+  "contact.messagePlaceholder": "Describe your question or problem in detail...",
+  "contact.followUp": "Track your messages in",
+  "contact.myAccountSupport": "My Account → Support",
+  "contact.infoTitle": "Contact Information",
+  "contact.emailLabel": "Email",
+  "contact.hoursTitle": "Support Hours",
+  "contact.hoursDays": "Monday to Friday",
+  "contact.hoursTime": "09:00 - 18:00 (Brasília time)",
+  "contact.socialTitle": "Social Media",
+  "contact.faqHint": "Many questions are already answered on our",
+  "contact.faqPageLink": "FAQ page",
+
+  // ─── Skin categories (raffle filter) ────────────────────
+  "category.rifles": "Rifles",
+  "category.pistols": "Pistols",
+  "category.snipers": "Snipers",
+  "category.knives": "Knives",
+  "category.gloves": "Gloves",
+
+  // ─── Verify page (additions) ────────────────────────────
+  "verify.verifyError": "Verification error",
+  "verify.dataNotFound": "Data not found",
+  "verify.openTool": "Open {tool}",
+
+  // ─── Winners page (additions) ───────────────────────────
+  "winners.winnerLabel": "Winner",
+  "winners.numberLabel": "Number",
+  "winners.verify": "Verify",
+
+  // ─── Date picker ────────────────────────────────────────
+  "datePicker.placeholder": "Select date and time",
+  "datePicker.timeLabel": "Time:",
+
+  // ─── Number selector (raffle) ───────────────────────────
+  "raffleDetail.purchaseError": "Error processing purchase",
+  "raffleDetail.purchaseConnError": "Connection error. Please try again.",
+  "raffleDetail.yourNumberTitle": "Your number",
+
+  // ─── Winner celebration popup ───────────────────────────
+  "winnerCelebration.congrats": "CONGRATULATIONS!",
+  "winnerCelebration.subtitle": "You were drawn and won a raffle!",
+  "winnerCelebration.raffleFallback": "Raffle",
+  "winnerCelebration.drawnNumber": "Winning number",
+  "winnerCelebration.viewWin": "View my win",
+  "winnerCelebration.proof": "Draw proof",
+
+  // ─── Raffle card ────────────────────────────────────────
+  "raffles.status.draft": "Draft",
 };

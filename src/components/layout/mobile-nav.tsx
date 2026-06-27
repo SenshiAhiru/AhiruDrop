@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
+import { useTranslation } from "@/i18n/provider";
 
 export interface MobileNavItem {
   label: string;
@@ -36,6 +37,7 @@ interface MobileNavProps {
 }
 
 export function MobileNav({ isOpen, onClose, items, title, children }: MobileNavProps) {
+  const { t } = useTranslation();
   const pathname = usePathname();
 
   // Lock body scroll while open + close on Escape (matches the
@@ -75,7 +77,7 @@ export function MobileNav({ isOpen, onClose, items, title, children }: MobileNav
         )}
         role="dialog"
         aria-modal="true"
-        aria-label={title ?? "Menu"}
+        aria-label={title ?? t("common.menu")}
       >
         {/* Header — logo + optional section badge + close */}
         <div className="flex items-center gap-3 px-4 h-16 border-b border-[var(--border)] shrink-0">
@@ -88,7 +90,7 @@ export function MobileNav({ isOpen, onClose, items, title, children }: MobileNav
           <button
             onClick={onClose}
             className="ml-auto p-2 rounded-lg text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
-            aria-label="Fechar menu"
+            aria-label={t("common.closeMenu")}
           >
             <X className="h-5 w-5" />
           </button>

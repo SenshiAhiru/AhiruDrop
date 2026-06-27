@@ -14,15 +14,20 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Ticket, ShoppingCart, Clock, ArrowRight, Trophy, Package } from "lucide-react";
 import { useTranslation } from "@/i18n/provider";
+import { formatDate } from "@/i18n/format";
+import type { MessageKey } from "@/i18n/types";
 
-const statusConfig = {
-  pending: { label: "Pendente", variant: "warning" as const },
-  confirmed: { label: "Confirmado", variant: "success" as const },
-  cancelled: { label: "Cancelado", variant: "danger" as const },
+const statusConfig: Record<
+  "pending" | "confirmed" | "cancelled",
+  { labelKey: MessageKey; variant: "warning" | "success" | "danger" }
+> = {
+  pending: { labelKey: "status.pending", variant: "warning" },
+  confirmed: { labelKey: "status.confirmed", variant: "success" },
+  cancelled: { labelKey: "status.cancelled", variant: "danger" },
 };
 
 export default function DashboardPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data: session, status } = useSession();
 
   // NOTE: every hook MUST run on every render — keep them above any
@@ -65,7 +70,7 @@ export default function DashboardPage() {
     return <DashboardSkeleton />;
   }
 
-  const firstName = session?.user?.name?.split(" ")[0] || "Usuário";
+  const firstName = session?.user?.name?.split(" ")[0] || t("common.user");
 
   // Real data will come from API
   const stats = {
@@ -146,7 +151,7 @@ export default function DashboardPage() {
                         {order.raffleName}
                       </p>
                       <p className="text-xs text-[var(--muted-foreground)]">
-                        {order.quantity} cotas &middot; {new Date(order.date).toLocaleDateString("pt-BR")}
+                        {order.quantity} {t("common.quotas")} &middot; {formatDate(order.date, locale)}
                       </p>
                     </div>
                     <div className="flex items-center gap-3 ml-3 flex-shrink-0">
@@ -154,7 +159,7 @@ export default function DashboardPage() {
                         R$ {order.total.toFixed(2)}
                       </span>
                       <Badge variant={statusConfig[order.status].variant}>
-                        {statusConfig[order.status].label}
+                        {t(statusConfig[order.status].labelKey)}
                       </Badge>
                     </div>
                   </Link>
@@ -211,7 +216,7 @@ export default function DashboardPage() {
                           <p className="text-sm font-medium text-[var(--foreground)] truncate">{raffle.name}</p>
                           {raffle.drawDate && (
                             <p className="text-xs text-[var(--muted-foreground)]">
-                              {t("dashboardHome.drawLabel", { date: new Date(raffle.drawDate).toLocaleDateString("pt-BR") })}
+                              {t("dashboardHome.drawLabel", { date: formatDate(raffle.drawDate, locale) })}
                             </p>
                           )}
                         </div>
@@ -233,7 +238,7 @@ export default function DashboardPage() {
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <Ticket className="h-8 w-8 text-[var(--muted-foreground)] mb-2" />
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  Você não está participando de nenhuma rifa
+                  {t("dashboardHome.noRafflesJoined")}
                 </p>
               </div>
             )}

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingCart, ChevronLeft, ChevronRight, Package } from "lucide-react";
 import { useTranslation } from "@/i18n/provider";
+import { formatDate } from "@/i18n/format";
 
 type OrderStatus = "pending" | "confirmed" | "cancelled";
 type StatusFilter = "all" | OrderStatus;
@@ -25,7 +26,7 @@ const allOrders: {
 const PAGE_SIZE = 6;
 
 export default function OrdersPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const statusConfig = {
     pending: { label: t("myOrders.statusPending"), variant: "warning" as const },
     confirmed: { label: t("myOrders.statusConfirmed"), variant: "success" as const },
@@ -136,9 +137,9 @@ export default function OrdersPage() {
                         <div className="flex items-center gap-2 text-xs text-[var(--muted-foreground)]">
                           <span className="font-mono">#{order.id.slice(-6)}</span>
                           <span>&middot;</span>
-                          <span>{order.quantity} cotas</span>
+                          <span>{order.quantity} {t("common.quotas")}</span>
                           <span>&middot;</span>
-                          <span>{new Date(order.date).toLocaleDateString("pt-BR")}</span>
+                          <span>{formatDate(order.date, locale)}</span>
                         </div>
                       </div>
                     </div>
@@ -162,7 +163,7 @@ export default function OrdersPage() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-[var(--muted-foreground)]">
-            Mostrando {(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, filtered.length)} de {filtered.length}
+            {t("orders.showing", { from: (page - 1) * PAGE_SIZE + 1, to: Math.min(page * PAGE_SIZE, filtered.length), total: filtered.length })}
           </p>
           <div className="flex items-center gap-2">
             <Button

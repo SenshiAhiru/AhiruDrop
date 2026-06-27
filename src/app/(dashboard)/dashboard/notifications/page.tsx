@@ -23,6 +23,8 @@ import {
 import { usePoll } from "@/hooks/use-poll";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n/provider";
+import { formatDate } from "@/i18n/format";
+import type { Locale, MessageKey } from "@/i18n/types";
 
 type NotificationItem = {
   id: string;
@@ -50,20 +52,24 @@ const typeConfig: Record<
   SYSTEM: { icon: Info, color: "text-surface-400", bg: "bg-surface-800" },
 };
 
-function timeAgo(iso: string): string {
+function timeAgo(
+  iso: string,
+  t: (key: MessageKey, vars?: Record<string, string | number>) => string,
+  locale: Locale
+): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "agora";
-  if (mins < 60) return `${mins} min atrás`;
+  if (mins < 1) return t("time.now");
+  if (mins < 60) return t("time.minutesAgo", { mins });
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h atrás`;
+  if (hours < 24) return t("time.hoursAgo", { hours });
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d atrás`;
-  return new Date(iso).toLocaleDateString("pt-BR");
+  if (days < 30) return t("time.daysAgo", { days });
+  return formatDate(iso, locale);
 }
 
 export default function NotificationsPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [markingAll, setMarkingAll] = useState(false);
@@ -121,8 +127,10 @@ export default function NotificationsPage() {
           <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("notifications.title")}</h1>
           <p className="text-[var(--muted-foreground)] mt-1">
             {unreadCount > 0
-              ? `${unreadCount} não lida${unreadCount > 1 ? "s" : ""}`
-              : "Tudo lido!"}
+              ? unreadCount === 1
+                ? t("notifications.unreadOne")
+                : t("notifications.unreadMany", { count: unreadCount })
+              : t("notifications.allRead")}
           </p>
         </div>
         {unreadCount > 0 && (
@@ -173,10 +181,10 @@ export default function NotificationsPage() {
                   </div>
                   <p className="text-sm text-surface-400 break-words">{n.message}</p>
                   <div className="flex items-center gap-2 mt-1.5">
-                    <p className="text-[10px] text-surface-500">{timeAgo(n.createdAt)}</p>
+                    <p className="text-[10px] text-surface-500">{timeAgo(n.createdAt, t, locale)}</p>
                     {link && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-400">
-                        Abrir <ExternalLink className="h-2.5 w-2.5" />
+                        {t("common.open")} <ExternalLink className="h-2.5 w-2.5" />
                       </span>
                     )}
                   </div>

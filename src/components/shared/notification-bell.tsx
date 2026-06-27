@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import Link from "next/link";
 import { Bell } from "lucide-react";
 import { usePoll } from "@/hooks/use-poll";
+import { useTranslation } from "@/i18n/provider";
 
 interface Props {
   href?: string;
@@ -15,6 +16,7 @@ interface Props {
  * every 15 seconds while the tab is visible.
  */
 export function NotificationBell({ href = "/dashboard/notifications", className }: Props) {
+  const { t } = useTranslation();
   const [unread, setUnread] = useState(0);
 
   const refresh = useCallback(async () => {
@@ -35,7 +37,7 @@ export function NotificationBell({ href = "/dashboard/notifications", className 
       className={`relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-surface-400 hover:text-white hover:bg-surface-800 transition-colors ${
         className ?? ""
       }`}
-      aria-label="Notificações"
+      aria-label={t("a11y.notifications")}
     >
       <Bell className="h-5 w-5" />
       {unread > 0 && (

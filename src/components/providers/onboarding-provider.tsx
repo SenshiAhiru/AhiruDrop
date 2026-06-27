@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { OnboardingWizard } from "@/components/shared/onboarding-wizard";
+import { useTranslation } from "@/i18n/provider";
 
 /**
  * On mount (if logged in and not yet onboarded), shows the welcome tutorial.
@@ -13,6 +14,7 @@ import { OnboardingWizard } from "@/components/shared/onboarding-wizard";
  */
 export function OnboardingProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
+  const { t } = useTranslation();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -53,7 +55,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
       {children}
       {show && session?.user && (
         <OnboardingWizard
-          userName={session.user.name ?? "você"}
+          userName={session.user.name ?? t("common.youLower")}
           onDismiss={handleDismiss}
         />
       )}

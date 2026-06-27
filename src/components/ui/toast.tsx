@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n/provider";
 
 type ToastType = "success" | "error" | "warning" | "info";
 
@@ -90,6 +91,7 @@ const toastIcons: Record<ToastType, React.ReactNode> = {
 
 function ToastContainer() {
   const { toasts, removeToast } = useToast();
+  const { t } = useTranslation();
 
   return (
     <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none">
@@ -112,7 +114,7 @@ function ToastContainer() {
             <button
               onClick={() => removeToast(toast.id)}
               className="flex-shrink-0 rounded-md p-1 opacity-70 hover:opacity-100 transition-opacity"
-              aria-label="Fechar notificação"
+              aria-label={t("a11y.closeNotification")}
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

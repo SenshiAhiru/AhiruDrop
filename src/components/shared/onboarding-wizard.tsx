@@ -24,7 +24,7 @@ type Step = {
 
 export function OnboardingWizard({ userName, onDismiss }: Props) {
   const { t } = useTranslation();
-  const firstName = userName?.split(" ")[0] ?? "você";
+  const firstName = userName?.split(" ")[0] ?? t("common.youLower");
   const [visible, setVisible] = useState(false);
   const [index, setIndex] = useState(0);
   const [dismissing, setDismissing] = useState(false);

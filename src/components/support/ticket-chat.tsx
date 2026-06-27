@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Send, Loader2, Shield, User as UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n/provider";
+import { formatDateTime } from "@/i18n/format";
 
 export type ChatMessage = {
   id: string;
@@ -27,6 +29,7 @@ type Props = {
 };
 
 export function TicketChat({ messages, currentUserId, canSend, disabledReason, onSend }: Props) {
+  const { t, locale } = useTranslation();
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -60,7 +63,7 @@ export function TicketChat({ messages, currentUserId, canSend, disabledReason, o
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
         {messages.length === 0 ? (
           <p className="text-center text-sm text-surface-500 py-10">
-            Nenhuma mensagem ainda.
+            {t("support.noMessages")}
           </p>
         ) : (
           messages.map((m) => {
@@ -121,7 +124,7 @@ export function TicketChat({ messages, currentUserId, canSend, disabledReason, o
                         isAdmin ? "text-accent-400" : "text-surface-400"
                       )}
                     >
-                      {isAdmin ? "Suporte" : m.sender?.name ?? "Usuário"}
+                      {isAdmin ? t("support.senderSupport") : m.sender?.name ?? t("common.user")}
                     </p>
                   )}
                   <p className="text-sm whitespace-pre-wrap break-words">{m.body}</p>
@@ -131,7 +134,7 @@ export function TicketChat({ messages, currentUserId, canSend, disabledReason, o
                       mine ? "text-right" : "text-left"
                     )}
                   >
-                    {new Date(m.createdAt).toLocaleString("pt-BR", {
+                    {formatDateTime(m.createdAt, locale, {
                       day: "2-digit",
                       month: "2-digit",
                       hour: "2-digit",
@@ -150,7 +153,7 @@ export function TicketChat({ messages, currentUserId, canSend, disabledReason, o
       <div className="border-t border-[var(--border)] p-3 bg-surface-950/40">
         {!canSend ? (
           <p className="text-center text-sm text-surface-500 py-3">
-            {disabledReason ?? "Não é possível enviar mensagens neste ticket."}
+            {disabledReason ?? t("support.cantSend")}
           </p>
         ) : (
           <div className="flex items-end gap-2">
@@ -159,7 +162,7 @@ export function TicketChat({ messages, currentUserId, canSend, disabledReason, o
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={onKeyDown}
               rows={2}
-              placeholder="Digite sua mensagem... (Enter envia, Shift+Enter quebra linha)"
+              placeholder={t("support.composerPlaceholder")}
               className="flex-1 resize-none rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
               disabled={sending}
             />
@@ -173,7 +176,7 @@ export function TicketChat({ messages, currentUserId, canSend, disabledReason, o
               ) : (
                 <Send className="h-4 w-4" />
               )}
-              Enviar
+              {t("support.send")}
             </button>
           </div>
         )}

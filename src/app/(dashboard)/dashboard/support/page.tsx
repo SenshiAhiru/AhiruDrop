@@ -20,6 +20,8 @@ import {
 import { useToast } from "@/components/ui/toast";
 import { SUPPORT_CATEGORIES } from "@/constants/support";
 import { useTranslation } from "@/i18n/provider";
+import { formatDateTime } from "@/i18n/format";
+import type { MessageKey } from "@/i18n/types";
 
 type TicketListItem = {
   id: string;
@@ -34,16 +36,16 @@ type TicketListItem = {
 
 const STATUS_META: Record<
   string,
-  { label: string; color: string; icon: React.ElementType; badgeVariant: "default" | "warning" | "success" | "danger" }
+  { labelKey: MessageKey; color: string; icon: React.ElementType; badgeVariant: "default" | "warning" | "success" | "danger" }
 > = {
-  OPEN: { label: "Aberto", color: "text-yellow-400", icon: Clock, badgeVariant: "warning" },
-  IN_PROGRESS: { label: "Em andamento", color: "text-blue-400", icon: PlayCircle, badgeVariant: "default" },
-  RESOLVED: { label: "Resolvido", color: "text-emerald-400", icon: CheckCircle2, badgeVariant: "success" },
-  CLOSED: { label: "Fechado", color: "text-surface-500", icon: XCircle, badgeVariant: "default" },
+  OPEN: { labelKey: "ticketStatus.open", color: "text-yellow-400", icon: Clock, badgeVariant: "warning" },
+  IN_PROGRESS: { labelKey: "ticketStatus.inProgress", color: "text-blue-400", icon: PlayCircle, badgeVariant: "default" },
+  RESOLVED: { labelKey: "ticketStatus.resolved", color: "text-emerald-400", icon: CheckCircle2, badgeVariant: "success" },
+  CLOSED: { labelKey: "ticketStatus.closed", color: "text-surface-500", icon: XCircle, badgeVariant: "default" },
 };
 
 export default function UserSupportPage() {
-  const { t: tr } = useTranslation();
+  const { t: tr, locale } = useTranslation();
   const { addToast } = useToast();
   const [tickets, setTickets] = useState<TicketListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,11 +74,11 @@ export default function UserSupportPage() {
   async function handleCreate() {
     setFormError(null);
     if (form.subject.trim().length < 3) {
-      setFormError("Assunto muito curto (mínimo 3 caracteres)");
+      setFormError(tr("support.subjectTooShort"));
       return;
     }
     if (form.message.trim().length < 5) {
-      setFormError("Mensagem muito curta (mínimo 5 caracteres)");
+      setFormError(tr("support.messageTooShort"));
       return;
     }
 
@@ -89,7 +91,7 @@ export default function UserSupportPage() {
       });
       const json = await res.json();
       if (!json.success) {
-        setFormError(json.error || "Falha ao criar ticket");
+        setFormError(json.error || tr("support.createFailed"));
         return;
       }
       addToast({ type: "success", message: tr("support.ticketCreated"), description: tr("support.ticketWillReply") });
@@ -97,7 +99,7 @@ export default function UserSupportPage() {
       setForm({ subject: "", category: "duvida", message: "" });
       load();
     } catch {
-      setFormError("Erro de conexão");
+      setFormError(tr("common.connectionError"));
     } finally {
       setCreating(false);
     }
@@ -155,21 +157,23 @@ export default function UserSupportPage() {
                       <div className="flex items-center gap-2 shrink-0">
                         {t.unreadForUser > 0 && (
                           <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-red-500/20 border border-red-500/40 text-red-400 px-2 py-0.5">
-                            {t.unreadForUser} nova{t.unreadForUser > 1 ? "s" : ""}
+                            {t.unreadForUser === 1
+                              ? tr("support.newReplyOne")
+                              : tr("support.newReplyMany", { count: t.unreadForUser })}
                           </span>
                         )}
-                        <Badge variant={meta.badgeVariant}>{meta.label}</Badge>
+                        <Badge variant={meta.badgeVariant}>{tr(meta.labelKey)}</Badge>
                       </div>
                     </div>
                     <div className="mt-1 flex items-center gap-2 text-xs text-surface-500">
                       <span className="font-mono">#{t.id.slice(-8)}</span>
                       {category && <span>· {category.label}</span>}
-                      <span>· atualizado em {new Date(t.updatedAt).toLocaleString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+                      <span>· {tr("support.updatedAt")} {formatDateTime(t.updatedAt, locale, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
                     </div>
                     {lastMsg && (
                       <p className="mt-2 text-sm text-surface-400 line-clamp-2">
                         <span className="font-semibold text-surface-300">
-                          {lastMsg.senderRole === "ADMIN" ? "Suporte" : "Você"}:
+                          {lastMsg.senderRole === "ADMIN" ? tr("support.senderSupport") : tr("common.you")}:
                         </span>{" "}
                         {lastMsg.body}
                       </p>
@@ -186,15 +190,15 @@ export default function UserSupportPage() {
       <Dialog open={newOpen} onOpenChange={setNewOpen}>
         <DialogClose onClick={() => setNewOpen(false)} />
         <DialogHeader>
-          <DialogTitle>Novo ticket de suporte</DialogTitle>
+          <DialogTitle>{tr("support.newTicket")}</DialogTitle>
           <DialogDescription>
-            Descreva sua dúvida ou problema. Respondemos em até 24 horas úteis.
+            {tr("support.newTicketDesc")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div>
-            <label className="text-xs text-surface-400 mb-1 block">Categoria</label>
+            <label className="text-xs text-surface-400 mb-1 block">{tr("support.category")}</label>
             <Select
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value })}
@@ -208,21 +212,21 @@ export default function UserSupportPage() {
           </div>
 
           <div>
-            <label className="text-xs text-surface-400 mb-1 block">Assunto</label>
+            <label className="text-xs text-surface-400 mb-1 block">{tr("support.subject")}</label>
             <Input
               value={form.subject}
               onChange={(e) => setForm({ ...form, subject: e.target.value })}
-              placeholder="Resumo curto do problema"
+              placeholder={tr("support.subjectPlaceholder")}
               maxLength={200}
             />
           </div>
 
           <div>
-            <label className="text-xs text-surface-400 mb-1 block">Mensagem</label>
+            <label className="text-xs text-surface-400 mb-1 block">{tr("support.messageLabel")}</label>
             <Textarea
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
-              placeholder="Descreva o problema em detalhes..."
+              placeholder={tr("support.messagePlaceholder")}
               rows={5}
               maxLength={5000}
             />
@@ -243,7 +247,7 @@ export default function UserSupportPage() {
           </Button>
           <Button onClick={handleCreate} disabled={creating}>
             {creating && <Loader2 className="h-4 w-4 animate-spin" />}
-            Abrir ticket
+            {tr("support.openTicket")}
           </Button>
         </DialogFooter>
       </Dialog>

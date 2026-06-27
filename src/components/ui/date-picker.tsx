@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect } from "react";
 import { DayPicker } from "react-day-picker";
-import { ptBR } from "date-fns/locale";
+import { ptBR, enUS } from "date-fns/locale";
 import { format } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n/provider";
 
 interface DateTimePickerProps {
   value: string;
@@ -14,7 +15,10 @@ interface DateTimePickerProps {
   className?: string;
 }
 
-export function DateTimePicker({ value, onChange, placeholder = "Selecione data e hora", className }: DateTimePickerProps) {
+export function DateTimePicker({ value, onChange, placeholder, className }: DateTimePickerProps) {
+  const { t, locale } = useTranslation();
+  const dfLocale = locale === "pt" ? ptBR : enUS;
+  const resolvedPlaceholder = placeholder ?? t("datePicker.placeholder");
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(value ? new Date(value) : undefined);
   const [time, setTime] = useState(value ? format(new Date(value), "HH:mm") : "20:00");
@@ -50,7 +54,7 @@ export function DateTimePicker({ value, onChange, placeholder = "Selecione data 
   }
 
   const displayValue = selectedDate
-    ? `${format(selectedDate, "dd/MM/yyyy", { locale: ptBR })} ${time}`
+    ? `${format(selectedDate, "dd/MM/yyyy", { locale: dfLocale })} ${time}`
     : "";
 
   return (
@@ -62,7 +66,7 @@ export function DateTimePicker({ value, onChange, placeholder = "Selecione data 
       >
         <CalendarDays className="h-4 w-4 text-surface-500 shrink-0" />
         <span className={displayValue ? "text-[var(--foreground)]" : "text-surface-500"}>
-          {displayValue || placeholder}
+          {displayValue || resolvedPlaceholder}
         </span>
       </button>
 
@@ -72,7 +76,7 @@ export function DateTimePicker({ value, onChange, placeholder = "Selecione data 
             mode="single"
             selected={selectedDate}
             onSelect={handleDaySelect}
-            locale={ptBR}
+            locale={dfLocale}
             showOutsideDays
             classNames={{
               root: "text-sm",
@@ -97,7 +101,7 @@ export function DateTimePicker({ value, onChange, placeholder = "Selecione data 
 
           {/* Time picker */}
           <div className="mt-3 pt-3 border-t border-surface-700 flex items-center gap-2">
-            <span className="text-xs text-surface-400">Horário:</span>
+            <span className="text-xs text-surface-400">{t("datePicker.timeLabel")}</span>
             <input
               type="time"
               value={time}

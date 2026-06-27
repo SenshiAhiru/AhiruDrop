@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Ticket } from "lucide-react";
+import { getServerT } from "@/i18n/server";
 
 export default async function DrawResultPage({
   params,
@@ -7,6 +8,7 @@ export default async function DrawResultPage({
   params: Promise<{ drawId: string }>;
 }) {
   const { drawId } = await params;
+  const { t } = await getServerT();
 
   // TODO: fetch real result from API: /api/draws/${drawId}
   const result = null;
@@ -18,10 +20,10 @@ export default async function DrawResultPage({
           <Ticket className="mb-4 h-16 w-16 text-[var(--muted-foreground)] opacity-40" />
         </div>
         <h1 className="text-2xl font-bold text-[var(--foreground)]">
-          Resultado não encontrado
+          {t("results.notFoundTitle")}
         </h1>
         <p className="mt-3 text-[var(--muted-foreground)]">
-          O sorteio solicitado não existe ou ainda não foi realizado.
+          {t("results.notFoundMessage")}
         </p>
         <div className="mt-8 flex justify-center">
           <Link
@@ -41,7 +43,7 @@ export default async function DrawResultPage({
                 d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
               />
             </svg>
-            Ver outras rifas
+            {t("results.viewOtherRaffles")}
           </Link>
         </div>
       </div>

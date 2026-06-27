@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Trophy, X, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/i18n/provider";
+import { formatDate } from "@/i18n/format";
 
 export type UnseenWin = {
   id: string;
@@ -55,6 +57,7 @@ function useConfettiPieces(count: number) {
 }
 
 export function WinnerCelebrationPopup({ win, onClose }: Props) {
+  const { t, locale } = useTranslation();
   const [visible, setVisible] = useState(false);
   const confetti = useConfettiPieces(40);
   const rarityColor = win.raffle?.skinRarityColor ?? "#fbbf24";
@@ -142,10 +145,10 @@ export function WinnerCelebrationPopup({ win, onClose }: Props) {
 
             {/* Title */}
             <h2 className="text-3xl sm:text-4xl font-black celebration-gradient-text mb-2">
-              PARABÉNS!
+              {t("winnerCelebration.congrats")}
             </h2>
             <p className="text-surface-400 text-sm mb-6">
-              Você foi sorteado e ganhou uma rifa!
+              {t("winnerCelebration.subtitle")}
             </p>
 
             {/* Skin image */}
@@ -178,7 +181,7 @@ export function WinnerCelebrationPopup({ win, onClose }: Props) {
                 </p>
               )}
               <h3 className="text-xl font-bold text-white">
-                {win.raffle?.title ?? "Rifa"}
+                {win.raffle?.title ?? t("winnerCelebration.raffleFallback")}
               </h3>
               <div className="flex items-center justify-center gap-2 flex-wrap">
                 {win.raffle?.skinRarity && (
@@ -204,13 +207,13 @@ export function WinnerCelebrationPopup({ win, onClose }: Props) {
             {/* Winning number */}
             <div className="rounded-xl border border-accent-500/30 bg-accent-500/10 px-6 py-4 mb-6 inline-block">
               <p className="text-xs text-accent-400/70 uppercase tracking-wider mb-1">
-                Número sorteado
+                {t("winnerCelebration.drawnNumber")}
               </p>
               <p className="text-4xl font-black font-mono text-accent-400">
                 #{win.numberWon}
               </p>
               <p className="text-xs text-surface-500 mt-1">
-                {new Date(win.drawnAt).toLocaleDateString("pt-BR", {
+                {formatDate(win.drawnAt, locale, {
                   day: "2-digit",
                   month: "long",
                   year: "numeric",
@@ -226,7 +229,7 @@ export function WinnerCelebrationPopup({ win, onClose }: Props) {
                 className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-amber-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-accent-500/30 hover:shadow-accent-500/50 transition-shadow"
               >
                 <Trophy className="h-4 w-4" />
-                Ver minha vitória
+                {t("winnerCelebration.viewWin")}
               </Link>
               {win.raffle?.slug && (
                 <Link
@@ -234,7 +237,7 @@ export function WinnerCelebrationPopup({ win, onClose }: Props) {
                   onClick={handleClose}
                   className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 text-sm font-semibold text-emerald-400 hover:bg-emerald-500/20 transition-colors"
                 >
-                  Prova do sorteio
+                  {t("winnerCelebration.proof")}
                   <ExternalLink className="h-3.5 w-3.5" />
                 </Link>
               )}

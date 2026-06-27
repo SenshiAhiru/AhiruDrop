@@ -13,6 +13,7 @@ import { NumberSelector } from "@/components/raffle/number-selector";
 import { formatCurrency, calculatePercentage } from "@/lib/utils";
 import { getWearShortName, getWearColor, getRarityColor } from "@/constants/cs2";
 import { useTranslation } from "@/i18n/provider";
+import { formatDate } from "@/i18n/format";
 
 interface RaffleStats {
   available: number;
@@ -443,7 +444,7 @@ export default function RaffleDetailPage() {
                       <p className="text-xs text-surface-400">{t("results.winner")}</p>
                       <p className="text-lg font-bold text-white truncate">{winnerInfo.name}</p>
                       <p className="text-xs text-accent-400/80 mt-0.5">
-                        {t("raffleDetail.winnerNumber", { num: winnerInfo.winningNumber })} · {new Date(winnerInfo.drawnAt).toLocaleDateString("pt-BR")}
+                        {t("raffleDetail.winnerNumber", { num: winnerInfo.winningNumber })} · {formatDate(winnerInfo.drawnAt, locale)}
                       </p>
                     </div>
                   </div>

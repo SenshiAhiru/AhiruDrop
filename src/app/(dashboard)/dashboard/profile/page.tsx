@@ -63,17 +63,17 @@ export default function ProfilePage() {
         setSteamName(params.get("name") || "");
         setSteamMessage({
           type: "success",
-          text: `Steam vinculada com sucesso! (${params.get("name") || ""})`,
+          text: t("profile.steamLinkedSuccess", { name: params.get("name") || "" }),
         });
         window.history.replaceState({}, "", "/dashboard/profile");
       } else if (steamResult === "error") {
         const reason = params.get("reason");
         const messages: Record<string, string> = {
-          already_linked: "Esta conta Steam já está vinculada a outro usuário.",
-          verification_failed: "Falha na verificação do Steam. Tente novamente.",
-          not_configured: "Login Steam não está configurado.",
-          not_authenticated: "Você precisa estar logado para vincular.",
-          unknown: "Erro desconhecido. Tente novamente.",
+          already_linked: t("profile.steamAlreadyLinked"),
+          verification_failed: t("profile.steamVerifyFailed"),
+          not_configured: t("profile.steamNotConfigured"),
+          not_authenticated: t("profile.steamMustLogin"),
+          unknown: t("profile.steamUnknownError"),
         };
         setSteamMessage({
           type: "error",
@@ -116,13 +116,13 @@ export default function ProfilePage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setProfileMessage({ type: "error", text: data.error || "Erro ao salvar perfil." });
+        setProfileMessage({ type: "error", text: data.error || t("profile.saveError") });
         return;
       }
 
-      setProfileMessage({ type: "success", text: "Perfil atualizado com sucesso!" });
+      setProfileMessage({ type: "success", text: t("profile.saveSuccess") });
     } catch {
-      setProfileMessage({ type: "error", text: "Erro ao salvar perfil." });
+      setProfileMessage({ type: "error", text: t("profile.saveError") });
     } finally {
       setIsSavingProfile(false);
     }
@@ -159,9 +159,9 @@ export default function ProfilePage() {
               </svg>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-white">Bem-vindo ao AhiruDrop!</h3>
+              <h3 className="text-sm font-semibold text-white">{t("profile.welcomeTitle")}</h3>
               <p className="mt-1 text-xs text-surface-400 leading-relaxed">
-                Para participar das rifas e garantir a legitimidade da sua conta, vincule sua <strong className="text-white">conta Steam</strong> abaixo.
+                {t("profile.welcomeBanner")}
               </p>
             </div>
           </div>
@@ -188,7 +188,7 @@ export default function ProfilePage() {
               {avatarUrl ? (
                 <Image
                   src={avatarUrl}
-                  alt="Avatar"
+                  alt={t("profile.avatarAlt")}
                   width={64}
                   height={64}
                   className="rounded-full ring-2 ring-primary-500/30 object-cover"
@@ -201,7 +201,7 @@ export default function ProfilePage() {
               )}
               <div>
                 <p className="text-sm font-medium text-[var(--foreground)]">
-                  {session?.user?.name || "Usuário"}
+                  {session?.user?.name || t("common.user")}
                 </p>
                 {email && (
                   <p className="text-xs text-[var(--muted-foreground)]">{email}</p>
@@ -218,7 +218,7 @@ export default function ProfilePage() {
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Seu nome"
+                  placeholder={t("profile.namePlaceholder")}
                   required
                 />
               </div>
@@ -300,11 +300,11 @@ export default function ProfilePage() {
           ) : (
             <div className="space-y-3">
               <p className="text-sm text-[var(--muted-foreground)]">
-                Vincule sua conta Steam para que possamos enviar as skins diretamente para seu inventário quando você ganhar uma rifa.
+                {t("profile.steamLinkPrompt")}
               </p>
               <a href="/api/auth/steam/link" className="inline-flex items-center gap-2 rounded-lg bg-surface-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-surface-700 border border-surface-700 transition-colors">
                 <Link2 className="h-4 w-4" />
-                Vincular conta Steam
+                {t("profile.linkSteamButton")}
               </a>
             </div>
           )}

@@ -897,6 +897,11 @@ export const en: Record<MessageKey, string> = {
   // ─── Raffle card ────────────────────────────────────────
   "raffles.status.draft": "Draft",
 
+  // ─── Cookie consent banner (LGPD) ──────────────────────
+  "cookie.message": "We use essential cookies (login and preferences) and cookieless anonymous analytics to improve the platform. Learn more in our",
+  "cookie.privacyLink": "Privacy Policy",
+  "cookie.accept": "Got it",
+
   // ─── SEO / metadata (server-rendered, locale-aware) ─────
   "meta.home.title": "AhiruDrop — CS2 Skin Raffles with Provably Fair",
   "meta.home.description": "Counter-Strike 2 skin raffles with 100% verifiable draws via the Bitcoin blockchain. AK-47, AWP, knives, gloves and more.",

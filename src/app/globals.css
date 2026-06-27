@@ -370,6 +370,27 @@ main {
   .animate-modal-enter { animation: none; }
 }
 
+/* ─── Cookie consent banner (slide up) ─── */
+@keyframes cookie-consent-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cookie-consent-enter {
+  animation: cookie-consent-enter 320ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-consent-enter { animation: none; }
+}
+
 /* ─── Brand Spinner (coin spin) ─── */
 /*
   Replaces the generic Loader2 spinner. The coin rotates continuously

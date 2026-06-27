@@ -897,6 +897,11 @@ export const pt = {
   // ─── Raffle card ────────────────────────────────────────
   "raffles.status.draft": "Rascunho",
 
+  // ─── Cookie consent banner (LGPD) ──────────────────────
+  "cookie.message": "Usamos cookies essenciais (login e preferências) e métricas anônimas sem cookies para melhorar a plataforma. Saiba mais na nossa",
+  "cookie.privacyLink": "Política de Privacidade",
+  "cookie.accept": "Entendi",
+
   // ─── SEO / metadata (server-rendered, locale-aware) ─────
   "meta.home.title": "AhiruDrop — Rifas de Skins CS2 com Provably Fair",
   "meta.home.description": "Rifas de skins de Counter-Strike 2 com sorteios 100% verificáveis via blockchain Bitcoin. AK-47, AWP, facas, luvas e muito mais.",

@@ -12,6 +12,7 @@ import { ConfirmProvider } from "@/components/providers/confirm-provider";
 import { WinnerCelebrationProvider } from "@/components/providers/winner-celebration-provider";
 import { OnboardingProvider } from "@/components/providers/onboarding-provider";
 import { I18nProvider } from "@/i18n/provider";
+import { CookieConsent } from "@/components/shared/cookie-consent";
 import { getServerT } from "@/i18n/server";
 import { detectLocaleFromAcceptLanguage } from "@/i18n/detect";
 import { DEFAULT_LOCALE, LOCALE_COOKIE, LOCALES } from "@/i18n/types";
@@ -128,6 +129,7 @@ export default async function RootLayout({
                 </ToastProvider>
               </QueryProvider>
             </SessionProvider>
+            <CookieConsent />
           </I18nProvider>
         </ThemeProvider>
         {/* Vercel Web Analytics — cookieless pageview/visitor tracking.

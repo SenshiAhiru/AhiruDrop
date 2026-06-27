@@ -123,7 +123,7 @@ export default function UserTicketDetailPage() {
           <h1 className="text-xl font-bold text-[var(--foreground)]">{ticket.subject}</h1>
           <div className="mt-1 flex items-center gap-2 text-xs text-surface-500">
             <span className="font-mono">#{ticket.id.slice(-8)}</span>
-            {category && <span>· {category.label}</span>}
+            {category && <span>· {t(category.labelKey)}</span>}
             <span>· {t("support.openedAt")} {formatDate(ticket.createdAt, locale)}</span>
           </div>
         </div>

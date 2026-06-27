@@ -167,7 +167,7 @@ export default function UserSupportPage() {
                     </div>
                     <div className="mt-1 flex items-center gap-2 text-xs text-surface-500">
                       <span className="font-mono">#{t.id.slice(-8)}</span>
-                      {category && <span>· {category.label}</span>}
+                      {category && <span>· {tr(category.labelKey)}</span>}
                       <span>· {tr("support.updatedAt")} {formatDateTime(t.updatedAt, locale, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
                     </div>
                     {lastMsg && (
@@ -205,7 +205,7 @@ export default function UserSupportPage() {
             >
               {SUPPORT_CATEGORIES.map((c) => (
                 <option key={c.value} value={c.value}>
-                  {c.label}
+                  {tr(c.labelKey)}
                 </option>
               ))}
             </Select>

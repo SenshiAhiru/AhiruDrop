@@ -896,6 +896,13 @@ export const pt = {
 
   // ─── Raffle card ────────────────────────────────────────
   "raffles.status.draft": "Rascunho",
+
+  // ─── Support categories ─────────────────────────────────
+  "supportCategory.duvida": "Dúvida geral",
+  "supportCategory.pagamento": "Problema com pagamento / depósito",
+  "supportCategory.rifa": "Problema com rifa / sorteio",
+  "supportCategory.tecnico": "Problema técnico",
+  "supportCategory.outro": "Outro assunto",
 } as const;
 
 export type MessageKey = keyof typeof pt;

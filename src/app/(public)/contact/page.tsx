@@ -114,7 +114,7 @@ export default function ContactPage() {
                 <Select value={category} onChange={(e) => setCategory(e.target.value)} required>
                   {SUPPORT_CATEGORIES.map((c) => (
                     <option key={c.value} value={c.value}>
-                      {c.label}
+                      {t(c.labelKey)}
                     </option>
                   ))}
                 </Select>

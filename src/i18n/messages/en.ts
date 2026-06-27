@@ -896,4 +896,11 @@ export const en: Record<MessageKey, string> = {
 
   // ─── Raffle card ────────────────────────────────────────
   "raffles.status.draft": "Draft",
+
+  // ─── Support categories ─────────────────────────────────
+  "supportCategory.duvida": "General question",
+  "supportCategory.pagamento": "Payment / deposit issue",
+  "supportCategory.rifa": "Raffle / draw issue",
+  "supportCategory.tecnico": "Technical issue",
+  "supportCategory.outro": "Other",
 };

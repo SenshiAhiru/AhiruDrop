@@ -1,29 +1,31 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
-// Content-Security-Policy — anti-XSS defense-in-depth.
+// Content-Security-Policy — anti-XSS defense-in-depth (enforcing).
 //
-// Shipped as Report-Only first: it does NOT block anything, only reports what
-// it *would* block. This lets us exercise the live payment flows (Stripe
-// Checkout, Mercado Pago PIX) and confirm no legit resource is caught before
-// flipping the header name to "Content-Security-Policy" (enforcing).
+// Verified clean in Report-Only first by exercising the live payment flows
+// (Stripe Checkout/Elements + Mercado Pago PIX), then flipped to enforce.
 //
-// Origins allowed: Stripe (js/api/checkout), Mercado Pago SDK + mlstatic,
-// Supabase, Sentry ingest (the SDK tunnels via same-origin /monitoring, ingest
-// kept as fallback), Vercel Analytics (same-origin), Steam image CDNs.
-// 'unsafe-inline' on script/style is required by Next's hydration + Tailwind
-// without a nonce pipeline — a future upgrade is nonce-based scripts.
+// Origins allowed: Stripe (js/*.stripe.com/checkout/m.stripe.network), Mercado
+// Pago SDK + mlstatic, Supabase, Sentry ingest (the SDK tunnels via same-origin
+// /monitoring, ingest kept as fallback), Vercel Analytics, Google Pay, Steam
+// image CDNs. 'unsafe-inline' on script/style is required by Next's hydration +
+// Tailwind without a nonce pipeline — a future upgrade is nonce-based scripts.
+// 'unsafe-eval' is added in DEVELOPMENT ONLY: React's dev build uses eval() for
+// debugging (it never does in production), so the strict prod policy omits it.
+const isDev = process.env.NODE_ENV !== "production";
+
 const cspDirectives = [
   "default-src 'self'",
   "base-uri 'self'",
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self' https://checkout.stripe.com https://*.mercadopago.com https://*.mercadopago.com.br",
-  "script-src 'self' 'unsafe-inline' https://js.stripe.com https://sdk.mercadopago.com https://*.mercadopago.com https://secure.mlstatic.com",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://js.stripe.com https://sdk.mercadopago.com https://*.mercadopago.com https://secure.mlstatic.com https://va.vercel-scripts.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://*.supabase.co https://*.steamstatic.com https://*.akamaihd.net https://community.akamai.steamstatic.com https://raw.githubusercontent.com https://*.mlstatic.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.stripe.com https://m.stripe.network https://*.supabase.co https://*.ingest.us.sentry.io https://api.mercadopago.com https://*.mercadopago.com https://*.mlstatic.com https://pay.google.com",
+  "connect-src 'self' https://*.stripe.com https://m.stripe.network https://*.supabase.co https://*.ingest.us.sentry.io https://api.mercadopago.com https://*.mercadopago.com https://*.mlstatic.com https://pay.google.com https://va.vercel-scripts.com",
   "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://*.mercadopago.com https://pay.google.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
@@ -68,10 +70,10 @@ const nextConfig: NextConfig = {
             value: "camera=(), microphone=(), geolocation=()",
           },
           {
-            // Report-Only — observe violations without blocking. Flip the key
-            // to "Content-Security-Policy" to enforce once the payment flows
-            // are confirmed clean in the browser console.
-            key: "Content-Security-Policy-Report-Only",
+            // Enforcing — payment flows (Stripe Checkout/Elements + MP PIX)
+            // confirmed clean in Report-Only first (2026-06-26). Origins are
+            // defined in `cspDirectives` above.
+            key: "Content-Security-Policy",
             value: cspDirectives,
           },
         ],

@@ -216,7 +216,7 @@ export const discord = {
     if (args.link) {
       fields.push({
         name: "🔗 Link",
-        value: `[${args.link.label ?? "Abrir no admin"}](${args.link.url})`,
+        value: `[${args.link.label ?? "Abrir no admin · Open in admin"}](${args.link.url})`,
         inline: false,
       });
     }
@@ -226,7 +226,7 @@ export const discord = {
       description: args.description,
       color: colorBySeverity[args.severity ?? "info"],
       fields,
-      footer: { text: "AhiruDrop · Alerta automático" },
+      footer: { text: "AhiruDrop · Alerta automático · Automated alert" },
       timestamp: new Date().toISOString(),
     };
 
@@ -243,16 +243,18 @@ export const discord = {
     provider: string; // "stripe" | "mercadopago"
   }) {
     return this.notifyAlert({
-      title: "💸 Depósito relevante",
-      description: `**${args.userName}** depositou **${args.amount.toFixed(2)} AHC**.`,
+      title: "💸 Depósito relevante · Big deposit",
+      description:
+        `🇧🇷 **${args.userName}** depositou **${args.amount.toFixed(2)} AHC**.\n` +
+        `🇺🇸 **${args.userName}** deposited **${args.amount.toFixed(2)} AHC**.`,
       severity: "info",
       fields: [
         { name: "Provider", value: args.provider, inline: true },
-        { name: "Valor", value: `${args.amount.toFixed(2)} AHC`, inline: true },
+        { name: "Valor · Amount", value: `${args.amount.toFixed(2)} AHC`, inline: true },
       ],
       link: {
         url: `${SITE_URL}/admin/users/${args.userId}`,
-        label: "Ver usuário no admin",
+        label: "Ver usuário no admin · View user in admin",
       },
     });
   },

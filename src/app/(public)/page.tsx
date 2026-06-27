@@ -198,7 +198,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <StaggerReveal stagger={100} className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {STEPS.map((step, i) => (
               <div
                 key={step.title}
@@ -221,7 +221,7 @@ export default function HomePage() {
                 </p>
               </div>
             ))}
-          </div>
+          </StaggerReveal>
         </div>
       </section>
     </>
@@ -263,7 +263,7 @@ function DiscordCta() {
   if (!invite) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-14">
+    <StaggerReveal className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-14">
       <div
         className="relative overflow-hidden rounded-2xl border border-[#5865F2]/30 p-6 sm:p-10"
         style={{
@@ -304,6 +304,6 @@ function DiscordCta() {
           </a>
         </div>
       </div>
-    </section>
+    </StaggerReveal>
   );
 }

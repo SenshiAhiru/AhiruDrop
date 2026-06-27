@@ -39,7 +39,7 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
       />
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <div
-          className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-[var(--card)] p-4 shadow-2xl animate-in zoom-in-95 fade-in duration-200 sm:p-6"
+          className="animate-modal-enter relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-[var(--card)] p-4 shadow-2xl sm:p-6"
           onClick={(e) => e.stopPropagation()}
         >
           {children}

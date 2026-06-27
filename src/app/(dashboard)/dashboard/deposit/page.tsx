@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCircle, Loader2, Tag, X, Sparkles, QrCode, Copy, CreditCard, Clock } from "lucide-react";
+import { CheckCircle, Loader2, Tag, X, Sparkles, QrCode, Copy, Check, CreditCard, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { useTranslation } from "@/i18n/provider";
 import { AhcCoin } from "@/components/shared/ahc-coin";
@@ -133,6 +133,8 @@ function PixPanel({
   onCancel: () => void;
 }) {
   const { t } = useTranslation();
+  // Inline copy feedback: swap Copy → Check + brief scale, revert after 1.5s.
+  const [copied, setCopied] = useState(false);
   // Live countdown to expiration
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -144,6 +146,17 @@ function PixPanel({
   const mm = Math.floor(remaining / 60000);
   const ss = Math.floor((remaining % 60000) / 1000);
   const expired = remaining === 0;
+
+  const handleCopyClick = () => {
+    onCopy();
+    setCopied(true);
+  };
+  // Revert the inline check icon ~1.5s after the last copy.
+  useEffect(() => {
+    if (!copied) return;
+    const id = setTimeout(() => setCopied(false), 1500);
+    return () => clearTimeout(id);
+  }, [copied]);
 
   return (
     <Card>
@@ -205,8 +218,18 @@ function PixPanel({
               className="font-mono text-xs"
               onFocus={(e) => e.currentTarget.select()}
             />
-            <Button type="button" variant="outline" onClick={onCopy} title={t("deposit.pixCopyButton")}>
-              <Copy className="h-4 w-4" />
+            <Button type="button" variant="outline" onClick={handleCopyClick} title={t("deposit.pixCopyButton")}>
+              {copied ? (
+                <Check
+                  className="h-4 w-4 text-emerald-400 motion-reduce:transition-none"
+                  style={{
+                    transition: "transform 250ms var(--ease-spring)",
+                    transform: "scale(1.25)",
+                  }}
+                />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>

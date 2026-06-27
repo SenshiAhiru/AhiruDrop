@@ -39,7 +39,7 @@ interface RaffleCardProps {
 
 export function RaffleCard({ raffle, className }: RaffleCardProps) {
   const { t, locale } = useTranslation();
-  const tilt = useMouseTilt({ maxTilt: 5, perspective: 1000, lift: 6 });
+  const tilt = useMouseTilt({ maxTilt: 7, perspective: 1000, lift: 10 });
 
   const statusConfig: Record<RaffleStatus, { label: string; variant: "default" | "accent" | "success" | "warning" | "danger" }> = {
     DRAFT: { label: t("raffles.status.draft"), variant: "default" },
@@ -95,7 +95,7 @@ export function RaffleCard({ raffle, className }: RaffleCardProps) {
             alt={title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
           />
         ) : (
           <div

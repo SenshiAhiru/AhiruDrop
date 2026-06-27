@@ -78,9 +78,16 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
                       : "text-surface-400 hover:text-[var(--foreground)] hover:bg-[var(--muted)]"
                   )}
                 >
-                  {isActive && (
-                    <span className="absolute right-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-primary-500 rounded-l" />
-                  )}
+                  {/* Active right-edge bar: always rendered so it can
+                      animate (scale/opacity) when the active item changes. */}
+                  <span
+                    className={cn(
+                      "absolute right-0 top-1/2 w-0.5 h-6 bg-primary-500 rounded-l origin-center transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
+                      isActive
+                        ? "-translate-y-1/2 scale-y-100 opacity-100"
+                        : "-translate-y-1/2 scale-y-0 opacity-0"
+                    )}
+                  />
                   <Icon className="h-5 w-5 shrink-0" />
                   {t(item.labelKey)}
                 </Link>

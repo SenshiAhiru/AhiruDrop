@@ -6,11 +6,13 @@ import Link from "next/link";
 import { CheckCircle } from "lucide-react";
 import { AhcCoin } from "@/components/shared/ahc-coin";
 import { useTranslation } from "@/i18n/provider";
+import { AnimatedNumber } from "@/components/motion/animated-number";
 
 function SuccessContent() {
   const { t } = useTranslation();
   const params = useSearchParams();
   const amount = params.get("amount") || "0";
+  const amountNum = Number(amount) || 0;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
@@ -25,7 +27,9 @@ function SuccessContent() {
 
       <div className="flex items-center gap-2 mb-8">
         <AhcCoin size={32} />
-        <span className="text-3xl font-bold text-accent-400">+{amount} AHC</span>
+        <span className="text-3xl font-bold text-accent-400">
+          +<AnimatedNumber value={amountNum} decimals={2} className="tabular-nums" /> AHC
+        </span>
       </div>
 
       <div className="flex gap-3">

@@ -16,6 +16,7 @@ import { Ticket, ShoppingCart, Clock, ArrowRight, Trophy, Package } from "lucide
 import { useTranslation } from "@/i18n/provider";
 import { formatDate } from "@/i18n/format";
 import type { MessageKey } from "@/i18n/types";
+import { AnimatedNumber } from "@/components/motion/animated-number";
 
 const statusConfig: Record<
   "pending" | "confirmed" | "cancelled",
@@ -270,7 +271,9 @@ function StatsCard({
             {icon}
           </div>
           <div>
-            <p className="text-2xl font-bold text-[var(--foreground)]">{value}</p>
+            <p className="text-2xl font-bold text-[var(--foreground)]">
+              <AnimatedNumber value={value} decimals={0} className="tabular-nums" />
+            </p>
             <p className="text-sm text-[var(--muted-foreground)]">{label}</p>
           </div>
         </div>

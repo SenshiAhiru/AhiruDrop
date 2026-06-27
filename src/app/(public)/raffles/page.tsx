@@ -7,7 +7,6 @@ import { RaffleGrid } from "@/components/raffle/raffle-grid";
 import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/i18n/provider";
 
 type Raffle = {
@@ -136,16 +135,7 @@ export default function RafflesPage() {
 
       {/* Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 space-y-4">
-              <Skeleton className="h-48 w-full rounded-lg" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-8 w-full rounded-md" />
-            </div>
-          ))}
-        </div>
+        <RaffleGrid loading />
       ) : paginatedRaffles.length > 0 ? (
         <RaffleGrid loading={false} emptyMessage={t("rafflesList.noResultsFiltered")}>
           {paginatedRaffles.map((raffle) => (

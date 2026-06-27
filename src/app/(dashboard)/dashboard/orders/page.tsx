@@ -173,24 +173,18 @@ export default function OrdersPage() {
               disabled={page === 1}
             >
               <ChevronLeft className="h-4 w-4" />
+              {t("pagination.previous")}
             </Button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <Button
-                key={p}
-                variant={p === page ? "default" : "outline"}
-                size="sm"
-                onClick={() => setPage(p)}
-                className="w-8"
-              >
-                {p}
-              </Button>
-            ))}
+            <span className="text-sm text-[var(--muted-foreground)]">
+              {t("pagination.pageOf", { page, pages: totalPages })}
+            </span>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setPage(page + 1)}
               disabled={page === totalPages}
             >
+              {t("pagination.next")}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

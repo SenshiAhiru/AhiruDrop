@@ -39,7 +39,7 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
       />
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <div
-          className="relative max-w-lg w-full rounded-xl bg-[var(--card)] p-6 shadow-2xl animate-in zoom-in-95 fade-in duration-200"
+          className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-[var(--card)] p-4 shadow-2xl animate-in zoom-in-95 fade-in duration-200 sm:p-6"
           onClick={(e) => e.stopPropagation()}
         >
           {children}
@@ -108,8 +108,9 @@ const DialogClose = React.forwardRef<HTMLButtonElement, DialogCloseProps>(
     return (
     <button
       ref={ref}
+      aria-label={t("common.close")}
       className={cn(
-        "absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2",
+        "absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-lg text-[var(--muted-foreground)] opacity-70 transition-opacity hover:bg-[var(--muted)] hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary-500",
         className
       )}
       onClick={onClick}

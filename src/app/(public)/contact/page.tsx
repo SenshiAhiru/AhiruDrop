@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
-import { LogIn, MessageSquare, Loader2 } from "lucide-react";
+import { LogIn, MessageSquare } from "lucide-react";
 import { SUPPORT_CATEGORIES } from "@/constants/support";
 import { useTranslation } from "@/i18n/provider";
 
@@ -77,8 +78,21 @@ export default function ContactPage() {
         {/* Form OR login prompt */}
         <div className="lg:col-span-3">
           {status === "loading" ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+            <div className="space-y-5" aria-hidden>
+              <Skeleton className="h-12 w-full rounded-lg" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-[140px] w-full rounded-lg" />
+              </div>
+              <Skeleton className="h-11 w-full rounded-lg sm:w-40" />
             </div>
           ) : !session?.user ? (
             <div className="rounded-xl border border-primary-500/30 bg-primary-600/5 p-8 text-center">

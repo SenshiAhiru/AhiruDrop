@@ -29,12 +29,12 @@ export function NotificationBell({ href = "/dashboard/notifications", className 
     }
   }, []);
 
-  usePoll(refresh, 1500);
+  usePoll(refresh, 15000);
 
   return (
     <Link
       href={href}
-      className={`relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-surface-400 hover:text-white hover:bg-surface-800 transition-colors ${
+      className={`relative inline-flex h-10 w-10 items-center justify-center rounded-lg text-surface-400 hover:text-white hover:bg-surface-800 transition-colors ${
         className ?? ""
       }`}
       aria-label={t("a11y.notifications")}

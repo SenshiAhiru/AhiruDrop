@@ -80,7 +80,8 @@ export function PublicHeader() {
               <LanguageSwitcher />
               <button
                 onClick={() => toggleTheme()}
-                className="p-2 rounded-lg text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
+                aria-label={theme === "dark" ? t("theme.light") : t("theme.dark")}
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
               >
                 {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </button>
@@ -100,7 +101,8 @@ export function PublicHeader() {
 
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="md:hidden p-2 rounded-lg text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
+                aria-label={t("common.menu")}
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-surface-400 hover:text-white hover:bg-surface-800 transition-colors md:hidden"
               >
                 {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
@@ -111,14 +113,14 @@ export function PublicHeader() {
 
       {menuOpen && (
         <div className="fixed inset-0 z-[60] md:hidden">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setMenuOpen(false)} />
-          <div className="absolute top-0 left-0 w-[85vw] max-w-sm h-full bg-surface-950 border-r border-surface-800 flex flex-col overflow-y-auto">
+          <div className="absolute inset-0 bg-black/60 animate-in fade-in duration-200" onClick={() => setMenuOpen(false)} />
+          <div className="absolute top-0 left-0 w-[85vw] max-w-sm h-full bg-surface-950 border-r border-surface-800 flex flex-col overflow-y-auto animate-in slide-in-from-left duration-300 ease-out">
             {/* Header com Logo + Fechar */}
             <div className="flex items-center justify-between h-16 px-4 border-b border-surface-800 shrink-0">
               <Logo size="md" />
               <button
                 onClick={() => setMenuOpen(false)}
-                className="p-2 rounded-lg text-surface-400 hover:text-white hover:bg-surface-800"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-surface-400 hover:text-white hover:bg-surface-800"
                 aria-label={t("header.closeMenu")}
               >
                 <X className="h-5 w-5" />

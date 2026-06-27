@@ -71,8 +71,8 @@ export default function UserTicketDetailPage() {
     load();
   }, [load]);
 
-  // Poll for new messages every 1.5s (silent so UI doesn't flicker)
-  usePoll(() => load({ silent: true }), 1500);
+  // Poll for new messages every 5s (silent so UI doesn't flicker)
+  usePoll(() => load({ silent: true }), 5000);
 
   async function handleSend(body: string) {
     const res = await fetch(`/api/support/tickets/${ticketId}/messages`, {

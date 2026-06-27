@@ -7,13 +7,15 @@ import { useTranslation } from "@/i18n/provider";
 import { StaggerReveal } from "@/components/motion/stagger-reveal";
 
 interface RaffleGridProps {
-  children: React.ReactNode;
+  // Optional: the `loading` branch renders skeletons and returns before
+  // children are read, so callers can do `<RaffleGrid loading />`.
+  children?: React.ReactNode;
   loading?: boolean;
   emptyMessage?: string;
   className?: string;
 }
 
-function RaffleCardSkeleton() {
+export function RaffleCardSkeleton() {
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm overflow-hidden">
       <Skeleton className="aspect-video w-full rounded-none" />

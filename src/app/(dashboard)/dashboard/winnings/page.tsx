@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose,
 } from "@/components/ui/dialog";
@@ -157,8 +158,26 @@ export default function WinningsPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-accent-500" />
+        <div className="space-y-4" aria-hidden>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-2xl border border-surface-700 bg-surface-900/50 overflow-hidden"
+            >
+              <div className="flex flex-col sm:flex-row">
+                <Skeleton className="sm:w-48 aspect-square sm:aspect-auto rounded-none shrink-0" />
+                <div className="flex-1 p-5 space-y-3">
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-6 w-2/3" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                  </div>
+                  <Skeleton className="h-10 w-full rounded-lg" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : error ? (
         <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-400">{error}</div>

@@ -6,6 +6,7 @@ import { MessageSquare, Plus, Loader2, Clock, CheckCircle2, PlayCircle, XCircle,
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
@@ -123,8 +124,21 @@ export default function UserSupportPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+        <div className="space-y-3" aria-hidden>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-xl border border-surface-700 bg-surface-900/40 p-4"
+            >
+              <div className="flex items-start gap-3">
+                <Skeleton className="h-5 w-5 shrink-0 rounded-full" />
+                <div className="flex-1 min-w-0 space-y-2">
+                  <Skeleton className="h-5 w-1/2" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : tickets.length === 0 ? (
         <Card>

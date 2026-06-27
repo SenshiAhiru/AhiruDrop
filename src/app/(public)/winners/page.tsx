@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Trophy, Shield, Loader2, ExternalLink } from "lucide-react";
+import { Trophy, Shield, ExternalLink } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/i18n/provider";
 import { formatDate } from "@/i18n/format";
 
@@ -70,8 +71,21 @@ export default function WinnersPage() {
       </div>
 
       {loading && (
-        <div className="flex justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-accent-500" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-2xl border border-surface-700 bg-surface-900/50 overflow-hidden"
+            >
+              <Skeleton className="aspect-square w-full rounded-none" />
+              <div className="p-4 space-y-3">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-14 w-full rounded-lg" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

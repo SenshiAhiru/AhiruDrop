@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { RaffleCard } from "@/components/raffle/raffle-card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { RaffleCardSkeleton } from "@/components/raffle/raffle-grid";
 import { useTranslation } from "@/i18n/provider";
 import { HeroParticles } from "@/components/motion/hero-particles";
 import { StaggerReveal } from "@/components/motion/stagger-reveal";
@@ -147,12 +147,7 @@ export default function HomePage() {
         {loading ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 space-y-4">
-                <Skeleton className="h-48 w-full rounded-lg" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-8 w-full rounded-md" />
-              </div>
+              <RaffleCardSkeleton key={i} />
             ))}
           </div>
         ) : featuredRaffles.length > 0 ? (

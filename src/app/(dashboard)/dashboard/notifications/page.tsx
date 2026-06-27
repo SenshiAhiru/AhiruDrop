@@ -90,8 +90,8 @@ export default function NotificationsPage() {
     load();
   }, [load]);
 
-  // Poll every 1.5s while tab is visible
-  usePoll(() => load({ silent: true }), 1500);
+  // Poll every 10s while tab is visible
+  usePoll(() => load({ silent: true }), 10000);
 
   const unreadCount = notifications.filter((n) => !n.readAt).length;
 

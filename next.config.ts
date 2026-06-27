@@ -23,8 +23,8 @@ const cspDirectives = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://*.supabase.co https://*.steamstatic.com https://*.akamaihd.net https://community.akamai.steamstatic.com https://raw.githubusercontent.com https://*.mlstatic.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.stripe.com https://*.supabase.co https://*.ingest.us.sentry.io https://api.mercadopago.com https://*.mercadopago.com https://*.mlstatic.com",
-  "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://*.mercadopago.com",
+  "connect-src 'self' https://*.stripe.com https://m.stripe.network https://*.supabase.co https://*.ingest.us.sentry.io https://api.mercadopago.com https://*.mercadopago.com https://*.mlstatic.com https://pay.google.com",
+  "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://*.mercadopago.com https://pay.google.com",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
 ].join("; ");

@@ -897,6 +897,15 @@ export const pt = {
   // ─── Raffle card ────────────────────────────────────────
   "raffles.status.draft": "Rascunho",
 
+  // ─── Verify page — formula/code fragments ───────────────
+  "verify.codeUint64": "como uint64",
+  "verify.codeTotalPaid": "total_tickets_pagos",
+  "verify.codeSortedTickets": "ticket_pagos_ordenados",
+  "verify.codeFirst16Mod": "→ primeiros 16 hex, mod",
+  "verify.codeCommentExample": "// exemplo em JavaScript (console do browser)",
+  "verify.codePlaceholderHex": "primeiros_16_hex_do_passo_2",
+  "verify.codeCommentResult": "// deve dar o índice do vencedor",
+
   // ─── Support categories ─────────────────────────────────
   "supportCategory.duvida": "Dúvida geral",
   "supportCategory.pagamento": "Problema com pagamento / depósito",

@@ -897,6 +897,15 @@ export const en: Record<MessageKey, string> = {
   // ─── Raffle card ────────────────────────────────────────
   "raffles.status.draft": "Draft",
 
+  // ─── Verify page — formula/code fragments ───────────────
+  "verify.codeUint64": "as uint64",
+  "verify.codeTotalPaid": "total_paid_tickets",
+  "verify.codeSortedTickets": "sorted_paid_tickets",
+  "verify.codeFirst16Mod": "→ first 16 hex, mod",
+  "verify.codeCommentExample": "// example in JavaScript (browser console)",
+  "verify.codePlaceholderHex": "first_16_hex_from_step_2",
+  "verify.codeCommentResult": "// should give the winner index",
+
   // ─── Support categories ─────────────────────────────────
   "supportCategory.duvida": "General question",
   "supportCategory.pagamento": "Payment / deposit issue",

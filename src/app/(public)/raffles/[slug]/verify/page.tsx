@@ -266,10 +266,10 @@ export default function VerifyPage() {
               h ={" "}
               <span className="text-emerald-400">HMAC-SHA256</span>(server_seed, block_hash + &quot;:&quot; + raffle_id)
               <br />
-              idx = (h[0..16] como uint64){" "}
-              <span className="text-accent-400">mod</span> total_tickets_pagos
+              idx = (h[0..16] {t("verify.codeUint64")}){" "}
+              <span className="text-accent-400">mod</span> {t("verify.codeTotalPaid")}
               <br />
-              <span className="text-amber-300">winning_number</span> = ticket_pagos_ordenados[idx]
+              <span className="text-amber-300">winning_number</span> = {t("verify.codeSortedTickets")}[idx]
             </div>
           </div>
           <p className="text-xs text-surface-400">{t("verify.formulaHint")}</p>
@@ -448,7 +448,7 @@ export default function VerifyPage() {
                         HMAC-SHA256(server_seed, block_hash + &quot;:&quot; + raffle_id)
                       </div>
                       <div className="text-white">
-                        → primeiros 16 hex, mod{" "}
+                        {t("verify.codeFirst16Mod")}{" "}
                         <span className="text-accent-400">
                           {data.totalPaidTickets}
                         </span>
@@ -550,15 +550,15 @@ export default function VerifyPage() {
                 {t("verify.stepMathDesc", { total: data.totalPaidTickets })}
               </p>
               <div className="rounded-md bg-surface-900/60 border border-surface-800 p-3 font-mono text-xs text-surface-300 space-y-1">
-                <div>// exemplo em JavaScript (console do browser)</div>
+                <div>{t("verify.codeCommentExample")}</div>
                 <div className="text-emerald-400">
-                  const hex = &quot;<span className="text-amber-300">primeiros_16_hex_do_passo_2</span>&quot;;
+                  const hex = &quot;<span className="text-amber-300">{t("verify.codePlaceholderHex")}</span>&quot;;
                 </div>
                 <div className="text-emerald-400">
                   const idx = Number(BigInt(&quot;0x&quot; + hex) % {BigInt(data.totalPaidTickets).toString()}n);
                 </div>
                 <div className="text-white">
-                  console.log(idx); <span className="text-surface-500">// deve dar o índice do vencedor</span>
+                  console.log(idx); <span className="text-surface-500">{t("verify.codeCommentResult")}</span>
                 </div>
               </div>
             </div>

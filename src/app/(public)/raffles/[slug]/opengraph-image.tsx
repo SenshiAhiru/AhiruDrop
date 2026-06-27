@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { prisma } from "@/lib/prisma";
+import { getServerT } from "@/i18n/server";
 
 /**
  * Dynamic Open Graph image per raffle (1200×630).
@@ -27,9 +28,11 @@ export default async function Image({
   // card instead of the branded one. (Caught by Discord/WhatsApp
   // showing just the "AhiruDrop" placeholder.)
   const { slug } = await params;
+  const { t, locale } = await getServerT();
 
   let raffle: {
     title: string;
+    titleEn: string | null;
     skinImage: string | null;
     skinName: string | null;
     skinWeapon: string | null;
@@ -47,6 +50,7 @@ export default async function Image({
       where: { slug },
       select: {
         title: true,
+        titleEn: true,
         skinImage: true,
         skinName: true,
         skinWeapon: true,
@@ -93,7 +97,8 @@ export default async function Image({
   // De-dupe the weapon: if skinName already starts with the weapon
   // (e.g. skinName="M4A4 | Desolate Space"), drop the weapon label
   // so we don't show "M4A4" + "M4A4 | Desolate Space" stacked.
-  const rawName = raffle.skinName?.trim() ?? raffle.title;
+  const rawName =
+    raffle.skinName?.trim() ?? ((locale === "en" && raffle.titleEn) || raffle.title);
   const weaponDuplicated =
     raffle.skinWeapon &&
     raffle.skinName &&
@@ -316,7 +321,7 @@ export default async function Image({
                   fontWeight: 600,
                 }}
               >
-                Por número
+                {t("meta.og.perNumber")}
               </div>
               <div
                 style={{
@@ -351,7 +356,7 @@ export default async function Image({
                     marginLeft: 12,
                   }}
                 >
-                  · {raffle.totalNumbers} números
+                  · {raffle.totalNumbers} {t("meta.og.numbersSuffix")}
                 </span>
               </div>
             </div>

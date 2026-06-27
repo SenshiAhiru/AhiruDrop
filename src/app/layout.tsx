@@ -12,6 +12,7 @@ import { ConfirmProvider } from "@/components/providers/confirm-provider";
 import { WinnerCelebrationProvider } from "@/components/providers/winner-celebration-provider";
 import { OnboardingProvider } from "@/components/providers/onboarding-provider";
 import { I18nProvider } from "@/i18n/provider";
+import { getServerT } from "@/i18n/server";
 import { detectLocaleFromAcceptLanguage } from "@/i18n/detect";
 import { DEFAULT_LOCALE, LOCALE_COOKIE, LOCALES } from "@/i18n/types";
 import type { Locale } from "@/i18n/types";
@@ -28,14 +29,15 @@ const geistMono = Geist_Mono({
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ahirudrop.vercel.app";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const { t, locale } = await getServerT();
+  return {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "AhiruDrop — Rifas de Skins CS2 com Provably Fair",
+    default: t("meta.home.title"),
     template: "%s | AhiruDrop",
   },
-  description:
-    "Rifas de skins de Counter-Strike 2 com sorteios 100% verificáveis via blockchain Bitcoin. AK-47, AWP, facas, luvas e muito mais.",
+  description: t("meta.home.description"),
   keywords: [
     "rifas cs2", "rifas skins", "sorteio cs2", "counter-strike 2",
     "skins csgo", "ak-47", "awp", "karambit", "provably fair",
@@ -51,12 +53,11 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "pt_BR",
+    locale: locale === "en" ? "en_US" : "pt_BR",
     url: SITE_URL,
     siteName: "AhiruDrop",
-    title: "AhiruDrop — Rifas de Skins CS2",
-    description:
-      "Participe de rifas de skins CS2 com sorteios verificáveis publicamente via Bitcoin.",
+    title: t("meta.home.ogTitle"),
+    description: t("meta.home.ogDescription"),
     images: [
       {
         url: "/og-image.png",
@@ -68,9 +69,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AhiruDrop — Rifas de Skins CS2",
-    description:
-      "Rifas de skins CS2 com provably fair. Transparente, justo e verificável.",
+    title: t("meta.home.ogTitle"),
+    description: t("meta.home.twitterDescription"),
     images: ["/og-image.png"],
   },
   robots: {
@@ -83,7 +83,8 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-};
+  };
+}
 
 async function resolveInitialLocale(): Promise<Locale> {
   // 1st priority: explicit cookie (user preference)

@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Rifas de Skins CS2",
-  description:
-    "Explore todas as rifas de skins de Counter-Strike 2 disponíveis. Armas, facas, luvas e muito mais com sorteios provably fair.",
-  openGraph: {
-    title: "Rifas de Skins CS2 — AhiruDrop",
-    description: "Participe de rifas de skins CS2 com sorteios verificáveis.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getServerT();
+  return {
+    title: t("meta.raffles.title"),
+    description: t("meta.raffles.description"),
+    openGraph: {
+      title: t("meta.raffles.ogTitle"),
+      description: t("meta.raffles.ogDescription"),
+    },
+  };
+}
 
 export default function RafflesLayout({ children }: { children: React.ReactNode }) {
   return children;

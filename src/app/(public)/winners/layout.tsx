@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Hall dos Ganhadores",
-  description:
-    "Veja todos os sorteios já realizados no AhiruDrop. Cada um com prova pública de integridade via Bitcoin.",
-  openGraph: {
-    title: "Hall dos Ganhadores — AhiruDrop",
-    description: "Histórico transparente de todos os sorteios realizados.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getServerT();
+  return {
+    title: t("meta.winners.title"),
+    description: t("meta.winners.description"),
+    openGraph: {
+      title: t("meta.winners.ogTitle"),
+      description: t("meta.winners.ogDescription"),
+    },
+  };
+}
 
 export default function WinnersLayout({ children }: { children: React.ReactNode }) {
   return children;

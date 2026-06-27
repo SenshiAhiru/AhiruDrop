@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import { getServerT } from "@/i18n/server";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ahirudrop.vercel.app";
 
@@ -9,14 +10,18 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const { t, locale } = await getServerT();
 
   try {
     const raffle = await prisma.raffle.findUnique({
       where: { slug },
       select: {
         title: true,
+        titleEn: true,
         description: true,
+        descriptionEn: true,
         shortDescription: true,
+        shortDescriptionEn: true,
         skinName: true,
         skinImage: true,
         skinRarity: true,
@@ -32,26 +37,28 @@ export async function generateMetadata({
 
     if (!raffle) {
       return {
-        title: "Rifa não encontrada",
-        description: "A rifa que você procura não existe ou foi removida.",
+        title: t("meta.raffle.notFoundTitle"),
+        description: t("meta.raffle.notFoundDesc"),
         robots: { index: false, follow: false },
       };
     }
 
+    const isEn = locale === "en";
+    const localizedTitle = (isEn && raffle.titleEn) || raffle.title;
     const priceStr = Number(raffle.pricePerNumber).toFixed(2);
     const statusLabel =
       raffle.status === "ACTIVE"
-        ? "Disponível"
+        ? t("meta.raffle.statusAvailable")
         : raffle.status === "CLOSED"
-        ? "Aguardando sorteio"
+        ? t("meta.raffle.statusWaiting")
         : raffle.status === "DRAWN"
-        ? "Sorteada"
+        ? t("meta.raffle.statusDrawn")
         : raffle.status;
 
     // Build skin name without duplicating the weapon. Some entries store
     // skinName already prefixed (e.g. weapon="M4A4", skinName="M4A4 | Desolate
     // Space") which would otherwise render as "M4A4 | M4A4 | Desolate Space".
-    let skinTitle = raffle.skinName?.trim() || raffle.title;
+    let skinTitle = raffle.skinName?.trim() || localizedTitle;
     if (
       raffle.skinWeapon &&
       raffle.skinName &&
@@ -61,18 +68,20 @@ export async function generateMetadata({
     }
     const titleHead = raffle.skinName
       ? `${skinTitle}${raffle.skinWear ? ` (${raffle.skinWear})` : ""}`
-      : raffle.title;
+      : localizedTitle;
 
     // Price tag uses AHC (the platform's internal currency). Showing "R$"
     // here was misleading — pricePerNumber is denominated in AHC, not reais.
-    const title = `${titleHead} — Rifa por ${priceStr} AHC`;
+    const title = `${titleHead} — ${t("meta.raffle.titleSuffix", { price: priceStr })}`;
 
+    const localizedShort = (isEn && raffle.shortDescriptionEn) || raffle.shortDescription;
+    const localizedDesc = (isEn && raffle.descriptionEn) || raffle.description;
     const description =
-      raffle.shortDescription ||
-      (raffle.description && raffle.description.slice(0, 155)) ||
-      `${statusLabel} · ${raffle.totalNumbers} números · ${priceStr} AHC por cota${
+      localizedShort ||
+      (localizedDesc && localizedDesc.slice(0, 155)) ||
+      `${statusLabel} · ${t("meta.raffle.descNumbers", { total: raffle.totalNumbers })} · ${t("meta.raffle.descPerTicket", { price: priceStr })}${
         raffle.skinRarity ? ` · ${raffle.skinRarity}` : ""
-      }${raffle.skinWear ? ` · ${raffle.skinWear}` : ""}. Sorteio provably fair via Bitcoin.`;
+      }${raffle.skinWear ? ` · ${raffle.skinWear}` : ""}. ${t("meta.raffle.descProvablyFair")}`;
 
     const url = `${SITE_URL}/raffles/${slug}`;
 
@@ -91,7 +100,7 @@ export async function generateMetadata({
       alternates: { canonical: url },
       openGraph: {
         type: "website",
-        locale: "pt_BR",
+        locale: isEn ? "en_US" : "pt_BR",
         url,
         siteName: "AhiruDrop",
         title,
@@ -124,8 +133,8 @@ export async function generateMetadata({
     };
   } catch {
     return {
-      title: "Rifa",
-      description: "Participe de rifas de skins CS2 no AhiruDrop",
+      title: t("meta.raffle.fallbackTitle"),
+      description: t("meta.raffle.fallbackDesc"),
     };
   }
 }

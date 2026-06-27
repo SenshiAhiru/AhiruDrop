@@ -83,8 +83,8 @@ export function StaggerReveal({
       transform: visible ? "translateY(0)" : `translateY(${translateY}px)`,
       transition: reduced
         ? "none"
-        : `opacity ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms,
-           transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
+        : `opacity ${duration}ms var(--ease-out) ${delay}ms,
+           transform ${duration}ms var(--ease-out) ${delay}ms`,
       willChange: "opacity, transform",
       // display:contents would skip the wrapper from layout, but it
       // also drops grid-item participation. Keep block-level.

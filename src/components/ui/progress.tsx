@@ -86,7 +86,7 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
           className="absolute inset-0 h-full rounded-full bg-gradient-to-r from-primary-600 to-accent-500 origin-left"
           style={{
             transform: `scaleX(${displayValue / 100})`,
-            transition: "transform 800ms cubic-bezier(0.16, 1, 0.3, 1)",
+            transition: "transform 800ms var(--ease-out)",
             willChange: "transform",
           }}
         >

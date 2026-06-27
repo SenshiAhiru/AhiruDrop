@@ -75,7 +75,7 @@ export function PublicHeader() {
                   {/* Expressive animated underline: scales in when active or hovered. */}
                   <span
                     className={cn(
-                      "pointer-events-none absolute bottom-1 left-4 right-4 h-0.5 rounded-full bg-primary-500 origin-left transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none group-hover:scale-x-100",
+                      "pointer-events-none absolute bottom-1 left-4 right-4 h-0.5 rounded-full bg-primary-500 origin-left transition-transform duration-300 ease-[var(--ease-spring)] motion-reduce:transition-none group-hover:scale-x-100",
                       pathname === link.href || pathname.startsWith(link.href + "/")
                         ? "scale-x-100"
                         : "scale-x-0"

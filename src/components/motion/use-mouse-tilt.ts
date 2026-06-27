@@ -70,7 +70,7 @@ export function useMouseTilt({
     transform: `perspective(${perspective}px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateY(${tilt.lifted ? -lift : 0}px)`,
     transition: tilt.lifted
       ? "transform 120ms ease-out"
-      : "transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+      : "transform 400ms var(--ease-spring)",
     transformStyle: "preserve-3d",
     willChange: "transform",
   };

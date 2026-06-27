@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { successResponse, errorResponse, handleApiError, requireAuth } from "@/lib/api-utils";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
+import { applyRateLimitWithId } from "@/lib/rate-limit";
 import Stripe from "stripe";
 
 async function getStripeClient(): Promise<Stripe> {
@@ -35,6 +36,14 @@ async function getStripeClient(): Promise<Stripe> {
 export async function POST(req: NextRequest) {
   try {
     const session = await requireAuth();
+
+    // Rate limit: cap checkout-session creation (mirrors deposit/intent).
+    const limited = applyRateLimitWithId(req, session.user.id, {
+      key: "deposit_create",
+      limit: 10,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (limited) return limited;
 
     let body: any;
     try {

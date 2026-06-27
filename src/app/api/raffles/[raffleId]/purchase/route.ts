@@ -6,6 +6,7 @@ import {
   requireAuth,
 } from "@/lib/api-utils";
 import { orderService } from "@/services/order.service";
+import { applyRateLimitWithId } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const purchaseSchema = z.object({
@@ -19,6 +20,14 @@ export async function POST(
   try {
     const session = await requireAuth();
     const { raffleId } = await params;
+
+    // Rate limit: cap rapid-fire buys (number-sniping races / abuse).
+    const limited = applyRateLimitWithId(req, session.user.id, {
+      key: "raffle_purchase",
+      limit: 20,
+      windowMs: 60 * 1000,
+    });
+    if (limited) return limited;
 
     const body = await req.json().catch(() => null);
     const parsed = purchaseSchema.safeParse(body);

@@ -57,9 +57,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
     if (sig.reason === "no-secret-configured") {
-      // Soft mode — webhook secret missing in admin config. Continue but
-      // log it loudly so ops sees and configures.
-      warn("MP webhook: no webhook_secret configured — skipping verification");
+      // In production, fail CLOSED — an unconfigured secret means we can't
+      // trust the caller, so reject rather than silently accepting unsigned
+      // webhooks. (Status is still re-fetched from MP below, but we shouldn't
+      // act on unauthenticated pings at all.) In dev/sandbox, soft-continue
+      // so local testing without a secret still works.
+      if (process.env.NODE_ENV === "production") {
+        logError("MP webhook: no webhook_secret configured — rejecting in production");
+        return NextResponse.json({ error: "Webhook not configured" }, { status: 503 });
+      }
+      warn("MP webhook: no webhook_secret configured — skipping verification (non-prod)");
     }
   } catch (err) {
     logError("MP webhook: signature check threw", err);

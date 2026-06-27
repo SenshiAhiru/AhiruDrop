@@ -6,6 +6,12 @@ import {
   requireAuth,
 } from "@/lib/api-utils";
 import { notificationService } from "@/services/notification.service";
+import { z } from "zod";
+
+const patchSchema = z.union([
+  z.object({ all: z.literal(true) }),
+  z.object({ ids: z.array(z.string().min(1)).min(1).max(200) }),
+]);
 
 export async function GET(req: NextRequest) {
   try {
@@ -37,26 +43,26 @@ export async function PATCH(req: NextRequest) {
   try {
     const session = await requireAuth();
 
-    let body: any;
-    try {
-      body = await req.json();
-    } catch {
-      return errorResponse("Invalid JSON body", 422);
+    const parsed = patchSchema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) {
+      return errorResponse("Informe 'ids' (máx. 200) ou 'all: true'", 422);
     }
 
-    if (body.all === true) {
+    if ("all" in parsed.data) {
       await notificationService.markAllAsRead(session.user.id);
       return successResponse({ message: "Todas as notificacoes marcadas como lidas" });
     }
 
-    if (Array.isArray(body.ids) && body.ids.length > 0) {
-      for (const id of body.ids) {
-        await notificationService.markAsRead(id, session.user.id);
-      }
-      return successResponse({ message: `${body.ids.length} notificacao(oes) marcada(s) como lida(s)` });
-    }
-
-    return errorResponse("Informe 'ids' ou 'all: true'", 422);
+    // markAsRead already scopes by userId, so a forged id can't touch another
+    // user's notifications. The .max(200) cap bounds the write amplification.
+    await Promise.all(
+      parsed.data.ids.map((id) =>
+        notificationService.markAsRead(id, session.user.id)
+      )
+    );
+    return successResponse({
+      message: `${parsed.data.ids.length} notificacao(oes) marcada(s) como lida(s)`,
+    });
   } catch (error) {
     return handleApiError(error);
   }

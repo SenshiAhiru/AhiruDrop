@@ -12,10 +12,17 @@ export async function GET(
   { params }: { params: Promise<{ paymentId: string }> }
 ) {
   try {
-    await requireAuth();
+    const session = await requireAuth();
     const { paymentId } = await params;
 
     const payment = await paymentService.checkStatus(paymentId);
+
+    // Ownership check — a payment belongs to a user via its order. Without
+    // this, any authenticated user could read any payment's status/amount by
+    // guessing IDs (IDOR). 404 (not 403) so we don't confirm the ID exists.
+    if (payment.order?.userId !== session.user.id) {
+      return errorResponse("Pagamento não encontrado", 404);
+    }
 
     return successResponse({
       id: payment.id,

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { successResponse, errorResponse, handleApiError, requireAuth } from "@/lib/api-utils";
 import { supportService } from "@/services/support.service";
 import { ADMIN_ROLES } from "@/constants/roles";
+import { applyRateLimitWithId } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const bodySchema = z.object({
@@ -16,6 +17,14 @@ export async function POST(
     const session = await requireAuth();
     const { ticketId } = await params;
     const isAdmin = ADMIN_ROLES.includes((session.user as any).role);
+
+    // Rate limit: cap message spam per user.
+    const limited = applyRateLimitWithId(req, session.user.id, {
+      key: "ticket_message",
+      limit: 20,
+      windowMs: 60 * 1000,
+    });
+    if (limited) return limited;
 
     const parsed = bodySchema.safeParse(await req.json().catch(() => null));
     if (!parsed.success) {
